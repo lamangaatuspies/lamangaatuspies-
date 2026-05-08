@@ -801,6 +801,51 @@
     }
     .map-popup-close:hover { color: #e6edf3; }
 
+    /* ── LIGHTBOX ── */
+    .lightbox-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 999999;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      animation: lbFadeIn 0.18s ease;
+    }
+    .lightbox-overlay.visible { display: flex; }
+    @keyframes lbFadeIn { from { opacity:0; } to { opacity:1; } }
+    .lightbox-overlay img {
+      max-width: 90vw;
+      max-height: 88vh;
+      object-fit: contain;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.9);
+      border: 1px solid #30363d;
+      cursor: default;
+      animation: lbZoomIn 0.18s ease;
+    }
+    @keyframes lbZoomIn { from { transform: scale(0.93); opacity:0; } to { transform: scale(1); opacity:1; } }
+    .lightbox-close {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.4rem;
+      background: rgba(22,27,34,0.85);
+      border: 1px solid #30363d;
+      color: #8b949e;
+      font-size: 1.3rem;
+      line-height: 1;
+      width: 2.2rem;
+      height: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      z-index: 1000000;
+    }
+    .lightbox-close:hover { color: #e6edf3; border-color: #58a6ff; }
+    .lp-img { cursor: zoom-in; }
+
   </style>
 </head>
 <body>
@@ -1022,6 +1067,12 @@
 </body>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- LIGHTBOX -->
+  <div class="lightbox-overlay" id="lightboxOverlay">
+    <button class="lightbox-close" id="lightboxClose">✕</button>
+    <img id="lightboxImg" src="" alt=""/>
+  </div>
+
   <script>
   document.addEventListener('DOMContentLoaded', function() {
     // ── GEODATA ──
@@ -15509,34 +15560,47 @@
     // ── KM POINTS LAYER ──
     const KM_POINTS = [{"name": "Km 1", "lat": 37.642909, "lng": -0.714294, "img": "https://i.postimg.cc/BQNQ7Bd2/Km-1.png"}, {"name": "Km 2", "lat": 37.651527, "lng": -0.718569, "img": "https://i.postimg.cc/v8rWBC6C/Km-2.png"}, {"name": "Km 3", "lat": 37.660313, "lng": -0.723038, "img": "https://i.postimg.cc/gJTkkzKd/Km-3.png"}, {"name": "Km 4", "lat": 37.667566, "lng": -0.728277, "img": "https://i.postimg.cc/FFpwSWMq/Km-4.png"}, {"name": "Km 5", "lat": 37.676395, "lng": -0.731621, "img": "https://i.postimg.cc/ydYyCPLn/Km-5.png"}, {"name": "Km 5", "lat": 37.676395, "lng": -0.731621, "img": "https://i.postimg.cc/ydYyCPLn/Km-5.png"}, {"name": "Km 6", "lat": 37.684439, "lng": -0.735022, "img": "https://i.postimg.cc/cCPPK1hc/Km-6.png"}, {"name": "Km 7", "lat": 37.692243, "lng": -0.737785, "img": "https://i.postimg.cc/2SXqtPHN/Km-7.png"}, {"name": "Km 8", "lat": 37.700923, "lng": -0.740571, "img": "https://i.postimg.cc/rmZYRygX/Km-8.png"}, {"name": "Km 9", "lat": 37.709719, "lng": -0.742186, "img": "https://i.postimg.cc/TYKhDkdH/Km-9.png"}, {"name": "Km 10", "lat": 37.718119, "lng": -0.741722, "img": "https://i.postimg.cc/NFgJn9M1/Km-10.png"}, {"name": "Km 11", "lat": 37.726007, "lng": -0.740282, "img": "https://i.postimg.cc/gcSHpBtf/Km-11.png"}, {"name": "Km 12", "lat": 37.734448, "lng": -0.740424, "img": "https://i.postimg.cc/bvSvBgFz/Km-12.png"}, {"name": "Km 13", "lat": 37.742655, "lng": -0.737055, "img": "https://i.postimg.cc/Gm5FDMsz/Km-13.png"}, {"name": "Km 14", "lat": 37.74873, "lng": -0.737516, "img": "https://i.postimg.cc/59zfWj3J/Km-14.png"}, {"name": "Km 15", "lat": 37.755414, "lng": -0.744056, "img": "https://i.postimg.cc/P5WLX2QW/Km-15.png"}, {"name": "Km 16", "lat": 37.763361, "lng": -0.747955, "img": "https://i.postimg.cc/L88XS25B/Km-16.png"}, {"name": "Km 17", "lat": 37.771766, "lng": -0.746872, "img": "https://i.postimg.cc/85Dx8PP6/Km-17.png"}, {"name": "Km 18", "lat": 37.778563, "lng": -0.747221, "img": "https://i.postimg.cc/KvrNVr3B/Km-18.png"}, {"name": "Semáforo Cabo de Palos", "lat": 37.636019, "lng": -0.708328, "img": "https://i.postimg.cc/52gJ29xz/Semaforo-Cabo-de-palos.png"}];
 
-    const kmIcon = (name) => L.divIcon({
-      className: '',
-      html: `<div style="
-        background: #e53935;
-        color: white;
-        font-family: 'Rajdhani', sans-serif;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 3px 7px;
-        border-radius: 3px;
-        white-space: nowrap;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-        border: 1px solid rgba(255,255,255,0.3);
-        position: relative;
-      ">${name}<div style="
-        position:absolute; bottom:-5px; left:50%; transform:translateX(-50%);
-        width:0; height:0;
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        border-top: 5px solid #e53935;
-      "></div></div>`,
-      iconAnchor: [20, 28],
-      popupAnchor: [0, -30],
-    });
+    function kmLineWidth(zoom) {
+      // At zoom 13: 18px, at zoom 17: 150px, at zoom 19: 260px
+      if (zoom <= 13) return 18;
+      if (zoom >= 19) return 260;
+      return Math.round(18 + (zoom - 13) * 40);
+    }
+
+    const kmIcon = (name, zoom) => {
+      const lineW = kmLineWidth(zoom || map.getZoom());
+      return L.divIcon({
+        className: '',
+        html: `<div style="
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          white-space: nowrap;
+          pointer-events: none;
+        ">
+          <div style="
+            width: ${lineW}px;
+            height: 2px;
+            background: #e53935;
+            flex-shrink: 0;
+          "></div>
+          <span style="
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.9);
+            letter-spacing: 0.05em;
+          ">${name}</span>
+        </div>`,
+        iconAnchor: [0, 6],
+        iconSize: [lineW + 60, 12],
+      });
+    };
 
     const kmLayerGroup = L.featureGroup();
     KM_POINTS.forEach(km => {
-      const marker = L.marker([km.lat, km.lng], { icon: kmIcon(km.name) });
+      const marker = L.marker([km.lat, km.lng], { icon: kmIcon(km.name, map.getZoom()) });
       const popupHtml = `
         <div class="lp-wrap">
           <div class="lp-name">${km.name}</div>
@@ -15671,6 +15735,43 @@
     btn.addEventListener('click', () => { const first = dropdown.querySelector('.search-item'); if (first) first.click(); else showResults(input.value.trim()); });
     clearBtn.addEventListener('click', clearSearch);
     document.addEventListener('click', e => { if (!e.target.closest('.search-wrap')) dropdown.classList.remove('open'); });
+
+    // ── UPDATE KM ICONS ON ZOOM ──
+    map.on('zoomend', () => {
+      const zoom = map.getZoom();
+      kmLayerGroup.eachLayer(marker => {
+        const name = marker.options.icon.options.html.match(/>([^<]+)<\/span>/)?.[1]?.trim() || '';
+        if (name) marker.setIcon(kmIcon(name, zoom));
+      });
+    });
+
+    // ── LIGHTBOX ──
+    const lightboxOverlay = document.getElementById('lightboxOverlay');
+    const lightboxImg     = document.getElementById('lightboxImg');
+
+    function openLightbox(src, alt) {
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || '';
+      lightboxOverlay.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lightboxOverlay.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('ppImg').addEventListener('click', function() {
+      if (this.src && this.style.display !== 'none') openLightbox(this.src, this.alt);
+    });
+
+    lightboxOverlay.addEventListener('click', function(e) {
+      if (e.target !== lightboxImg) closeLightbox();
+    });
+    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
 
     // ── NAV SCROLL ──
     const sections = document.querySelectorAll('section[id]');

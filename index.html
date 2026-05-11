@@ -542,7 +542,7 @@
       font-family: var(--mono);
       font-size: 0.72rem;
       color: var(--ink-dim);
-      text-align: center;
+      text-align: left;
     }
 
     /* ── LEAFLET MAP ── */
@@ -566,7 +566,9 @@
       z-index: 1000;
     }
     /* Leaflet popup custom style */
-    .leaflet-popup-content-wrapper {
+    .leaflet-tile {
+      filter: saturate(1.3) contrast(1.15) brightness(1.05) hue-rotate(15deg);
+    }
       background: #161b22 !important;
       color: #e6edf3 !important;
       border: 1px solid #30363d !important;
@@ -588,6 +590,13 @@
       margin-bottom: 0.4rem;
     }
     .lp-dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
+    .lp-km {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: #f0883e;
+      letter-spacing: 0.08em;
+    }
     .lp-name {
       font-family: var(--sans);
       font-size: 1rem;
@@ -627,6 +636,34 @@
       text-decoration: none;
     }
     .lp-maps:hover { border-color: #58a6ff; }
+    .lp-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .lp-share {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      cursor: pointer;
+      background: transparent;
+      transition: color 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+    }
+    .lp-share:hover { color: #e6edf3; border-color: #58a6ff; }
+    .lp-share.copied { color: #3fb950; border-color: #3fb950; }
+    .lp-share-tip {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: #3fb950;
+      letter-spacing: 0.06em;
+      display: none;
+    }
+    .lp-share-tip.visible { display: inline; }
     .leaflet-control-layers {
       background: #161b22 !important;
       border: 1px solid #30363d !important;
@@ -789,8 +826,6 @@
     .map-popup-panel.visible { display: block; }
     .map-popup-panel .lp-wrap { padding: 0.8rem 1rem; }
     .map-popup-close {
-      position: absolute;
-      top: 0.4rem; right: 0.5rem;
       background: transparent;
       border: none;
       color: #484f58;
@@ -799,8 +834,102 @@
       line-height: 1;
       padding: 0.2rem;
       transition: color 0.2s;
+      margin-left: 0.4rem;
+      flex-shrink: 0;
     }
     .map-popup-close:hover { color: #e6edf3; }
+
+    /* ── LISTA ── */
+    .lista-grupo {
+      margin-bottom: 2.5rem;
+    }
+    .lista-grupo-header {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.5rem 0;
+      margin-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .lista-grupo-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .lista-grupo-nombre {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+    }
+    .lista-grupo-count {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--ink-dim);
+      margin-left: auto;
+    }
+    .lista-tabla {
+      width: 100%;
+    }
+    .lista-fila {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #21262d;
+      transition: background 0.15s;
+      padding: 0.45rem 0.7rem;
+    }
+    .lista-fila:hover { background: #161b22; }
+    .lista-td-km {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--ink-dim);
+      width: 5.5rem;
+      flex-shrink: 0;
+    }
+    .lista-td-nombre {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 0.88rem;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      flex: 1;
+    }
+    .lista-td-btn {
+      flex-shrink: 0;
+      margin-left: 1rem;
+    }
+    .lista-btn-mapa {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.8rem; height: 1.8rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--ink-mid);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .lista-btn-mapa:hover { color: #58a6ff; border-color: #58a6ff; }
+    .lista-sort-btns {
+      display: flex;
+      gap: 0.4rem;
+      margin-left: auto;
+    }
+    .lista-sort-btn {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.07em;
+      padding: 0.2rem 0.55rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--ink-dim);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      text-transform: uppercase;
+    }
+    .lista-sort-btn:hover { color: var(--ink); border-color: var(--ink-mid); }
+    .lista-sort-btn.active { color: #58a6ff; border-color: #58a6ff; }
 
     /* ── LIGHTBOX ── */
     .lightbox-overlay {
@@ -907,7 +1036,7 @@
     </div>
     <div class="status-item" style="margin-left:auto; border-right:none; border-left:1px solid var(--border); padding-left:1.8rem;">
       <span>Última actualización</span>
-      <span class="status-val">Mayo 2025</span>
+      <span class="status-val" id="status-fecha">Mayo 2025</span>
     </div>
   </div>
 
@@ -915,7 +1044,7 @@
   <nav>
     <ul>
       <li><a href="#mapa" class="active">Mapa</a></li>
-      <li><a href="#capas">Capas</a></li>
+      <li><a href="#lista">Lista</a></li>
       <li><a href="#proyecto">Proyecto</a></li>
     </ul>
   </nav>
@@ -950,25 +1079,45 @@
       <div class="map-frame">
         <div id="leaflet-map"></div>
         <div class="map-popup-panel" id="mapPopupPanel">
-          <button class="map-popup-close" id="mapPopupClose">✕</button>
           <div class="lp-wrap">
-            <div class="lp-capa"><span class="lp-dot" id="ppDot"></span><span id="ppCapa"></span></div>
+            <div class="lp-capa"><span class="lp-dot" id="ppDot"></span><span id="ppCapa"></span><span class="lp-km" id="ppKm"></span><button class="map-popup-close" id="mapPopupClose">✕</button></div>
             <div class="lp-name" id="ppName"></div>
             <img class="lp-img" id="ppImg" src="" alt="" style="display:none"/>
             <div class="lp-desc" id="ppDesc"></div>
-            <a class="lp-maps" id="ppMaps" href="#" target="_blank">↗ Ver en Google Maps</a>
+            <div class="lp-footer">
+              <a class="lp-maps" id="ppMaps" href="#" target="_blank">↗ Ver en Google Maps</a>
+              <button class="lp-share" id="ppShare" title="Copiar enlace">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+              </button>
+              <span class="lp-share-tip" id="ppShareTip">✓ ENLACE COPIADO</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- CAPAS -->
-    <section id="capas">
+    <!-- LISTA -->
+    <section id="lista">
       <div class="sec-head">
-        <h2>Capas del directorio</h2>
-        <span class="sec-badge" id="badge-total">295 registros</span>
+        <h2>Lista de marcadores</h2>
+        <span class="sec-badge" id="badge-lista">— registros</span>
       </div>
-      <div class="layers-wrap">
+      <div id="lista-wrap"></div>
+    </section>
+
+    <!-- PROYECTO -->
+    <section id="proyecto">
+      <div class="sec-head">
+        <h2>El proyecto</h2>
+        <span class="sec-badge">Metodología</span>
+      </div>
+
+      <!-- Capas del directorio (antes sección independiente) -->
+      <div class="layers-wrap" style="margin-bottom: 3rem;">
         <div class="lcard" id="lcard-urb" data-num="250">
           <div class="lcard-tag" style="color:#1f938a;">
             <span style="background:#1f938a;box-shadow:0 0 6px #1f938a;"></span>CAPA 01
@@ -1002,14 +1151,7 @@
           <div class="lcard-desc">Puntos de referencia geográficos, culturales y de servicios que completan el conocimiento del territorio.</div>
         </div>
       </div>
-    </section>
 
-    <!-- PROYECTO -->
-    <section id="proyecto">
-      <div class="sec-head">
-        <h2>El proyecto</h2>
-        <span class="sec-badge">Metodología</span>
-      </div>
       <div class="about-wrap">
         <div class="about-text">
           <p>
@@ -1958,6 +2100,55 @@
         "img": "https://i.postimg.cc/N09cRDDy/anaconda.png",
         "lat": 37.690103,
         "lng": -0.740227
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -0.725642,
+              37.663769
+            ],
+            [
+              -0.7265,
+              37.663671
+            ],
+            [
+              -0.726466,
+              37.663378
+            ],
+            [
+              -0.725878,
+              37.663421
+            ],
+            [
+              -0.725924,
+              37.663582
+            ],
+            [
+              -0.725607,
+              37.663616
+            ],
+            [
+              -0.725642,
+              37.663769
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "ARENA",
+        "desc": [
+          "Edificio",
+          "Piscina",
+          "Padel"
+        ],
+        "img": "https://i.postimg.cc/mgYrbJpM/arena.png",
+        "lat": 37.663601,
+        "lng": -0.725951
       }
     },
     {
@@ -5247,8 +5438,8 @@
         "coordinates": [
           [
             [
-              -0.7411,
-              37.706245
+              -0.741003,
+              37.706266
             ],
             [
               -0.742092,
@@ -5259,12 +5450,12 @@
               37.70437
             ],
             [
-              -0.740697,
-              37.704472
+              -0.740628,
+              37.704458
             ],
             [
-              -0.7411,
-              37.706245
+              -0.741003,
+              37.706266
             ]
           ]
         ],
@@ -5274,12 +5465,11 @@
         "name": "HAWAII 4-5",
         "desc": [
           "Edificio",
-          "Piscina",
-          "[[https://maps.app.goo.gl/Wa2y1FeWRCzsVwvf6|Ver en Google Maps]]"
+          "Piscina"
         ],
         "img": "https://i.postimg.cc/7Zf4bC55/hawai-5.png",
-        "lat": 37.705489,
-        "lng": -0.741327
+        "lat": 37.705495,
+        "lng": -0.741275
       }
     },
     {
@@ -12813,55 +13003,6 @@
         "lat": 37.646564,
         "lng": -0.71414
       }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              -0.725642,
-              37.663769
-            ],
-            [
-              -0.7265,
-              37.663671
-            ],
-            [
-              -0.726466,
-              37.663378
-            ],
-            [
-              -0.725878,
-              37.663421
-            ],
-            [
-              -0.725924,
-              37.663582
-            ],
-            [
-              -0.725607,
-              37.663616
-            ],
-            [
-              -0.725642,
-              37.663769
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "ARENA",
-        "desc": [
-          "Edificio",
-          "Piscina",
-          "Padel"
-        ],
-        "img": "https://i.postimg.cc/mgYrbJpM/arena.png",
-        "lat": 37.663601,
-        "lng": -0.725951
-      }
     }
   ],
   "Hoteles": [
@@ -13540,6 +13681,53 @@
         "coordinates": [
           [
             [
+              -0.746435,
+              37.780484
+            ],
+            [
+              -0.74688,
+              37.780429
+            ],
+            [
+              -0.746845,
+              37.780105
+            ],
+            [
+              -0.746671,
+              37.780083
+            ],
+            [
+              -0.746469,
+              37.779859
+            ],
+            [
+              -0.746051,
+              37.780022
+            ],
+            [
+              -0.746435,
+              37.780484
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "Collados Beach",
+        "desc": [
+          "Restaurante"
+        ],
+        "img": "https://i.postimg.cc/SRfdGxK2/collados-beach.png",
+        "lat": 37.780209,
+        "lng": -0.746541
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
               -0.740089,
               37.691935
             ],
@@ -13790,7 +13978,7 @@
         "desc": [
           "Chiringuito"
         ],
-        "img": "https://i.postimg.cc/TYtcGV14/la-cangreja.png",
+        "img": "https://i.postimg.cc/nh9nK0Hx/la-cangreja.png",
         "lat": 37.661523,
         "lng": -0.721772
       }
@@ -14049,6 +14237,80 @@
         "coordinates": [
           [
             [
+              -0.724019,
+              37.641009
+            ],
+            [
+              -0.72336,
+              37.641468
+            ],
+            [
+              -0.723016,
+              37.641073
+            ],
+            [
+              -0.723569,
+              37.640661
+            ],
+            [
+              -0.724019,
+              37.641009
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "RESTAURANTE EL PARADOR DEL MAR MENOR",
+        "desc": [],
+        "img": "",
+        "lat": 37.641044,
+        "lng": -0.723597
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -0.723319,
+              37.641501
+            ],
+            [
+              -0.722719,
+              37.641866
+            ],
+            [
+              -0.722407,
+              37.641484
+            ],
+            [
+              -0.723014,
+              37.641125
+            ],
+            [
+              -0.723319,
+              37.641501
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "RESTAURANTE MALOCA",
+        "desc": [],
+        "img": "",
+        "lat": 37.641495,
+        "lng": -0.722956
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
               -0.71589,
               37.650208
             ],
@@ -14131,45 +14393,115 @@
         "coordinates": [
           [
             [
-              -0.746435,
-              37.780484
+              -0.721046,
+              37.655723
             ],
             [
-              -0.74688,
-              37.780429
+              -0.72123,
+              37.655705
             ],
             [
-              -0.746845,
-              37.780105
+              -0.721184,
+              37.655501
             ],
             [
-              -0.746671,
-              37.780083
+              -0.721017,
+              37.655521
             ],
             [
-              -0.746469,
-              37.779859
-            ],
-            [
-              -0.746051,
-              37.780022
-            ],
-            [
-              -0.746435,
-              37.780484
+              -0.721046,
+              37.655723
             ]
           ]
         ],
         "type": "Polygon"
       },
       "properties": {
-        "name": "Collados Beach",
+        "name": "A Muñeira",
         "desc": [
           "Restaurante"
         ],
-        "img": "https://i.postimg.cc/SRfdGxK2/collados-beach.png",
-        "lat": 37.780209,
-        "lng": -0.746541
+        "img": "https://i.postimg.cc/Fs6qMWg0/a-039-muneira.png",
+        "lat": 37.655635,
+        "lng": -0.721105
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -0.721212,
+              37.656303
+            ],
+            [
+              -0.721194,
+              37.656216
+            ],
+            [
+              -0.721294,
+              37.656197
+            ],
+            [
+              -0.721313,
+              37.656282
+            ],
+            [
+              -0.721212,
+              37.656303
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "Bongo",
+        "desc": [
+          "Pub"
+        ],
+        "img": "https://i.postimg.cc/GtyYHmVh/bongo.png",
+        "lat": 37.65626,
+        "lng": -0.721245
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -0.72132,
+              37.656281
+            ],
+            [
+              -0.721659,
+              37.656245
+            ],
+            [
+              -0.721646,
+              37.656157
+            ],
+            [
+              -0.721302,
+              37.656197
+            ],
+            [
+              -0.72132,
+              37.656281
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "Los Caballos",
+        "desc": [
+          "Restaurante"
+        ],
+        "img": "https://i.postimg.cc/nLG39f90/los-caballos.png",
+        "lat": 37.656232,
+        "lng": -0.721449
       }
     }
   ],
@@ -15543,10 +15875,34 @@
         document.getElementById('lcard-' + k).dataset.num = n[k];
       });
 
-      // Badge "X registros" y ficha técnica
-      document.getElementById('badge-total').textContent = total + ' registros';
+      // Ficha técnica
       document.getElementById('spec-total').textContent  = total + '+';
+
+      // Fecha automática en el status bar
+      const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                     'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      const hoy = new Date();
+      document.getElementById('status-fecha').textContent =
+        MESES[hoy.getMonth()] + ' ' + hoy.getFullYear();
     })();
+
+    // ── COMPARTIR EDIFICIO ──
+    // Genera una URL con ?q=NombreEdificio y la copia al portapapeles
+    document.getElementById('ppShare').addEventListener('click', function() {
+      const nombre = document.getElementById('ppName').textContent;
+      if (!nombre) return;
+      const url = window.location.origin + window.location.pathname + '?q=' + encodeURIComponent(nombre);
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = this;
+        const tip = document.getElementById('ppShareTip');
+        btn.classList.add('copied');
+        tip.classList.add('visible');
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          tip.classList.remove('visible');
+        }, 2200);
+      });
+    });
 
     // ── INIT MAP ──
     const map = L.map('leaflet-map', {
@@ -15700,11 +16056,27 @@
     Object.keys(GEODATA).forEach(name => { overlays[name] = leafletLayers[name]; });
     L.control.layers(null, overlays, { collapsed: false }).addTo(map);
 
-    // Esri imagery date note
+    // Esri imagery date — se consultan los metadatos del servicio para obtener el año real
     const dateNote = L.control({ position: 'bottomleft' });
     dateNote.onAdd = () => {
       const div = L.DomUtil.create('div');
-      div.innerHTML = '<span style="background:rgba(13,17,23,0.75);color:#8b949e;font-family:monospace;font-size:10px;padding:3px 7px;letter-spacing:0.05em;">IMAGEN SATELITAL © ESRI · 2023</span>';
+      const span = document.createElement('span');
+      span.style.cssText = 'background:rgba(13,17,23,0.75);color:#8b949e;font-family:monospace;font-size:10px;padding:3px 7px;letter-spacing:0.05em;display:inline-block;';
+      span.textContent = 'IMAGEN SATELITAL © ESRI';
+      div.appendChild(span);
+      // Consulta los metadatos del servicio ESRI para obtener el año de actualización
+      fetch('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json')
+        .then(r => r.json())
+        .then(data => {
+          // El campo copyrightText suele contener el año, p.ej. "© 2024 Esri, ..."
+          const match = (data.copyrightText || '').match(/20\d{2}/);
+          const year  = match ? match[0] : new Date().getFullYear();
+          span.textContent = 'IMAGEN SATELITAL © ESRI · ' + year;
+        })
+        .catch(() => {
+          // Si falla la consulta, mostramos el año actual como fallback
+          span.textContent = 'IMAGEN SATELITAL © ESRI · ' + new Date().getFullYear();
+        });
       return div;
     };
     dateNote.addTo(map);
@@ -15730,6 +16102,7 @@
       document.getElementById('ppDot').style.background = cfg.color;
       document.getElementById('ppCapa').textContent = cfg.label;
       document.getElementById('ppName').textContent = item.name;
+      document.getElementById('ppKm').textContent = kmMasCercano(item.lat, item.lng);
       const imgEl = document.getElementById('ppImg');
       if (item.img) { imgEl.src = item.img; imgEl.style.display = 'block'; }
       else { imgEl.style.display = 'none'; }
@@ -15787,7 +16160,8 @@
       const q = query.toLowerCase();
       const matches = allFeatures.filter(f => f.name.toLowerCase().includes(q)).slice(0, 12);
       if (matches.length === 0) {
-        dropdown.innerHTML = '<div class="search-empty">Sin resultados</div>';
+        dropdown.innerHTML = '<div class="search-empty">Sin resultados para «' + query + '»</div>';
+        dropdown.classList.add('open');
       } else {
         dropdown.innerHTML = matches.map((f, i) => {
           return '<div class="search-item" data-idx="' + allFeatures.indexOf(f) + '">' +
@@ -15819,6 +16193,32 @@
     clearBtn.addEventListener('click', clearSearch);
     document.addEventListener('click', e => { if (!e.target.closest('.search-wrap')) dropdown.classList.remove('open'); });
 
+    // ── ABRIR EDIFICIO DESDE URL (?q=NombreEdificio) ──
+    // Si la URL contiene ?q=X, busca el edificio y lo abre automáticamente.
+    (function abrirDesdeURL() {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q');
+      if (!q) return;
+      const nombre = q.toLowerCase();
+      const item = allFeatures.find(f => f.name.toLowerCase() === nombre)
+                || allFeatures.find(f => f.name.toLowerCase().includes(nombre));
+      if (!item) return;
+      // Breve retardo para que el mapa termine de renderizarse
+      setTimeout(() => {
+        map.setView([item.lat, item.lng], 17, { animate: true });
+        selectFeature(item);
+        // Centrar el bloque mapa+buscador en pantalla
+        const searchWrap = document.querySelector('.search-wrap');
+        const mapFrame   = document.querySelector('.map-frame');
+        const navH       = document.querySelector('nav').offsetHeight;
+        const blockTop    = window.scrollY + searchWrap.getBoundingClientRect().top;
+        const blockBottom = window.scrollY + mapFrame.getBoundingClientRect().bottom;
+        const blockCenter = (blockTop + blockBottom) / 2;
+        const visibleH    = window.innerHeight - navH;
+        window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'smooth' });
+      }, 400);
+    })();
+
     // ── UPDATE KM ICONS ON ZOOM ──
     map.on('zoomend', () => {
       const zoom = map.getZoom();
@@ -15827,6 +16227,140 @@
         if (name) marker.setIcon(kmIcon(name, zoom));
       });
     });
+
+    // ── LISTA DE MARCADORES ──
+    // ── KM CON DECIMAL (ámbito global, usada en popup y en lista) ──
+    function kmMasCercano(lat, lng) {
+      const kms = KM_POINTS
+        .filter(kp => kp.name.startsWith('Km'))
+        .map(kp => ({ n: parseInt(kp.name.replace('Km ','')), lat: kp.lat, lng: kp.lng }))
+        .filter(kp => !isNaN(kp.n))
+        .sort((a, b) => a.n - b.n)
+        .filter((kp, i, arr) => i === 0 || kp.n !== arr[i-1].n);
+
+      function dist(a, b) {
+        const d = (a.lat - b.lat) ** 2 + (a.lng - b.lng) ** 2;
+        return Math.sqrt(d);
+      }
+
+      let mejorKm = kms[0].n, mejorDist = Infinity;
+      for (let i = 0; i < kms.length - 1; i++) {
+        const A = kms[i], B = kms[i + 1];
+        const ax = B.lat - A.lat, ay = B.lng - A.lng;
+        const bx = lat - A.lat,   by = lng - A.lng;
+        const t  = Math.max(0, Math.min(1, (bx*ax + by*ay) / (ax*ax + ay*ay)));
+        const px = A.lat + t * ax, py = A.lng + t * ay;
+        const d  = dist({ lat: px, lng: py }, { lat, lng });
+        if (d < mejorDist) { mejorDist = d; mejorKm = A.n + t; }
+      }
+      const ultimo = kms[kms.length - 1];
+      if (dist({ lat: ultimo.lat, lng: ultimo.lng }, { lat, lng }) < mejorDist) mejorKm = ultimo.n;
+
+      return 'Km ' + mejorKm.toFixed(1).replace('.', ',');
+    }
+
+    (function construirLista() {
+
+      const CAPAS_LISTA = [
+        { key: 'Urbanizaciones y Edificios', color: '#1f938a', label: 'Urbanizaciones y Edificios' },
+        { key: 'Hoteles',                    color: '#ef5d69', label: 'Hoteles' },
+        { key: 'Bares y Restaurantes',       color: '#fad201', label: 'Bares y Restaurantes' },
+        { key: 'Sitios de Interés',          color: '#109010', label: 'Sitios de Interés' },
+      ];
+
+      const wrap = document.getElementById('lista-wrap');
+      let totalLista = 0;
+
+      CAPAS_LISTA.forEach(capa => {
+        const items = (GEODATA[capa.key] || [])
+          .map(f => ({
+            name: f.properties.name,
+            lat:  f.properties.lat,
+            lng:  f.properties.lng,
+            km:   kmMasCercano(f.properties.lat, f.properties.lng),
+            kmNum: parseFloat(kmMasCercano(f.properties.lat, f.properties.lng).replace('Km ','').replace(',','.')) || 0,
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name, 'es'));
+
+        totalLista += items.length;
+
+        function renderFilas(lista) {
+          return lista.map(item => `
+            <div class="lista-fila">
+              <span class="lista-td-km">${item.km}</span>
+              <span class="lista-td-nombre">${item.name}</span>
+              <div class="lista-td-btn">
+                <button class="lista-btn-mapa"
+                  data-lat="${item.lat}" data-lng="${item.lng}" data-name="${item.name}"
+                  title="Ver en el mapa">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+                  </svg>
+                </button>
+              </div>
+            </div>`).join('');
+        }
+
+        const grupo = document.createElement('div');
+        grupo.className = 'lista-grupo';
+        grupo.innerHTML = `
+          <div class="lista-grupo-header">
+            <span class="lista-grupo-dot" style="background:${capa.color}"></span>
+            <span class="lista-grupo-nombre">${capa.label}</span>
+            <span class="lista-grupo-count">${items.length} registros</span>
+            <div class="lista-sort-btns">
+              <button class="lista-sort-btn active" data-sort="nombre">A–Z</button>
+              <button class="lista-sort-btn" data-sort="km">Km</button>
+            </div>
+          </div>
+          <div class="lista-tabla">${renderFilas(items)}</div>`;
+        wrap.appendChild(grupo);
+
+        // Lógica de ordenación
+        let sortActual = 'nombre';
+        grupo.querySelectorAll('.lista-sort-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const tipo = this.dataset.sort;
+            if (tipo === sortActual) return;
+            sortActual = tipo;
+            grupo.querySelectorAll('.lista-sort-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const ordenados = [...items].sort((a, b) =>
+              tipo === 'km'
+                ? a.kmNum - b.kmNum || a.name.localeCompare(b.name, 'es')
+                : a.name.localeCompare(b.name, 'es')
+            );
+            grupo.querySelector('.lista-tabla').innerHTML = renderFilas(ordenados);
+          });
+        });
+      });
+
+      // Badge con total
+      document.getElementById('badge-lista').textContent = totalLista + ' registros';
+
+      // Click en botón "ver en mapa": va al mapa, hace zoom y abre popup
+      wrap.addEventListener('click', function(e) {
+        const btn = e.target.closest('.lista-btn-mapa');
+        if (!btn) return;
+        const name = btn.dataset.name;
+        const item = allFeatures.find(f => f.name === name);
+        if (!item) return;
+        // Navegar al mapa
+        const searchWrap = document.querySelector('.search-wrap');
+        const mapFrame   = document.querySelector('.map-frame');
+        const navH       = document.querySelector('nav').offsetHeight;
+        const blockTop    = window.scrollY + searchWrap.getBoundingClientRect().top;
+        const blockBottom = window.scrollY + mapFrame.getBoundingClientRect().bottom;
+        const blockCenter = (blockTop + blockBottom) / 2;
+        const visibleH    = window.innerHeight - navH;
+        window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'smooth' });
+        // Zoom y popup
+        setTimeout(() => {
+          map.setView([item.lat, item.lng], 17, { animate: true });
+          selectFeature(item);
+        }, 350);
+      });
+    })();
 
     // ── LIGHTBOX ──
     const lightboxOverlay = document.getElementById('lightboxOverlay');

@@ -791,6 +791,53 @@
     .result-panel-close:hover { color: var(--ink); }
 
 
+    /* ── BOTÓN EXPANDIR: igualar estilo nativo Leaflet ── */
+    .leaflet-top.leaflet-left .expand-control {
+      margin-top: 10px;
+      margin-left: 10px;
+      margin-bottom: 0;
+    }
+    .leaflet-top.leaflet-left .leaflet-control-zoom {
+      margin-top: 0 !important;
+      margin-left: 10px;
+    }
+    .map-expand-btn {
+      display: block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-bottom: 1px solid #ccc;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 2px 2px 0 0;
+    }
+    .map-expand-btn:hover { background: #f4f4f4; }
+    .map-expand-btn svg { display: inline-block; vertical-align: middle; margin-top: -2px; }
+
+    /* Transición suave del mapa al expandir */
+    #leaflet-map { transition: height 0.3s ease; }
+
+    /* Cuando está expandido: fixed sobre toda la pantalla bajo el nav */
+    .map-frame.map-expanded {
+      position: fixed;
+      top: 44px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 900;
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+    .map-frame.map-expanded #leaflet-map {
+      height: 100% !important;
+      transition: none;
+    }
+
     /* ── TOOLTIP ── */
     .leaflet-interactive:focus {
       outline: none !important;
@@ -930,6 +977,48 @@
     }
     .lista-sort-btn:hover { color: var(--ink); border-color: var(--ink-mid); }
     .lista-sort-btn.active { color: #58a6ff; border-color: #58a6ff; }
+
+    /* ── LISTA FILTRO TABS ── */
+    .lista-filtro {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.8rem;
+    }
+    .lista-filtro-btn {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.9rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--ink-dim);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+    .lista-filtro-btn:hover {
+      color: var(--ink);
+      border-color: var(--ink-mid);
+    }
+    .lista-filtro-btn.active {
+      color: var(--ink);
+      border-color: var(--accent);
+      background: rgba(88,166,255,0.07);
+    }
+    .lista-filtro-btn .filtro-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .lista-filtro-btn .filtro-count {
+      font-size: 0.6rem;
+      opacity: 0.6;
+    }
 
     /* ── LIGHTBOX ── */
     .lightbox-overlay {
@@ -1106,6 +1195,7 @@
         <h2>Lista de marcadores</h2>
         <span class="sec-badge" id="badge-lista">— registros</span>
       </div>
+      <div class="lista-filtro" id="lista-filtro"></div>
       <div id="lista-wrap"></div>
     </section>
 
@@ -1641,8 +1731,12 @@
       },
       "properties": {
         "name": "ALDEAS DE TARAY",
-        "desc": [],
-        "img": "",
+        "desc": [
+          "Apartamentos",
+          "Piscina",
+          "Tenis"
+        ],
+        "img": "https://i.postimg.cc/59vCMj2S/aldeas-de-taray.png",
         "lat": 37.772376,
         "lng": -0.745649
       }
@@ -1686,8 +1780,11 @@
       },
       "properties": {
         "name": "ALDEAS DE TARAY - PEDRUCHO",
-        "desc": [],
-        "img": "",
+        "desc": [
+          "Edificio",
+          "Duplex"
+        ],
+        "img": "https://i.postimg.cc/PrJnwvvD/aldeas-de-taray-pedrucho.png",
         "lat": 37.707357,
         "lng": -0.743734
       }
@@ -2048,8 +2145,11 @@
       },
       "properties": {
         "name": "AMARA MARIS BEACH & SPA",
-        "desc": [],
-        "img": "",
+        "desc": [
+          "Edificio",
+          "Piscina"
+        ],
+        "img": "https://i.postimg.cc/W4CwXKX9/amara-beach.png",
         "lat": 37.769682,
         "lng": -0.746302
       }
@@ -3090,28 +3190,40 @@
         "coordinates": [
           [
             [
-              -0.74773,
-              37.771614
+              -0.74788,
+              37.771431
             ],
             [
-              -0.7471,
-              37.771672
+              -0.748108,
+              37.771503
+            ],
+            [
+              -0.747709,
+              37.771622
+            ],
+            [
+              -0.74714,
+              37.771887
             ],
             [
               -0.746984,
               37.770859
             ],
             [
-              -0.747612,
-              37.770887
+              -0.747548,
+              37.770903
             ],
             [
-              -0.747647,
-              37.771179
+              -0.747754,
+              37.770846
             ],
             [
-              -0.74773,
-              37.771614
+              -0.74769,
+              37.771152
+            ],
+            [
+              -0.74788,
+              37.771431
             ]
           ]
         ],
@@ -3119,10 +3231,13 @@
       },
       "properties": {
         "name": "CANALES DE VENEZIOLA",
-        "desc": [],
-        "img": "",
-        "lat": 37.771304,
-        "lng": -0.747467
+        "desc": [
+          "Edificio",
+          "Piscina"
+        ],
+        "img": "https://i.postimg.cc/ThMsF10N/canales-de-veneciola.png",
+        "lat": 37.771293,
+        "lng": -0.747633
       }
     },
     {
@@ -3505,43 +3620,6 @@
         "img": "https://i.postimg.cc/nVmpMncm/colina-emperador.png",
         "lat": 37.73543,
         "lng": -0.73933
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              -0.724675,
-              37.663329
-            ],
-            [
-              -0.72403,
-              37.663383
-            ],
-            [
-              -0.723993,
-              37.663091
-            ],
-            [
-              -0.724652,
-              37.663041
-            ],
-            [
-              -0.724675,
-              37.663329
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "COMERCIAL BOHEMIA",
-        "desc": [],
-        "img": "",
-        "lat": 37.663235,
-        "lng": -0.724405
       }
     },
     {
@@ -4164,8 +4242,11 @@
       },
       "properties": {
         "name": "DOS MARES  NORTE",
-        "desc": [],
-        "img": "",
+        "desc": [
+          "Edificio",
+          "Piscina"
+        ],
+        "img": "https://i.postimg.cc/0Q3m8JTg/dos-mares-norte.png",
         "lat": 37.758914,
         "lng": -0.746269
       }
@@ -4201,8 +4282,11 @@
       },
       "properties": {
         "name": "DOS MARES  SUR",
-        "desc": [],
-        "img": "",
+        "desc": [
+          "Edificio",
+          "Piscina"
+        ],
+        "img": "https://i.postimg.cc/zG0L2LSd/dos-mares-sur.png",
         "lat": 37.756932,
         "lng": -0.744918
       }
@@ -4238,8 +4322,10 @@
       },
       "properties": {
         "name": "DUCAL",
-        "desc": [],
-        "img": "",
+        "desc": [
+          "Duplex"
+        ],
+        "img": "https://i.postimg.cc/gJDkjQST/ducal.png",
         "lat": 37.770248,
         "lng": -0.749364
       }
@@ -7575,8 +7661,10 @@
       },
       "properties": {
         "name": "LIDO",
-        "desc": [],
-        "img": "",
+        "desc": [
+          "Apartamentos"
+        ],
+        "img": "https://i.postimg.cc/fTXW0Vrx/lido.png",
         "lat": 37.769168,
         "lng": -0.748668
       }
@@ -8196,8 +8284,8 @@
               37.769255
             ],
             [
-              -0.747489,
-              37.769279
+              -0.747285,
+              37.768959
             ],
             [
               -0.747524,
@@ -8225,10 +8313,12 @@
       },
       "properties": {
         "name": "MARCO POLO",
-        "desc": [],
-        "img": "",
-        "lat": 37.769329,
-        "lng": -0.747763
+        "desc": [
+          "Apartamentos"
+        ],
+        "img": "https://i.postimg.cc/pVBr0hB7/marco-polo.png",
+        "lat": 37.769294,
+        "lng": -0.747741
       }
     },
     {
@@ -11135,8 +11225,10 @@
       },
       "properties": {
         "name": "SAN MARCOS",
-        "desc": [],
-        "img": "",
+        "desc": [
+          "Duplex"
+        ],
+        "img": "https://i.postimg.cc/3wj3fzTC/san-marcos.png",
         "lat": 37.770009,
         "lng": -0.749187
       }
@@ -12066,8 +12158,10 @@
       },
       "properties": {
         "name": "VENECIA",
-        "desc": [],
-        "img": "",
+        "desc": [
+          "Apartamentos"
+        ],
+        "img": "https://i.postimg.cc/Kj1SbHdC/venecia.png",
         "lat": 37.769582,
         "lng": -0.748882
       }
@@ -13003,9 +13097,162 @@
         "lat": 37.646564,
         "lng": -0.71414
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -0.724675,
+              37.663329
+            ],
+            [
+              -0.72403,
+              37.663383
+            ],
+            [
+              -0.723993,
+              37.663091
+            ],
+            [
+              -0.724652,
+              37.663041
+            ],
+            [
+              -0.724675,
+              37.663329
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "COMERCIAL BOHEMIA",
+        "desc": [
+          "Edificio",
+          "Comercios"
+        ],
+        "img": "https://i.postimg.cc/PxBpGnwR/comercial-bohemia.png",
+        "lat": 37.663235,
+        "lng": -0.724405
+      }
     }
   ],
   "Hoteles": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -0.738755,
+              37.748803
+            ],
+            [
+              -0.738356,
+              37.748548
+            ],
+            [
+              -0.738747,
+              37.748171
+            ],
+            [
+              -0.739112,
+              37.748517
+            ],
+            [
+              -0.739348,
+              37.749022
+            ],
+            [
+              -0.739158,
+              37.749126
+            ],
+            [
+              -0.738755,
+              37.748803
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "BAKOUR",
+        "desc": [
+          "Hotel",
+          "Piscina"
+        ],
+        "img": "https://i.postimg.cc/MGXQwH5X/hotel-bakour.png",
+        "lat": 37.748713,
+        "lng": -0.73889
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -0.722281,
+              37.656063
+            ],
+            [
+              -0.721713,
+              37.656135
+            ],
+            [
+              -0.721681,
+              37.655859
+            ],
+            [
+              -0.722271,
+              37.655761
+            ],
+            [
+              -0.722158,
+              37.655248
+            ],
+            [
+              -0.722812,
+              37.655197
+            ],
+            [
+              -0.723456,
+              37.656186
+            ],
+            [
+              -0.722775,
+              37.656581
+            ],
+            [
+              -0.722517,
+              37.656607
+            ],
+            [
+              -0.722399,
+              37.656522
+            ],
+            [
+              -0.722281,
+              37.656063
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "CAVANNA",
+        "desc": [
+          "Hotel",
+          "Piscina",
+          "Tenis"
+        ],
+        "img": "https://i.postimg.cc/x1fhq4pY/Hotel-Cavanna.png",
+        "lat": 37.65602,
+        "lng": -0.722395
+      }
+    },
     {
       "type": "Feature",
       "geometry": {
@@ -13228,116 +13475,6 @@
         "coordinates": [
           [
             [
-              -0.738755,
-              37.748803
-            ],
-            [
-              -0.738356,
-              37.748548
-            ],
-            [
-              -0.738747,
-              37.748171
-            ],
-            [
-              -0.739112,
-              37.748517
-            ],
-            [
-              -0.739348,
-              37.749022
-            ],
-            [
-              -0.739158,
-              37.749126
-            ],
-            [
-              -0.738755,
-              37.748803
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "HOTEL BAKOUR",
-        "desc": [],
-        "img": "",
-        "lat": 37.748713,
-        "lng": -0.73889
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              -0.722281,
-              37.656063
-            ],
-            [
-              -0.721713,
-              37.656135
-            ],
-            [
-              -0.721681,
-              37.655859
-            ],
-            [
-              -0.722271,
-              37.655761
-            ],
-            [
-              -0.722158,
-              37.655248
-            ],
-            [
-              -0.722812,
-              37.655197
-            ],
-            [
-              -0.723456,
-              37.656186
-            ],
-            [
-              -0.722775,
-              37.656581
-            ],
-            [
-              -0.722517,
-              37.656607
-            ],
-            [
-              -0.722399,
-              37.656522
-            ],
-            [
-              -0.722281,
-              37.656063
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "HOTEL CAVANNA",
-        "desc": [
-          "Hotel",
-          "Piscina",
-          "Tenis"
-        ],
-        "img": "https://i.postimg.cc/x1fhq4pY/Hotel-Cavanna.png",
-        "lat": 37.65602,
-        "lng": -0.722395
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
               -0.716764,
               37.648138
             ],
@@ -13501,6 +13638,45 @@
         "coordinates": [
           [
             [
+              -0.721046,
+              37.655723
+            ],
+            [
+              -0.72123,
+              37.655705
+            ],
+            [
+              -0.721184,
+              37.655501
+            ],
+            [
+              -0.721017,
+              37.655521
+            ],
+            [
+              -0.721046,
+              37.655723
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "A Muñeira",
+        "desc": [
+          "Restaurante"
+        ],
+        "img": "https://i.postimg.cc/Fs6qMWg0/a-039-muneira.png",
+        "lat": 37.655635,
+        "lng": -0.721105
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
               -0.715509,
               37.649648
             ],
@@ -13568,7 +13744,7 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "AREA SUNSET",
+        "name": "Area Sunset",
         "desc": [
           "Restaurante"
         ],
@@ -13627,13 +13803,52 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "BAMBOO",
+        "name": "Bamboo",
         "desc": [
           "Restaurante"
         ],
         "img": "https://i.postimg.cc/fbnqFRXk/Rest-Bamboo.png",
         "lat": 37.663157,
         "lng": -0.727335
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -0.721212,
+              37.656303
+            ],
+            [
+              -0.721194,
+              37.656216
+            ],
+            [
+              -0.721294,
+              37.656197
+            ],
+            [
+              -0.721313,
+              37.656282
+            ],
+            [
+              -0.721212,
+              37.656303
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "Bongo",
+        "desc": [
+          "Pub"
+        ],
+        "img": "https://i.postimg.cc/GtyYHmVh/bongo.png",
+        "lat": 37.65626,
+        "lng": -0.721245
       }
     },
     {
@@ -13752,7 +13967,7 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "EL BARON",
+        "name": "El Baron",
         "desc": [
           "Chringuito",
           "Restaurante"
@@ -13800,7 +14015,7 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "EL MOLINO",
+        "name": "El Molino",
         "desc": [
           "Restaurante"
         ],
@@ -13847,9 +14062,11 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "ESCUELA DE PIETER",
-        "desc": [],
-        "img": "",
+        "name": "Escuela de Pieter",
+        "desc": [
+          "Restaurante"
+        ],
+        "img": "https://i.postimg.cc/KYgW5nmS/escuela-de-pieter.png",
         "lat": 37.76787,
         "lng": -0.748154
       }
@@ -13884,7 +14101,7 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "GREGORY'S",
+        "name": "Gregory's",
         "desc": [
           "Restaurante"
         ],
@@ -13931,7 +14148,7 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "GRIMANGA AREA COMERCIAL",
+        "name": "Grimanga Area Comercial",
         "desc": [
           "Centro comercial"
         ],
@@ -14032,6 +14249,45 @@
         "img": "https://i.postimg.cc/V6pXd82m/la-mestiza.png",
         "lat": 37.663608,
         "lng": -0.73354
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -0.72132,
+              37.656281
+            ],
+            [
+              -0.721659,
+              37.656245
+            ],
+            [
+              -0.721646,
+              37.656157
+            ],
+            [
+              -0.721302,
+              37.656197
+            ],
+            [
+              -0.72132,
+              37.656281
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "Los Caballos",
+        "desc": [
+          "Restaurante"
+        ],
+        "img": "https://i.postimg.cc/nLG39f90/los-caballos.png",
+        "lat": 37.656232,
+        "lng": -0.721449
       }
     },
     {
@@ -14185,7 +14441,7 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "PAQUEBOTE",
+        "name": "Paquebote",
         "desc": [
           "Restaurante"
         ],
@@ -14224,9 +14480,11 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "PLAYA CHICA CHIRINGUITO",
-        "desc": [],
-        "img": "",
+        "name": "Playa Chica",
+        "desc": [
+          "Chiringuito"
+        ],
+        "img": "https://i.postimg.cc/pX4YJ3rf/playa-chica.png",
         "lat": 37.760815,
         "lng": -0.747494
       }
@@ -14261,9 +14519,11 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "RESTAURANTE EL PARADOR DEL MAR MENOR",
-        "desc": [],
-        "img": "",
+        "name": "El Parador del Mar Menor",
+        "desc": [
+          "Restaurante"
+        ],
+        "img": "https://i.postimg.cc/28bShKPj/el-parador-del-MM.png",
         "lat": 37.641044,
         "lng": -0.723597
       }
@@ -14298,9 +14558,11 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "RESTAURANTE MALOCA",
-        "desc": [],
-        "img": "",
+        "name": "Maloca",
+        "desc": [
+          "Restaurante"
+        ],
+        "img": "https://i.postimg.cc/VLVbcMPx/maloca.png",
         "lat": 37.641495,
         "lng": -0.722956
       }
@@ -14386,123 +14648,6 @@
         "lat": 37.661597,
         "lng": -0.729065
       }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              -0.721046,
-              37.655723
-            ],
-            [
-              -0.72123,
-              37.655705
-            ],
-            [
-              -0.721184,
-              37.655501
-            ],
-            [
-              -0.721017,
-              37.655521
-            ],
-            [
-              -0.721046,
-              37.655723
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "A Muñeira",
-        "desc": [
-          "Restaurante"
-        ],
-        "img": "https://i.postimg.cc/Fs6qMWg0/a-039-muneira.png",
-        "lat": 37.655635,
-        "lng": -0.721105
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              -0.721212,
-              37.656303
-            ],
-            [
-              -0.721194,
-              37.656216
-            ],
-            [
-              -0.721294,
-              37.656197
-            ],
-            [
-              -0.721313,
-              37.656282
-            ],
-            [
-              -0.721212,
-              37.656303
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "Bongo",
-        "desc": [
-          "Pub"
-        ],
-        "img": "https://i.postimg.cc/GtyYHmVh/bongo.png",
-        "lat": 37.65626,
-        "lng": -0.721245
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              -0.72132,
-              37.656281
-            ],
-            [
-              -0.721659,
-              37.656245
-            ],
-            [
-              -0.721646,
-              37.656157
-            ],
-            [
-              -0.721302,
-              37.656197
-            ],
-            [
-              -0.72132,
-              37.656281
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "Los Caballos",
-        "desc": [
-          "Restaurante"
-        ],
-        "img": "https://i.postimg.cc/nLG39f90/los-caballos.png",
-        "lat": 37.656232,
-        "lng": -0.721449
-      }
     }
   ],
   "Sitios de Interés": [
@@ -14517,7 +14662,9 @@
       },
       "properties": {
         "name": "Ancla entrada",
-        "desc": [],
+        "desc": [
+          "Escultura"
+        ],
         "img": "https://i.postimg.cc/2Sqssxsm/Cartel.png",
         "lat": 37.63952,
         "lng": -0.711453
@@ -14553,7 +14700,7 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "BANCO SANTANDER",
+        "name": "Banco Santander",
         "desc": [
           "Banco"
         ],
@@ -14600,9 +14747,11 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "CEIP MEDITERRÁNEO",
-        "desc": [],
-        "img": "",
+        "name": "CEIP Mediterraneo",
+        "desc": [
+          "Colegio de Infantil y Primaria Publico"
+        ],
+        "img": "https://i.postimg.cc/Qtt6V1Vn/CEIP-Mediterraneo.png",
         "lat": 37.640814,
         "lng": -0.722498
       }
@@ -14775,7 +14924,7 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "CINE EL GALAN",
+        "name": "Cine El Galan",
         "desc": [
           "Cine de verano"
         ],
@@ -14843,6 +14992,49 @@
         "img": "https://i.postimg.cc/fTv8y3W3/CN-Dos-Mares.png",
         "lat": 37.663393,
         "lng": -0.731334
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -0.735875,
+              37.748166
+            ],
+            [
+              -0.736063,
+              37.747623
+            ],
+            [
+              -0.735896,
+              37.747564
+            ],
+            [
+              -0.735489,
+              37.747946
+            ],
+            [
+              -0.735628,
+              37.748073
+            ],
+            [
+              -0.735875,
+              37.748166
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "properties": {
+        "name": "Escuela La Manga",
+        "desc": [
+          "Escuela infantil municipal"
+        ],
+        "img": "https://i.postimg.cc/GtRwFBSb/escuela-infantil.png",
+        "lat": 37.747923,
+        "lng": -0.735804
       }
     },
     {
@@ -14969,9 +15161,11 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "IES LAS SALINAS",
-        "desc": [],
-        "img": "",
+        "name": "IES Las Salinas",
+        "desc": [
+          "Instituto de Enseñanza Secundaria"
+        ],
+        "img": "https://i.postimg.cc/6pWbFkwM/IES-Las-salinas.png",
         "lat": 37.640033,
         "lng": -0.721314
       }
@@ -15172,7 +15366,7 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "PARQUE BOMBEROS",
+        "name": "Parque Bomberos",
         "desc": [],
         "img": "https://i.postimg.cc/m2N5yTHB/parque-bomberos.png",
         "lat": 37.695757,
@@ -15261,7 +15455,7 @@
         "type": "Polygon"
       },
       "properties": {
-        "name": "PEKE PARK",
+        "name": "Peke Park",
         "desc": [
           "Parque infantil"
         ],
@@ -15798,49 +15992,6 @@
         "lat": 37.642203,
         "lng": -0.712923
       }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              -0.735875,
-              37.748166
-            ],
-            [
-              -0.736063,
-              37.747623
-            ],
-            [
-              -0.735896,
-              37.747564
-            ],
-            [
-              -0.735489,
-              37.747946
-            ],
-            [
-              -0.735628,
-              37.748073
-            ],
-            [
-              -0.735875,
-              37.748166
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "Escuela La Manga",
-        "desc": [
-          "Escuela infantil municipal"
-        ],
-        "img": "https://i.postimg.cc/GtRwFBSb/escuela-infantil.png",
-        "lat": 37.747923,
-        "lng": -0.735804
-      }
     }
   ]
 };
@@ -15908,7 +16059,77 @@
     const map = L.map('leaflet-map', {
       center: [37.72, -0.75],
       zoom: 13,
-      zoomControl: true,
+      zoomControl: false,   // lo añadimos manualmente para controlar posición
+    });
+
+    // Zoom control abajo del expand, arriba izquierda
+    L.control.zoom({ position: 'topleft' }).addTo(map);
+
+    // ── CONTROL EXPANDIR MAPA ──
+    const ExpandControl = L.Control.extend({
+      options: { position: 'topleft' },
+      onAdd: function() {
+        const container = L.DomUtil.create('div', 'leaflet-bar expand-control');
+        const btn = L.DomUtil.create('button', 'map-expand-btn', container);
+        btn.title = 'Expandir mapa';
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+          <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+        </svg>`;
+        L.DomEvent.disableClickPropagation(btn);
+        L.DomEvent.on(btn, 'click', toggleExpandMap);
+        return container;
+      }
+    });
+    new ExpandControl().addTo(map);
+
+    let mapaExpandido = false;
+    const iconExpand = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+      <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+    </svg>`;
+    const iconCollapse = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/>
+      <line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>
+    </svg>`;
+
+    function toggleExpandMap() {
+      const mapFrame = document.querySelector('.map-frame');
+      const btn      = document.querySelector('.map-expand-btn');
+
+      mapaExpandido = !mapaExpandido;
+
+      if (mapaExpandido) {
+        // Guardar altura actual del frame como placeholder
+        let ph = document.getElementById('map-frame-ph');
+        if (!ph) {
+          ph = document.createElement('div');
+          ph.id = 'map-frame-ph';
+          ph.style.height = mapFrame.offsetHeight + 'px';
+          mapFrame.insertAdjacentElement('afterend', ph);
+        }
+        ph.style.display = 'block';
+        mapFrame.classList.add('map-expanded');
+        btn.innerHTML = iconCollapse;
+        btn.title = 'Contraer mapa';
+      } else {
+        mapFrame.classList.remove('map-expanded');
+        const ph = document.getElementById('map-frame-ph');
+        if (ph) ph.style.display = 'none';
+        btn.innerHTML = iconExpand;
+        btn.title = 'Expandir mapa';
+      }
+      setTimeout(() => map.invalidateSize(), 50);
+    }
+
+    // Con position:fixed el mapa llena el espacio automáticamente al redimensionar
+    window.addEventListener('resize', () => {
+      if (mapaExpandido) map.invalidateSize();
+    });
+
+    // Escape cierra el modo expandido
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && mapaExpandido) toggleExpandMap();
     });
 
     // Esri satellite tiles (free, no key needed)
@@ -15932,8 +16153,8 @@
         const geom = ft.geometry;
         const props = ft.properties;
 
-        const normalStyle = { color: cfg.color, weight: 1.5, fillColor: cfg.fill, fillOpacity: 0.15 };
-        const hoverStyle  = { color: cfg.color, weight: 2.5, fillColor: cfg.fill, fillOpacity: 0.35 };
+        const normalStyle = { color: cfg.color, weight: 1.5, fillColor: cfg.fill, fillOpacity: 0.25 };
+        const hoverStyle  = { color: cfg.color, weight: 2.5, fillColor: cfg.fill, fillOpacity: 0.50 };
         const activeStyle = { color: '#ffffff', weight: 3,   fillColor: cfg.fill, fillOpacity: 0.80 };
 
         if (geom.type === 'Polygon' || geom.type === 'MultiPolygon') {
@@ -16040,13 +16261,23 @@
     const kmLayerGroup = L.featureGroup();
     KM_POINTS.forEach(km => {
       const marker = L.marker([km.lat, km.lng], { icon: kmIcon(km.name, map.getZoom()) });
-      const popupHtml = `
-        <div class="lp-wrap">
-          <div class="lp-name">${km.name}</div>
-          ${km.img ? `<img class="lp-img" src="${km.img}" alt="${km.name}"/>` : ''}
-          <a class="lp-maps" href="https://www.google.com/maps?q=${km.lat},${km.lng}" target="_blank">↗ Ver en Google Maps</a>
-        </div>`;
-      marker.bindPopup(popupHtml, { maxWidth: 260 });
+      marker.on('click', () => {
+        // Reset estilos de features normales
+        allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
+        activeFeature = null;
+        map.closePopup();
+        // Rellenar el panel con los datos del punto kilométrico
+        document.getElementById('ppDot').style.background = '#ef5d69';
+        document.getElementById('ppCapa').textContent = 'PUNTO KILOMÉTRICO';
+        document.getElementById('ppKm').textContent = '';
+        document.getElementById('ppName').textContent = km.name;
+        const imgEl = document.getElementById('ppImg');
+        if (km.img) { imgEl.src = km.img; imgEl.alt = km.name; imgEl.style.display = 'block'; }
+        else { imgEl.style.display = 'none'; }
+        document.getElementById('ppDesc').innerHTML = '';
+        document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + km.lat + ',' + km.lng;
+        popupPanel.classList.add('visible');
+      });
       kmLayerGroup.addLayer(marker);
     });
     kmLayerGroup.addTo(map);
@@ -16055,6 +16286,27 @@
     const overlays = {};
     Object.keys(GEODATA).forEach(name => { overlays[name] = leafletLayers[name]; });
     L.control.layers(null, overlays, { collapsed: false }).addTo(map);
+
+    // Colorear las etiquetas del control de capas con los colores de cada capa
+    setTimeout(() => {
+      const CAPA_COLORS = {
+        'Urbanizaciones y Edificios': '#1f938a',
+        'Hoteles':                    '#ef5d69',
+        'Bares y Restaurantes':       '#fad201',
+        'Sitios de Interés':          '#109010',
+      };
+      document.querySelectorAll('.leaflet-control-layers-overlays label').forEach(label => {
+        const text = label.textContent.trim();
+        const color = CAPA_COLORS[text];
+        if (color) {
+          const span = label.querySelector('span');
+          if (span) span.style.color = color;
+          // Colorear también el checkbox con un dot de color
+          const input = label.querySelector('input');
+          if (input) input.style.accentColor = color;
+        }
+      });
+    }, 100);
 
     // Esri imagery date — se consultan los metadatos del servicio para obtener el año real
     const dateNote = L.control({ position: 'bottomleft' });
@@ -16268,8 +16520,13 @@
         { key: 'Sitios de Interés',          color: '#109010', label: 'Sitios de Interés' },
       ];
 
-      const wrap = document.getElementById('lista-wrap');
+      const wrap   = document.getElementById('lista-wrap');
+      const filtro = document.getElementById('lista-filtro');
       let totalLista = 0;
+
+      // ── Preparar datos y construir grupos ──
+      const grupos  = [];
+      const conteos = {};   // { key → items.length } para los tabs
 
       CAPAS_LISTA.forEach(capa => {
         const items = (GEODATA[capa.key] || [])
@@ -16283,6 +16540,7 @@
           .sort((a, b) => a.name.localeCompare(b.name, 'es'));
 
         totalLista += items.length;
+        conteos[capa.key] = items.length;
 
         function renderFilas(lista) {
           return lista.map(item => `
@@ -16303,18 +16561,20 @@
 
         const grupo = document.createElement('div');
         grupo.className = 'lista-grupo';
+        grupo.dataset.capaKey = capa.key;
         grupo.innerHTML = `
           <div class="lista-grupo-header">
             <span class="lista-grupo-dot" style="background:${capa.color}"></span>
             <span class="lista-grupo-nombre">${capa.label}</span>
             <span class="lista-grupo-count">${items.length} registros</span>
             <div class="lista-sort-btns">
-              <button class="lista-sort-btn active" data-sort="nombre">A–Z</button>
-              <button class="lista-sort-btn" data-sort="km">Km</button>
+              <button class="lista-sort-btn active" data-sort="nombre" title="Ordenar alfabéticamente">A–Z</button>
+              <button class="lista-sort-btn" data-sort="km" title="Ordenar por kilómetro">Km</button>
             </div>
           </div>
           <div class="lista-tabla">${renderFilas(items)}</div>`;
         wrap.appendChild(grupo);
+        grupos.push({ el: grupo, key: capa.key });
 
         // Lógica de ordenación
         let sortActual = 'nombre';
@@ -16338,7 +16598,43 @@
       // Badge con total
       document.getElementById('badge-lista').textContent = totalLista + ' registros';
 
-      // Click en botón "ver en mapa": va al mapa, hace zoom y abre popup
+      // ── Construir tabs de filtro ──
+      let filtroActivo = 'todas';
+
+      function aplicarFiltro(key) {
+        filtroActivo = key;
+        // Actualizar tabs
+        filtro.querySelectorAll('.lista-filtro-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.capa === key);
+        });
+        // Mostrar/ocultar grupos
+        grupos.forEach(g => {
+          g.el.style.display = (key === 'todas' || g.key === key) ? '' : 'none';
+        });
+      }
+
+      // Botón "Todas"
+      const btnTodas = document.createElement('button');
+      btnTodas.className = 'lista-filtro-btn active';
+      btnTodas.dataset.capa = 'todas';
+      btnTodas.title = 'Mostrar todas las capas';
+      btnTodas.innerHTML = `Todas <span class="filtro-count">${totalLista}</span>`;
+      btnTodas.addEventListener('click', () => aplicarFiltro('todas'));
+      filtro.appendChild(btnTodas);
+
+      // Un botón por capa
+      CAPAS_LISTA.forEach(capa => {
+        const count = conteos[capa.key] || 0;
+        const btn = document.createElement('button');
+        btn.className = 'lista-filtro-btn';
+        btn.dataset.capa = capa.key;
+        btn.innerHTML = `<span class="filtro-dot" style="background:${capa.color}"></span>${capa.label} <span class="filtro-count">${count}</span>`;
+        btn.title = `Filtrar por: ${capa.label}`;
+        btn.addEventListener('click', () => aplicarFiltro(capa.key));
+        filtro.appendChild(btn);
+      });
+
+      // ── Click en botón "ver en mapa" ──
       wrap.addEventListener('click', function(e) {
         const btn = e.target.closest('.lista-btn-mapa');
         if (!btn) return;

@@ -824,7 +824,7 @@
     /* Cuando está expandido: fixed sobre toda la pantalla bajo el nav */
     .map-frame.map-expanded {
       position: fixed;
-      top: 44px;
+      top: 0;
       left: 0;
       right: 0;
       bottom: 0;
@@ -1020,6 +1020,54 @@
       opacity: 0.6;
     }
 
+    /* ── CONTACTO ── */
+    .contacto-wrap {
+      max-width: 580px;
+      padding: 2rem 0 4rem;
+    }
+    .contacto-texto {
+      font-size: 0.95rem;
+      color: var(--ink-mid);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+    .contacto-btn {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .contacto-btn:hover {
+      background: #3d8fe0;
+      transform: translateY(-1px);
+    }
+    .contacto-hint {
+      margin-top: 1rem;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--ink-dim);
+      letter-spacing: 0.04em;
+    }
+    .contacto-email {
+      margin-top: 1.8rem;
+      font-size: 0.85rem;
+      color: var(--ink-mid);
+    }
+    .contacto-email a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .contacto-email a:hover {
+      text-decoration: underline;
+    }
+
     /* ── LIGHTBOX ── */
     .lightbox-overlay {
       display: none;
@@ -1135,6 +1183,7 @@
       <li><a href="#mapa" class="active">Mapa</a></li>
       <li><a href="#lista">Lista</a></li>
       <li><a href="#proyecto">Proyecto</a></li>
+      <li><a href="#contacto">Contacto</a></li>
     </ul>
   </nav>
 
@@ -1292,6 +1341,30 @@
             <span class="spec-key">Acceso</span>
             <span class="spec-val ok">Libre y gratuito</span>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section id="contacto">
+      <div class="sec-head">
+        <h2>Contacto</h2>
+        <span class="sec-badge">Google Forms</span>
+      </div>
+      <div class="contacto-wrap">
+        <p class="contacto-texto">
+          ¿Has detectado un error, quieres sugerir una mejora o añadir un lugar?<br>
+          Rellena el formulario y nos pondremos en contacto contigo si es necesario.
+        </p>
+        <a class="contacto-btn"
+           href="https://docs.google.com/forms/d/e/1FAIpQLScmKp83Dfh3InU0m_oPU7LpAo7UOCb5FvWTxAiI2ru2sJF2nw/viewform"
+           target="_blank" rel="noopener">
+          Abrir formulario de contacto &nbsp;↗
+        </a>
+        <div class="contacto-hint">Se abrirá en una nueva pestaña. No necesitas cuenta de Google.</div>
+        <div class="contacto-email">
+          También puedes escribirnos directamente a
+          <a href="mailto:gestion@lamangaatuspies.com">gestion@lamangaatuspies.com</a>
         </div>
       </div>
     </section>
@@ -16097,29 +16170,68 @@
       const mapFrame = document.querySelector('.map-frame');
       const btn      = document.querySelector('.map-expand-btn');
 
-      mapaExpandido = !mapaExpandido;
+      if (!mapaExpandido) {
+        // Scroll hasta que el map-frame quede justo bajo el nav, luego expandir
+        const nav     = document.querySelector('nav');
+        const navH    = nav.offsetHeight;
+        const targetY = mapFrame.getBoundingClientRect().top + window.scrollY - navH;
 
-      if (mapaExpandido) {
-        // Guardar altura actual del frame como placeholder
-        let ph = document.getElementById('map-frame-ph');
-        if (!ph) {
-          ph = document.createElement('div');
-          ph.id = 'map-frame-ph';
-          ph.style.height = mapFrame.offsetHeight + 'px';
-          mapFrame.insertAdjacentElement('afterend', ph);
-        }
-        ph.style.display = 'block';
-        mapFrame.classList.add('map-expanded');
-        btn.innerHTML = iconCollapse;
-        btn.title = 'Contraer mapa';
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+
+        setTimeout(() => {
+          let ph = document.getElementById('map-frame-ph');
+          if (!ph) {
+            ph = document.createElement('div');
+            ph.id = 'map-frame-ph';
+            ph.style.height = mapFrame.offsetHeight + 'px';
+            mapFrame.insertAdjacentElement('afterend', ph);
+          }
+          ph.style.display = 'block';
+          // Poner el buscador en fixed encima del mapa
+          const sw = document.querySelector('.search-wrap');
+          const navBottom = document.querySelector('nav').getBoundingClientRect().bottom;
+          sw.style.position = 'fixed';
+          sw.style.top      = navBottom + 'px';
+          sw.style.left     = '0';
+          sw.style.right    = '0';
+          sw.style.zIndex   = '950';
+          sw.style.margin   = '0';
+          sw.style.padding  = '0.5rem 1rem';
+          sw.style.background = 'rgba(13,17,23,0.92)';
+          sw.style.backdropFilter = 'blur(6px)';
+          // El mapa arranca justo debajo del buscador
+          const swBottom = navBottom + sw.offsetHeight;
+          mapFrame.style.top = swBottom + 'px';
+          mapFrame.classList.add('map-expanded');
+          document.body.style.overflow = 'hidden';
+          btn.innerHTML = iconCollapse;
+          btn.title = 'Contraer mapa';
+          mapaExpandido = true;
+          setTimeout(() => map.invalidateSize(), 50);
+        }, 420);
+
       } else {
         mapFrame.classList.remove('map-expanded');
+        mapFrame.style.top = '';
+        document.body.style.overflow = '';
+        // Restaurar buscador
+        const sw = document.querySelector('.search-wrap');
+        sw.style.position   = '';
+        sw.style.top        = '';
+        sw.style.left       = '';
+        sw.style.right      = '';
+        sw.style.zIndex     = '';
+        sw.style.margin     = '';
+        sw.style.padding    = '';
+        sw.style.background = '';
+        sw.style.backdropFilter = '';
         const ph = document.getElementById('map-frame-ph');
         if (ph) ph.style.display = 'none';
         btn.innerHTML = iconExpand;
         btn.title = 'Expandir mapa';
+        mapaExpandido = false;
+        setTimeout(() => map.invalidateSize(), 50);
       }
-      setTimeout(() => map.invalidateSize(), 50);
     }
 
     // Con position:fixed el mapa llena el espacio automáticamente al redimensionar

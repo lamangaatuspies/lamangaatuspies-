@@ -534,6 +534,15 @@
       color: var(--accent);
       font-weight: bold;
     }
+    .search-item-km {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      white-space: nowrap;
+      letter-spacing: 0.06em;
+      opacity: 0.85;
+    }
     .search-item-capa {
       display: flex;
       align-items: center;
@@ -17007,6 +17016,93 @@
     });
     kmLayerGroup.addTo(map);
 
+    // ── BEACH LABELS LAYER ──
+    // Coordenadas de QGIS (playas_3.js). Etiquetas horizontales, sin rotación.
+    // lado 'med' = Mediterráneo → ancla derecha del texto en el punto (texto crece hacia la izquierda, hacia el mar)
+    // lado 'mm'  = Mar Menor    → ancla izquierda del texto en el punto (texto crece hacia la derecha, hacia el mar)
+    const PLAYAS = [
+      // ── Mediterráneo ──
+      { name: 'Playa del Pudrimel',         lat: 37.768516, lng: -0.746177, lado: 'med' },
+      { name: 'Playa Ensenada del Esparto', lat: 37.753855, lng: -0.741150, lado: 'med' },
+      { name: 'Playa del Estacio',          lat: 37.731391, lng: -0.738186, lado: 'med' },
+      { name: 'Playa El Arenal',            lat: 37.712984, lng: -0.740940, lado: 'med' },
+      { name: 'Playa Pedrucho',             lat: 37.694762, lng: -0.737025, lado: 'med' },
+      { name: 'Playa Banco del Tabal',      lat: 37.670924, lng: -0.727792, lado: 'med' },
+      { name: 'Playa de Calnegre',          lat: 37.665202, lng: -0.724428, lado: 'med' },
+      { name: 'Playa de Galúa',             lat: 37.661476, lng: -0.721404, lado: 'med' },
+      { name: 'Playa del Barco Perdido',    lat: 37.650108, lng: -0.715156, lado: 'med' },
+      { name: 'Playa Las Amoladeras',       lat: 37.639816, lng: -0.708026, lado: 'med' },
+      // ── Mar Menor ──
+      { name: 'Playa de Veneziola',         lat: 37.772442, lng: -0.751164, lado: 'mm'  },
+      { name: 'Playa Chica',                lat: 37.760497, lng: -0.747479, lado: 'mm'  },
+      { name: 'Playa Mistral',              lat: 37.736396, lng: -0.739628, lado: 'mm'  },
+      { name: 'Playa Matasgordas',          lat: 37.717364, lng: -0.742733, lado: 'mm'  },
+      { name: 'Playa Antillas',             lat: 37.708286, lng: -0.743994, lado: 'mm'  },
+      { name: 'Playa El Pedruchillo',       lat: 37.705806, lng: -0.743113, lado: 'mm'  },
+      { name: 'Playa de Poniente',          lat: 37.700546, lng: -0.741491, lado: 'mm'  },
+      { name: 'Playa del Galán',            lat: 37.691672, lng: -0.740349, lado: 'mm'  },
+      { name: 'Playa de Lebeche',           lat: 37.687694, lng: -0.739168, lado: 'mm'  },
+      { name: 'Playa de La Isla',           lat: 37.669387, lng: -0.733260, lado: 'mm'  },
+      { name: 'Playa Aliseos',              lat: 37.672224, lng: -0.733540, lado: 'mm'  },
+      { name: 'Cala del Pino',              lat: 37.666850, lng: -0.732639, lado: 'mm'  },
+      { name: 'Playa Cavanna',              lat: 37.659431, lng: -0.724889, lado: 'mm'  },
+      { name: 'Playa Puerto Bello',         lat: 37.648966, lng: -0.719842, lado: 'mm'  },
+      { name: 'Playa La Gola',              lat: 37.650869, lng: -0.723006, lado: 'mm'  },
+      { name: 'Playa El Vivero',            lat: 37.642671, lng: -0.722606, lado: 'mm'  },
+      { name: 'Playa de Los Alemanes',      lat: 37.635788, lng: -0.726531, lado: 'mm'  },
+    ];
+
+    const FONT_SIZE   = 15;
+    const PX_POR_CHAR = 7.5;
+
+    const playaIcon = (name, lado) => {
+      const anchoEst = Math.round(name.length * PX_POR_CHAR);
+      // Med: el punto está a la derecha de la tierra → texto a su izquierda (hacia el mar)
+      //      ancla en extremo derecho del texto → iconAnchor x = anchoEst
+      // MM:  el punto está a la izquierda de la tierra → texto a su derecha (hacia el mar)
+      //      ancla en extremo izquierdo del texto → iconAnchor x = 0
+      const anclaX = lado === 'med' ? 0 : anchoEst;
+
+      return L.divIcon({
+        className: '',
+        html: `<span style="
+          display: inline-block;
+          font-family: 'Crimson Pro', Georgia, serif;
+          font-style: italic;
+          font-size: ${FONT_SIZE}px;
+          font-weight: 600;
+          color: #000000;
+          text-shadow: 0 0 4px rgba(255,255,255,0.9), 0 0 8px rgba(255,255,255,0.7);
+          white-space: nowrap;
+          pointer-events: none;
+          letter-spacing: 0.02em;
+        ">${name}</span>`,
+        iconAnchor: [anclaX, 8],
+        iconSize:   [anchoEst, FONT_SIZE + 4],
+      });
+    };
+
+    const playaLayerGroup = L.featureGroup();
+    PLAYAS.forEach(p => {
+      const marker = L.marker([p.lat, p.lng], {
+        icon: playaIcon(p.name, p.lado),
+        interactive: false,
+        keyboard: false,
+      });
+      playaLayerGroup.addLayer(marker);
+    });
+
+    // Mostrar/ocultar según zoom (visible a partir de zoom 14)
+    function actualizarVisibilidadPlayas() {
+      if (map.getZoom() >= 14) {
+        if (!map.hasLayer(playaLayerGroup)) playaLayerGroup.addTo(map);
+      } else {
+        if (map.hasLayer(playaLayerGroup)) map.removeLayer(playaLayerGroup);
+      }
+    }
+    map.on('zoomend', actualizarVisibilidadPlayas);
+    actualizarVisibilidadPlayas(); // estado inicial
+
     // Layer control
     const overlays = {};
     Object.keys(GEODATA).forEach(name => { overlays[name] = leafletLayers[name]; });
@@ -17141,9 +17237,11 @@
         dropdown.classList.add('open');
       } else {
         dropdown.innerHTML = matches.map((f, i) => {
+          const kmLabel = (f.lat != null) ? kmMasCercano(f.lat, f.lng) : '';
           return '<div class="search-item" data-idx="' + allFeatures.indexOf(f) + '">' +
             '<span class="search-item-capa"><span class="capa-dot" style="background:' + f.cfg.color + '"></span>' + f.cfg.label + '</span>' +
-            '<span class="search-item-name">' + highlight(f.name, query) + '</span></div>';
+            '<span class="search-item-name">' + highlight(f.name, query) + '</span>' +
+            (kmLabel ? '<span class="search-item-km">' + kmLabel + '</span>' : '') + '</div>';
         }).join('');
         dropdown.querySelectorAll('.search-item').forEach(el => {
           el.addEventListener('click', () => selectFeature(allFeatures[parseInt(el.dataset.idx)]));

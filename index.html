@@ -315,7 +315,7 @@
       border-top: 1px solid var(--border);
       font-family: var(--mono);
       font-size: 0.67rem;
-      color: var(--ink-dim);
+      color: var(--ink-mid);
     }
     .map-footer a {
       color: var(--accent);
@@ -480,7 +480,7 @@
       letter-spacing: 0.04em;
     }
     .search-input::placeholder {
-      color: var(--ink-dim);
+      color: var(--ink-mid);
     }
     .search-btn {
       background: transparent;
@@ -564,7 +564,7 @@
       padding: 0.9rem 1rem;
       font-family: var(--mono);
       font-size: 0.72rem;
-      color: var(--ink-dim);
+      color: var(--ink-mid);
       text-align: left;
     }
 
@@ -704,7 +704,7 @@
       gap: 0.5rem;
       font-family: var(--mono);
       font-size: 0.67rem;
-      color: var(--ink-dim);
+      color: var(--ink-mid);
       letter-spacing: 0.06em;
     }
     footer a { color: var(--accent); text-decoration: none; }
@@ -821,7 +821,7 @@
       top: 0.7rem; right: 0.8rem;
       background: transparent;
       border: none;
-      color: var(--ink-dim);
+      color: var(--ink-mid);
       cursor: pointer;
       font-size: 1rem;
       line-height: 1;
@@ -953,7 +953,7 @@
     .lista-grupo-count {
       font-family: var(--mono);
       font-size: 0.68rem;
-      color: var(--ink-dim);
+      color: var(--ink-mid);
       margin-left: auto;
     }
     .lista-tabla {
@@ -970,7 +970,7 @@
     .lista-td-km {
       font-family: var(--mono);
       font-size: 0.68rem;
-      color: var(--ink-dim);
+      color: var(--ink-mid);
       width: 5.5rem;
       flex-shrink: 0;
     }
@@ -998,6 +998,44 @@
       transition: color 0.15s, border-color 0.15s;
     }
     .lista-btn-mapa:hover { color: #58a6ff; border-color: #58a6ff; }
+    .lista-fila { cursor: pointer; }
+    .lista-fila:hover .lista-td-nombre { color: #58a6ff; }
+    .lista-td-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      justify-content: flex-end;
+      flex: 1;
+      margin-left: 0.8rem;
+    }
+    .lista-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      padding: 0.15rem 0.45rem;
+      border: 1px solid var(--border);
+      color: var(--ink-mid);
+      background: transparent;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .lista-tag:hover { color: var(--ink); border-color: var(--ink-mid); }
+    .lista-tag-active { color: #58a6ff !important; border-color: #58a6ff !important; background: rgba(88,166,255,0.08) !important; }
+    .lista-filtro-tag-activo {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: #58a6ff;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+    .lista-empty {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--ink-mid);
+      padding: 1.2rem 0.7rem;
+      letter-spacing: 0.04em;
+    }
     .lista-sort-btns {
       display: flex;
       gap: 0.4rem;
@@ -1010,7 +1048,7 @@
       padding: 0.2rem 0.55rem;
       border: 1px solid var(--border);
       background: transparent;
-      color: var(--ink-dim);
+      color: var(--ink-mid);
       cursor: pointer;
       transition: color 0.15s, border-color 0.15s;
       text-transform: uppercase;
@@ -1033,7 +1071,7 @@
       padding: 0.35rem 0.9rem;
       border: 1px solid var(--border);
       background: transparent;
-      color: var(--ink-dim);
+      color: var(--ink-mid);
       cursor: pointer;
       transition: color 0.15s, border-color 0.15s, background 0.15s;
       display: inline-flex;
@@ -1092,7 +1130,7 @@
       margin-top: 1rem;
       font-family: var(--mono);
       font-size: 0.7rem;
-      color: var(--ink-dim);
+      color: var(--ink-mid);
       letter-spacing: 0.04em;
     }
     .contacto-email {
@@ -17354,10 +17392,11 @@
       CAPAS_LISTA.forEach(capa => {
         const items = (GEODATA[capa.key] || [])
           .map(f => ({
-            name: f.properties.name,
-            lat:  f.properties.lat,
-            lng:  f.properties.lng,
-            km:   kmMasCercano(f.properties.lat, f.properties.lng),
+            name:  f.properties.name,
+            lat:   f.properties.lat,
+            lng:   f.properties.lng,
+            desc:  Array.isArray(f.properties.desc) ? f.properties.desc : [],
+            km:    kmMasCercano(f.properties.lat, f.properties.lng),
             kmNum: parseFloat(kmMasCercano(f.properties.lat, f.properties.lng).replace('Km ','').replace(',','.')) || 0,
           }))
           .sort((a, b) => a.name.localeCompare(b.name, 'es'));
@@ -17365,20 +17404,17 @@
         totalLista += items.length;
         conteos[capa.key] = items.length;
 
-        function renderFilas(lista) {
-          return lista.map(item => `
-            <div class="lista-fila">
+        function renderFilas(lista, tagsActivos) {
+          const activos = tagsActivos instanceof Set ? tagsActivos : new Set();
+          const visible = activos.size
+            ? lista.filter(item => [...activos].every(t => item.desc.includes(t)))
+            : lista;
+          if (!visible.length) return '<div class="lista-empty">Sin resultados para este filtro.</div>';
+          return visible.map(item => `
+            <div class="lista-fila" data-lat="${item.lat}" data-lng="${item.lng}" data-name="${item.name}" title="Ver en el mapa">
               <span class="lista-td-km">${item.km}</span>
               <span class="lista-td-nombre">${item.name}</span>
-              <div class="lista-td-btn">
-                <button class="lista-btn-mapa"
-                  data-lat="${item.lat}" data-lng="${item.lng}" data-name="${item.name}"
-                  title="Ver en el mapa">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="3 11 22 2 13 21 11 13 3 11"/>
-                  </svg>
-                </button>
-              </div>
+              <span class="lista-td-tags">${item.desc.map(t => `<span class="lista-tag${activos.has(t) ? ' lista-tag-active' : ''}" title="${activos.has(t) ? 'Quitar filtro' : 'Filtrar por: ' + t}">${t}</span>`).join('')}</span>
             </div>`).join('');
         }
 
@@ -17397,10 +17433,29 @@
           </div>
           <div class="lista-tabla">${renderFilas(items)}</div>`;
         wrap.appendChild(grupo);
-        grupos.push({ el: grupo, key: capa.key });
+        grupos.push({ el: grupo, key: capa.key, items });
+
+        // Estado local del grupo: sort y set de tags activos (filtro AND)
+        let sortActual = 'nombre';
+        let tagsActivos = new Set();
+
+        function rerender() {
+          const base = [...items].sort((a, b) =>
+            sortActual === 'km'
+              ? a.kmNum - b.kmNum || a.name.localeCompare(b.name, 'es')
+              : a.name.localeCompare(b.name, 'es')
+          );
+          grupo.querySelector('.lista-tabla').innerHTML = renderFilas(base, tagsActivos);
+          const visibles = tagsActivos.size
+            ? base.filter(i => [...tagsActivos].every(t => i.desc.includes(t))).length
+            : base.length;
+          const sufijo = tagsActivos.size
+            ? ' · ' + [...tagsActivos].map(t => `<span class="lista-filtro-tag-activo">${t} ✕</span>`).join(' ')
+            : '';
+          grupo.querySelector('.lista-grupo-count').innerHTML = visibles + ' registros' + sufijo;
+        }
 
         // Lógica de ordenación
-        let sortActual = 'nombre';
         grupo.querySelectorAll('.lista-sort-btn').forEach(btn => {
           btn.addEventListener('click', function() {
             const tipo = this.dataset.sort;
@@ -17408,13 +17463,18 @@
             sortActual = tipo;
             grupo.querySelectorAll('.lista-sort-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            const ordenados = [...items].sort((a, b) =>
-              tipo === 'km'
-                ? a.kmNum - b.kmNum || a.name.localeCompare(b.name, 'es')
-                : a.name.localeCompare(b.name, 'es')
-            );
-            grupo.querySelector('.lista-tabla').innerHTML = renderFilas(ordenados);
+            rerender();
           });
+        });
+
+        // Filtro por tag: clic en píldora → añade/quita del Set
+        grupo.querySelector('.lista-tabla').addEventListener('click', function(e) {
+          const tag = e.target.closest('.lista-tag');
+          if (!tag) return;
+          e.stopPropagation();
+          const t = tag.textContent.trim();
+          tagsActivos.has(t) ? tagsActivos.delete(t) : tagsActivos.add(t);
+          rerender();
         });
       });
 
@@ -17457,11 +17517,12 @@
         filtro.appendChild(btn);
       });
 
-      // ── Click en botón "ver en mapa" ──
+      // ── Click en fila → ver en mapa (ignora clics en píldoras de tag) ──
       wrap.addEventListener('click', function(e) {
-        const btn = e.target.closest('.lista-btn-mapa');
-        if (!btn) return;
-        const name = btn.dataset.name;
+        if (e.target.closest('.lista-tag')) return;
+        const fila = e.target.closest('.lista-fila');
+        if (!fila) return;
+        const name = fila.dataset.name;
         const item = allFeatures.find(f => f.name === name);
         if (!item) return;
         // Navegar al mapa

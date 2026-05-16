@@ -3,7 +3,21 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>La Manga a tus pies — Directorio cartográfico</title>
+  <title>La Manga a tus pies — Mapa interactivo de La Manga del Mar Menor</title>
+
+  <!-- SEO básico -->
+  <meta name="description" content="Mapa interactivo de La Manga del Mar Menor. Encuentra hoteles, restaurantes, bares, urbanizaciones, edificios y sitios de interés de La Manga. Todo lo que necesitas saber de La Manga del Mar Menor en un solo mapa."/>
+  <meta name="keywords" content="La Manga del Mar Menor, mapa de La Manga, edificios de La Manga, hoteles de La Manga, urbanizaciones de La Manga, sitios de interés de La Manga, bares y restaurantes de La Manga, playas de La Manga, directorio La Manga, guía La Manga"/>
+  <meta name="author" content="lamangaatuspies.com"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://lamangaatuspies.com/"/>
+
+  <!-- Open Graph (para compartir en redes sociales) -->
+  <meta property="og:title" content="La Manga a tus pies — Mapa interactivo de La Manga del Mar Menor"/>
+  <meta property="og:description" content="Encuentra hoteles, restaurantes, urbanizaciones, edificios y sitios de interés de La Manga del Mar Menor en un mapa interactivo."/>
+  <meta property="og:url" content="https://lamangaatuspies.com/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="es_ES"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
   <style>
@@ -698,6 +712,23 @@
       nav ul { padding: 0 1.5rem; }
       footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
       .layers-wrap { grid-template-columns: 1fr; }
+
+      /* Popup más pequeño y accesible en móvil */
+      .map-popup-panel {
+        width: calc(100vw - 20px) !important;
+        left: 10px !important;
+        top: 10px !important;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+      .map-popup-panel .lp-wrap { padding: 0.6rem 0.8rem; }
+      .lp-name { font-size: 0.85rem; }
+      .lp-desc { font-size: 0.62rem; }
+      .map-popup-close {
+        font-size: 1.1rem;
+        padding: 0.4rem 0.6rem;
+        color: var(--ink-mid);
+      }
     }
 
     /* ── RESULT PANEL ── */

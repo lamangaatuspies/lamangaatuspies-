@@ -17024,10 +17024,11 @@
       if (e.key === 'Escape' && mapaExpandido) toggleExpandMap();
     });
 
-    // Esri satellite tiles (free, no key needed)
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles © Esri · Elaboración propia',
+    // IGN España PNOA — Ortofoto oficial, sin costuras, uso libre
+    L.tileLayer('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{y}.jpeg', {
+      attribution: 'Tiles © IGN España (PNOA) · Elaboración propia',
       maxZoom: 20,
+      tms: true,
     }).addTo(map);
 
     // ── LAYERS ──
@@ -17286,21 +17287,9 @@
       const div = L.DomUtil.create('div');
       const span = document.createElement('span');
       span.style.cssText = 'background:rgba(13,17,23,0.75);color:#8b949e;font-family:monospace;font-size:10px;padding:3px 7px;letter-spacing:0.05em;display:inline-block;';
-      span.textContent = 'IMAGEN SATELITAL © ESRI';
+      span.textContent = 'IMAGEN SATELITAL © IGN ESPAÑA (PNOA)';
       div.appendChild(span);
-      // Consulta los metadatos del servicio ESRI para obtener el año de actualización
-      fetch('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json')
-        .then(r => r.json())
-        .then(data => {
-          // El campo copyrightText suele contener el año, p.ej. "© 2024 Esri, ..."
-          const match = (data.copyrightText || '').match(/20\d{2}/);
-          const year  = match ? match[0] : new Date().getFullYear();
-          span.textContent = 'IMAGEN SATELITAL © ESRI · ' + year;
-        })
-        .catch(() => {
-          // Si falla la consulta, mostramos el año actual como fallback
-          span.textContent = 'IMAGEN SATELITAL © ESRI · ' + new Date().getFullYear();
-        });
+      span.textContent = 'IMAGEN SATELITAL © IGN ESPAÑA (PNOA) · ' + new Date().getFullYear();
       return div;
     };
     dateNote.addTo(map);

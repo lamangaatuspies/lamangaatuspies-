@@ -12,12 +12,25 @@
   <meta name="robots" content="index, follow"/>
   <link rel="canonical" href="https://lamangaatuspies.com/"/>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23161b22'/%3E%3Crect width='64' height='5' rx='2' fill='%23f0883e'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Rajdhani%2Csans-serif' font-size='30' font-weight='700' fill='%23e6edf3' letter-spacing='1'%3ELM%3C/text%3E%3C/svg%3E"/>
+
   <!-- Open Graph (para compartir en redes sociales) -->
   <meta property="og:title" content="La Manga a tus pies — Mapa interactivo de La Manga del Mar Menor"/>
   <meta property="og:description" content="Encuentra hoteles, restaurantes, urbanizaciones, edificios y sitios de interés de La Manga del Mar Menor en un mapa interactivo."/>
   <meta property="og:url" content="https://lamangaatuspies.com/"/>
   <meta property="og:type" content="website"/>
   <meta property="og:locale" content="es_ES"/>
+  <meta property="og:image" content="https://lamangaatuspies.com/lamanga_hero.jpg"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:image:alt" content="Vista aérea de La Manga del Mar Menor"/>
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="La Manga a tus pies — Mapa interactivo de La Manga del Mar Menor"/>
+  <meta name="twitter:description" content="Encuentra hoteles, restaurantes, urbanizaciones, edificios y sitios de interés de La Manga del Mar Menor en un mapa interactivo."/>
+  <meta name="twitter:image" content="https://lamangaatuspies.com/lamanga_hero.jpg"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
   <style>
@@ -721,6 +734,7 @@
       nav ul { padding: 0 1.5rem; }
       footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
       .layers-wrap { grid-template-columns: 1fr; }
+      #leaflet-map { height: 55vw !important; min-height: 280px !important; }
 
       /* Popup más pequeño y accesible en móvil */
       .map-popup-panel {
@@ -896,6 +910,24 @@
       white-space: nowrap !important;
     }
     .lm-tooltip::before { display: none !important; }
+
+    /* Etiqueta permanente (zoom alto) */
+    .lm-tooltip-permanent {
+      background: rgba(13,17,23,0.82) !important;
+      border: 1px solid rgba(48,54,61,0.7) !important;
+      border-radius: 2px !important;
+      color: #e6edf3 !important;
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: 0.68rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.05em !important;
+      padding: 2px 6px !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.6) !important;
+      white-space: nowrap !important;
+      pointer-events: none !important;
+      text-transform: uppercase !important;
+    }
+    .lm-tooltip-permanent::before { display: none !important; }
 
     /* ── MAP POPUP PANEL ── */
     .map-popup-panel {
@@ -1409,7 +1441,7 @@
           </div>
           <div class="spec-row">
             <span class="spec-key">Plataforma base</span>
-            <span class="spec-val">uMap · OSM</span>
+            <span class="spec-val">Leaflet · GitHub Pages</span>
           </div>
           <div class="spec-row">
             <span class="spec-key">Licencia de datos</span>
@@ -17041,13 +17073,6 @@
             <a class="lp-maps" href="https://www.google.com/maps?q=${props.lat},${props.lng}" target="_blank">↗ Ver en Google Maps</a>
           </div>`;
 
-        layer.bindTooltip(props.name, {
-          sticky: true,
-          direction: 'top',
-          offset: [0, -4],
-          className: 'lm-tooltip',
-        });
-
         layer.on('mouseover', () => {
           if (layer !== activeFeature) layer.setStyle ? layer.setStyle(hoverStyle) : null;
         });
@@ -17420,6 +17445,34 @@
       }, 400);
     })();
 
+    // ── ETIQUETAS PERMANENTES A PARTIR DE ZOOM 16 ──
+    const ZOOM_LABELS = 16;
+
+    function actualizarTooltips(zoom) {
+      const permanente = zoom >= ZOOM_LABELS;
+      allFeatures.forEach(({ name, layer }) => {
+        layer.unbindTooltip();
+        if (permanente) {
+          layer.bindTooltip(name, {
+            permanent: true,
+            direction: 'top',
+            offset: [0, -4],
+            className: 'lm-tooltip-permanent',
+          });
+        } else {
+          layer.bindTooltip(name, {
+            sticky: true,
+            direction: 'top',
+            offset: [0, -4],
+            className: 'lm-tooltip',
+          });
+        }
+      });
+    }
+
+    // Aplicar al cargar
+    actualizarTooltips(map.getZoom());
+
     // ── UPDATE KM ICONS ON ZOOM ──
     map.on('zoomend', () => {
       const zoom = map.getZoom();
@@ -17427,6 +17480,7 @@
         const name = marker.options.icon.options.html.match(/>([^<]+)<\/span>/)?.[1]?.trim() || '';
         if (name) marker.setIcon(kmIcon(name, zoom));
       });
+      actualizarTooltips(zoom);
     });
 
     // ── LISTA DE MARCADORES ──
@@ -17687,6 +17741,20 @@
       const targetScrollY = blockCenter - navH - visibleH / 2;
       window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
     });
+
+    // ── FECHA DE ACTUALIZACIÓN (Last-Modified del servidor) ──
+    fetch(location.href, { method: 'HEAD' })
+      .then(r => {
+        const lm = r.headers.get('Last-Modified');
+        if (!lm) return;
+        const d = new Date(lm);
+        const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                       'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        const texto = meses[d.getMonth()] + ' ' + d.getFullYear();
+        const el = document.getElementById('status-fecha');
+        if (el) el.textContent = texto;
+      })
+      .catch(() => { /* Si falla, se queda el valor hardcodeado */ });
 
   }); // DOMContentLoaded
   </script>

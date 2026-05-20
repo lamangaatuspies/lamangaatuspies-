@@ -742,7 +742,7 @@
       nav ul { padding: 0 1.5rem; }
       footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
       .layers-wrap { grid-template-columns: 1fr; }
-      #leaflet-map { height: 55vw !important; min-height: 280px !important; }
+      #leaflet-map { height: 50vh !important; min-height: 320px !important; }
 
       /* Popup más pequeño y accesible en móvil */
       .map-popup-panel {
@@ -17619,7 +17619,7 @@
     const overlays = {};
     Object.keys(GEODATA).forEach(name => { overlays[name] = leafletLayers[name]; });
     overlays['Polígonos'] = L.layerGroup([poligonosLayer, poligonosLabels]);
-    L.control.layers(null, overlays, { collapsed: false }).addTo(map);
+    L.control.layers(null, overlays, { collapsed: window.innerWidth < 600 }).addTo(map);
 
     // Colorear las etiquetas del control de capas con los colores de cada capa
     setTimeout(() => {

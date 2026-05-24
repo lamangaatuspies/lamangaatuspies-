@@ -738,13 +738,15 @@
     }
     @media (max-width: 600px) {
       html, body { overflow-x: hidden; }
+      :root { --hero-h: 55vh; }
+      .hero { min-height: 320px; }
       .hero-content { padding: 2rem 1.5rem 2.5rem; }
       main { padding: 0 1.5rem 4rem; }
       .statusbar { padding: 0 1.5rem; }
       nav ul { padding: 0 1.5rem; }
       footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
       .layers-wrap { grid-template-columns: 1fr; }
-      #leaflet-map { height: 50vh !important; min-height: 320px !important; }
+      #leaflet-map { height: 65vh !important; min-height: 420px !important; }
 
       /* Popup más pequeño y accesible en móvil */
       .map-popup-panel {
@@ -18139,7 +18141,8 @@
           ph.style.display = 'block';
           // Poner el buscador en fixed encima del mapa
           const sw = document.querySelector('.search-wrap');
-          const navBottom = document.querySelector('nav').getBoundingClientRect().bottom;
+          const esMobil = window.innerWidth <= 600;
+          const navBottom = esMobil ? 0 : document.querySelector('nav').getBoundingClientRect().bottom;
           sw.style.position = 'fixed';
           sw.style.top      = navBottom + 'px';
           sw.style.left     = '0';
@@ -18151,8 +18154,7 @@
           sw.style.backdropFilter = 'blur(6px)';
           // El mapa arranca justo debajo del buscador
           const swBottom = navBottom + sw.offsetHeight;
-          const esMobil = window.innerWidth <= 600;
-          mapFrame.style.top = esMobil ? '0' : swBottom + 'px';
+          mapFrame.style.top = swBottom + 'px';
           mapFrame.classList.add('map-expanded');
           document.body.style.overflow = 'hidden';
           btn.innerHTML = iconCollapse;

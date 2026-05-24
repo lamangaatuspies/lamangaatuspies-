@@ -10,7 +10,7 @@
     gtag('config', 'G-50Z4QGPF3Q');
   </script>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>La Manga a tus pies — Mapa interactivo de La Manga del Mar Menor</title>
 
   <!-- SEO básico -->
@@ -737,6 +737,7 @@
       .about-wrap { grid-template-columns: 1fr; gap: 2rem; }
     }
     @media (max-width: 600px) {
+      html, body { overflow-x: hidden; }
       .hero-content { padding: 2rem 1.5rem 2.5rem; }
       main { padding: 0 1.5rem 4rem; }
       .statusbar { padding: 0 1.5rem; }
@@ -760,6 +761,9 @@
         font-size: 1.1rem;
         padding: 0.4rem 0.6rem;
         color: var(--ink-mid);
+      }
+      .map-frame.map-expanded .expand-control {
+        z-index: 960;
       }
     }
 
@@ -18147,7 +18151,8 @@
           sw.style.backdropFilter = 'blur(6px)';
           // El mapa arranca justo debajo del buscador
           const swBottom = navBottom + sw.offsetHeight;
-          mapFrame.style.top = swBottom + 'px';
+          const esMobil = window.innerWidth <= 600;
+          mapFrame.style.top = esMobil ? '0' : swBottom + 'px';
           mapFrame.classList.add('map-expanded');
           document.body.style.overflow = 'hidden';
           btn.innerHTML = iconCollapse;

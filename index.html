@@ -18162,9 +18162,18 @@
       .then(d => {
         const pais   = d.country_code || '?';
         const dispositivo = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio';
-        registrarStats('visita', pais + ' · ' + dispositivo);
+        const ref = document.referrer;
+        const origen = !ref                        ? 'directo'
+                     : /google\./i.test(ref)       ? 'google'
+                     : /facebook\.|fb\./i.test(ref)? 'facebook'
+                     : /instagram\./i.test(ref)    ? 'instagram'
+                     : /twitter\.|x\.com/i.test(ref)? 'twitter'
+                     : /whatsapp\./i.test(ref)     ? 'whatsapp'
+                     : /t\.co/i.test(ref)          ? 'twitter'
+                     : new URL(ref).hostname;
+        registrarStats('visita', pais + ' · ' + dispositivo + ' · ' + origen);
       })
-      .catch(() => registrarStats('visita', '? · ' + (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio')));
+      .catch(() => registrarStats('visita', '? · ' + (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio') + ' · ?'));
 
     function toggleExpandMap() {
       const mapFrame = document.querySelector('.map-frame');

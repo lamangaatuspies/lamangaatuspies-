@@ -18146,6 +18146,17 @@
                    + '&textobusq=' + encodeURIComponent(textobusq || '');
       fetch(STATS_URL + params).catch(() => {});
     }
+    const SESION_INICIO = Date.now();
+    window.addEventListener('beforeunload', () => {
+      const segundosTotales = Math.round((Date.now() - SESION_INICIO) / 1000);
+      const minutos = Math.floor(segundosTotales / 60);
+      const segundos = segundosTotales % 60;
+      const duracion = minutos + 'min ' + segundos + 's';
+      const url = STATS_URL + '?sesion=' + encodeURIComponent(SESION_ID)
+                + '&tipo=cierre&detalle=' + encodeURIComponent(duracion) + '&textobusq=';
+      try { navigator.sendBeacon(url); } catch(e) {}
+      try { fetch(url, { keepalive: true }); } catch(e) {}
+    });
     fetch('https://geolocation-db.com/json/')
       .then(r => r.json())
       .then(d => {

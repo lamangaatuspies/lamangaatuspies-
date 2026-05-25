@@ -18137,11 +18137,22 @@
       <line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>
     </svg>`;
 
+    const STATS_URL = 'https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec';
+    const SESION_ID = Math.random().toString(36).substring(2, 6);
+    function registrarStats(tipo, detalle, textobusq) {
+      const params = '?sesion=' + encodeURIComponent(SESION_ID)
+                   + '&tipo='   + encodeURIComponent(tipo)
+                   + '&detalle='+ encodeURIComponent(detalle)
+                   + '&textobusq=' + encodeURIComponent(textobusq || '');
+      fetch(STATS_URL + params).catch(() => {});
+    }
+
     function toggleExpandMap() {
       const mapFrame = document.querySelector('.map-frame');
       const btn      = document.querySelector('.map-expand-btn');
 
       if (!mapaExpandido) {
+        registrarStats('expandir_mapa', 'expandir');
         // Scroll hasta que el map-frame quede justo bajo el nav, luego expandir
         const nav     = document.querySelector('nav');
         const navH    = nav.offsetHeight;
@@ -18284,7 +18295,10 @@
           }
           // Build item for panel
           const clickedItem = allFeatures.find(f => f.layer === layer);
-          if (clickedItem) showMapPopup(clickedItem);
+          if (clickedItem) {
+            registrarStats('clic_marcador', clickedItem.name);
+            showMapPopup(clickedItem);
+          }
         });
 
         layerGroup.addLayer(layer);
@@ -18340,7 +18354,7 @@
     KM_POINTS.forEach(km => {
       const marker = L.marker([km.lat, km.lng], { icon: kmIcon(km.name, map.getZoom()) });
       marker.on('click', () => {
-        // Reset estilos de features normales
+        registrarStats('clic_marcador', km.name);
         allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
         activeFeature = null;
         map.closePopup();
@@ -18567,6 +18581,11 @@
       activeFeature = null;
     });
 
+    document.getElementById('ppMaps').addEventListener('click', () => {
+      const nombre = document.getElementById('ppName').textContent || 'desconocido';
+      registrarStats('ver_en_maps', nombre);
+    });
+
     function selectFeature(item) {
       // Reset previous
       allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
@@ -18618,7 +18637,11 @@
             (kmLabel ? '<span class="search-item-km">' + kmLabel + '</span>' : '') + '</div>';
         }).join('');
         dropdown.querySelectorAll('.search-item').forEach(el => {
-          el.addEventListener('click', () => selectFeature(allFeatures[parseInt(el.dataset.idx)]));
+        el.addEventListener('click', () => {
+            const item = allFeatures[parseInt(el.dataset.idx)];
+            registrarStats('busqueda', item.name, input.value.trim());
+            selectFeature(item);
+          });
         });
       }
       dropdown.classList.add('open');

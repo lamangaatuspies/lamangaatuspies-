@@ -18146,6 +18146,7 @@
                    + '&textobusq=' + encodeURIComponent(textobusq || '');
       fetch(STATS_URL + params).catch(() => {});
     }
+    registrarStats('visita', 'inicio');
 
     function toggleExpandMap() {
       const mapFrame = document.querySelector('.map-frame');
@@ -18913,6 +18914,7 @@
         const name = fila.dataset.name;
         const item = allFeatures.find(f => f.name === name);
         if (!item) return;
+        registrarStats('clic_lista', name);
         // Navegar al mapa
         const searchWrap = document.querySelector('.search-wrap');
         const mapFrame   = document.querySelector('.map-frame');

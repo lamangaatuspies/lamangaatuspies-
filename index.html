@@ -18147,6 +18147,15 @@
       fetch(STATS_URL + params).catch(() => {});
     }
     registrarStats('visita', 'inicio');
+    fetch('https://ipwho.is/')
+      .then(r => r.json())
+      .then(d => {
+        const ciudad = d.city || '?';
+        const pais   = d.country_code || '?';
+        const dispositivo = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio';
+        registrarStats('visita', ciudad + ' · ' + pais + ' · ' + dispositivo);
+      })
+      .catch(() => {});
 
     function toggleExpandMap() {
       const mapFrame = document.querySelector('.map-frame');

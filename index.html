@@ -18146,16 +18146,14 @@
                    + '&textobusq=' + encodeURIComponent(textobusq || '');
       fetch(STATS_URL + params).catch(() => {});
     }
-    registrarStats('visita', 'inicio');
     fetch('https://geolocation-db.com/json/')
       .then(r => r.json())
       .then(d => {
-        const ciudad = d.city || '?';
         const pais   = d.country_code || '?';
         const dispositivo = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio';
-        registrarStats('visita', ciudad + ' · ' + pais + ' · ' + dispositivo);
+        registrarStats('visita', pais + ' · ' + dispositivo);
       })
-      .catch(() => {});
+      .catch(() => registrarStats('visita', '? · ' + (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio')));
 
     function toggleExpandMap() {
       const mapFrame = document.querySelector('.map-frame');

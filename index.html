@@ -18147,7 +18147,7 @@
       fetch(STATS_URL + params).catch(() => {});
     }
     registrarStats('visita', 'inicio');
-    fetch('https://ipwho.is/')
+    fetch('https://geolocation-db.com/json/')
       .then(r => r.json())
       .then(d => {
         const ciudad = d.city || '?';

@@ -944,6 +944,24 @@
     }
     .lm-tooltip-permanent::before { display: none !important; }
 
+    /* Etiqueta del marcador activo (seleccionado) */
+    .lm-tooltip-active {
+      background: rgba(13,17,23,0.82) !important;
+      border: 1px solid rgba(48,54,61,0.7) !important;
+      border-radius: 2px !important;
+      color: #ff4444 !important;
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: 0.68rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.05em !important;
+      padding: 2px 6px !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.6) !important;
+      white-space: nowrap !important;
+      pointer-events: none !important;
+      text-transform: uppercase !important;
+    }
+    .lm-tooltip-active::before { display: none !important; }
+
     /* ── MAP POPUP PANEL ── */
     .map-popup-panel {
       display: none;
@@ -14960,43 +14978,6 @@
         "coordinates": [
           [
             [
-              -0.727469,
-              37.66103
-            ],
-            [
-              -0.727504,
-              37.660938
-            ],
-            [
-              -0.727372,
-              37.660901
-            ],
-            [
-              -0.72734,
-              37.660989
-            ],
-            [
-              -0.727469,
-              37.66103
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "BONGO BEACH",
-        "desc": [],
-        "img": "",
-        "lat": 37.660978,
-        "lng": -0.727431
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
               -0.715753,
               37.65003
             ],
@@ -15145,96 +15126,6 @@
         "img": "https://i.postimg.cc/cCZ0SBC7/casa-paco.png",
         "lat": 37.750179,
         "lng": -0.739405
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              -0.723145,
-              37.655659
-            ],
-            [
-              -0.723176,
-              37.655647
-            ],
-            [
-              -0.723132,
-              37.655564
-            ],
-            [
-              -0.723067,
-              37.655584
-            ],
-            [
-              -0.723116,
-              37.655664
-            ],
-            [
-              -0.723145,
-              37.655659
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "CAVANNA BREEZE",
-        "desc": [
-          "Chiringuito"
-        ],
-        "img": "",
-        "lat": 37.65563,
-        "lng": -0.72313
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              -0.722732,
-              37.655007
-            ],
-            [
-              -0.722661,
-              37.655016
-            ],
-            [
-              -0.722654,
-              37.654983
-            ],
-            [
-              -0.722583,
-              37.65499
-            ],
-            [
-              -0.722571,
-              37.654927
-            ],
-            [
-              -0.722717,
-              37.654915
-            ],
-            [
-              -0.722732,
-              37.655007
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "CHIRINGUITO DE LOLA",
-        "desc": [
-          "Chiringuito"
-        ],
-        "img": "https://i.postimg.cc/fLkC25c8/lola.png",
-        "lat": 37.654978,
-        "lng": -0.722664
       }
     },
     {
@@ -16041,46 +15932,6 @@
         "img": "https://i.postimg.cc/VLVbcMPx/maloca.png",
         "lat": 37.641495,
         "lng": -0.722956
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              -0.724843,
-              37.659841
-            ],
-            [
-              -0.72469,
-              37.659762
-            ],
-            [
-              -0.7248,
-              37.659637
-            ],
-            [
-              -0.72495,
-              37.659717
-            ],
-            [
-              -0.724843,
-              37.659841
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      },
-      "properties": {
-        "name": "MANGASURFING",
-        "desc": [
-          "Chiringuito",
-          "Escuela de Windsurf y Vela"
-        ],
-        "img": "",
-        "lat": 37.65976,
-        "lng": -0.724825
       }
     },
     {
@@ -18446,7 +18297,8 @@
 
         const normalStyle = { color: cfg.color, weight: 1.5, fillColor: cfg.fill, fillOpacity: 0.25 };
         const hoverStyle  = { color: cfg.color, weight: 2.5, fillColor: cfg.fill, fillOpacity: 0.50 };
-        const activeStyle = { color: '#ffffff', weight: 3,   fillColor: cfg.fill, fillOpacity: 0.80 };
+        const darkenColor = c => '#' + c.replace('#','').match(/.{2}/g).map(h => Math.max(0, parseInt(h,16) - 80).toString(16).padStart(2,'0')).join('');
+        const activeStyle = { color: darkenColor(cfg.color), weight: 3, fillColor: cfg.fill, fillOpacity: 0.80 };
 
         if (geom.type === 'Polygon' || geom.type === 'MultiPolygon') {
           layer = L.geoJSON(ft, { style: normalStyle });
@@ -18480,14 +18332,12 @@
         });
         layer.on('click', () => {
           allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
-          if (activeFeature && activeFeature !== layer) {
-            activeFeature.setStyle ? activeFeature.setStyle(normalStyle) : null;
-          }
           activeFeature = layer;
           layer.setStyle ? layer.setStyle(activeStyle) : null;
           if (layer.getLayers) {
             layer.getLayers().forEach(sub => sub.setStyle(activeStyle));
           }
+          actualizarTooltips(map.getZoom());
           // Build item for panel
           const clickedItem = allFeatures.find(f => f.layer === layer);
           if (clickedItem) {
@@ -18775,6 +18625,7 @@
       popupPanel.classList.remove('visible');
       allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
       activeFeature = null;
+      actualizarTooltips(map.getZoom());
     });
 
     document.getElementById('ppMaps').addEventListener('click', () => {
@@ -18893,8 +18744,16 @@
     function actualizarTooltips(zoom) {
       const permanente = zoom >= ZOOM_LABELS;
       allFeatures.forEach(({ name, layer }) => {
+        const esActivo = layer === activeFeature;
         layer.unbindTooltip();
-        if (permanente) {
+        if (esActivo) {
+          layer.bindTooltip(name, {
+            permanent: true,
+            direction: 'top',
+            offset: [0, -4],
+            className: 'lm-tooltip-active',
+          });
+        } else if (permanente) {
           layer.bindTooltip(name, {
             permanent: true,
             direction: 'top',
@@ -18914,6 +18773,11 @@
 
     // Aplicar al cargar
     actualizarTooltips(map.getZoom());
+
+    // Mantener tooltip activo al mover el mapa
+    map.on('moveend', () => {
+      if (activeFeature) actualizarTooltips(map.getZoom());
+    });
 
     // ── UPDATE KM ICONS ON ZOOM ──
     map.on('zoomend', () => {

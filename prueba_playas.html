@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prueba Estado Playas - La Manga</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0d1117; color: #e6edf3; padding: 20px; }
+    h1 { color: #58a6ff; }
+    #estado { color: #8b949e; margin-bottom: 20px; }
+    #tiempo { color: #8b949e; font-size: 0.85em; margin-bottom: 20px; }
+    table { border-collapse: collapse; width: 100%; max-width: 900px; }
+    th { background: #161b22; color: #58a6ff; padding: 8px 12px; text-align: left; border: 1px solid #30363d; }
+    td { padding: 8px 12px; border: 1px solid #30363d; font-size: 0.9em; }
+    tr:nth-child(even) { background: #161b22; }
+    .verde   { color: #3fb950; font-weight: bold; }
+    .amarilla{ color: #e3b341; font-weight: bold; }
+    .roja    { color: #f85149; font-weight: bold; }
+    .sin     { color: #8b949e; }
+  </style>
+</head>
+<body>
+  <h1>🏖️ Estado de las Playas — La Manga del Mar Menor</h1>
+  <div id="estado">Cargando datos...</div>
+  <div id="tiempo"></div>
+  <table id="tabla" style="display:none">
+    <thead>
+      <tr>
+        <th>Playa</th>
+        <th>Municipio</th>
+        <th>Bandera</th>
+        <th>Estado del mar</th>
+        <th>Actualizado</th>
+        <th>Lat</th>
+        <th>Lng</th>
+      </tr>
+    </thead>
+    <tbody id="cuerpo"></tbody>
+  </table>
+
+  <script>
+    const PROXY = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=playas";
+
+    function colorBandera(b) {
+      const v = (b || "").toUpperCase();
+      if (v === "VERDE")    return `<span class="verde">🟢 ${b}</span>`;
+      if (v === "AMARILLA") return `<span class="amarilla">🟡 ${b}</span>`;
+      if (v === "ROJA")     return `<span class="roja">🔴 ${b}</span>`;
+      return `<span class="sin">${b || "—"}</span>`;
+    }
+
+    const t0 = performance.now();
+
+    fetch(PROXY)
+      .then(r => r.json())
+      .then(data => {
+        const ms = Math.round(performance.now() - t0);
+        if (!data.ok) {
+          document.getElementById("estado").textContent = "Error: " + data.error;
+          return;
+        }
+        // Filtrar La Colonia (Águilas colada)
+        const playas = data.playas.filter(p => p.municipio === "CARTAGENA" || p.municipio === "SAN JAVIER");
+        // Ordenar por lat descendente (norte arriba)
+        playas.sort((a, b) => b.lat - a.lat);
+
+        document.getElementById("estado").textContent = `✅ ${playas.length} playas cargadas correctamente.`;
+        document.getElementById("tiempo").textContent = `⏱️ Tiempo de respuesta: ${ms} ms`;
+        document.getElementById("tabla").style.display = "table";
+
+        const tbody = document.getElementById("cuerpo");
+        playas.forEach(p => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${p.nombre}</td>
+            <td>${p.municipio}</td>
+            <td>${colorBandera(p.bandera)}</td>
+            <td>${p.estado || "—"}</td>
+            <td>${p.fecha || "—"}</td>
+            <td>${p.lat.toFixed(5)}</td>
+            <td>${p.lng.toFixed(5)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        document.getElementById("estado").textContent = "❌ Error de red: " + err.message;
+      });
+  </script>
+</body>
+</html>

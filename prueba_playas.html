@@ -20064,10 +20064,13 @@
         );
         playas.forEach(p => {
           if (!p.lat || !p.lng) return;
-          const MAR_MENOR_EXCEPCIONES = ['CALA DEL PINO', 'CAVANNA', 'LA GOLA', 'PUERTO BELLO'];
-          const nombreUpper = p.nombre.toUpperCase();
-          const esMarMenor = nombreUpper.indexOf('MAR MENOR') !== -1 ||
-                             MAR_MENOR_EXCEPCIONES.some(e => nombreUpper.indexOf(e) !== -1);
+          const MAR_MENOR = [
+            'CALA DEL PINO', 'CAVANNA', 'LA GOLA', 'PUERTO BELLO',
+            'LEBECHE (MAR MENOR) (LIMA 19)', 'MISTRAL (MAR MENOR) (LIMA 17)',
+            'PEDRUCHILLO (MAR MENOR) (LIMA 18)', 'VENEZIOLA (MAR MENOR) (LIMA 16)'
+          ];
+          const nombreUpper = p.nombre.toUpperCase().trim();
+          const esMarMenor = MAR_MENOR.some(e => nombreUpper === e);
           const lat = p.lat;
           const esLebeche = p.nombre.toUpperCase().indexOf('LEBECHE') !== -1;
           const lng = esMarMenor ? p.lng - 0.0004 - (esLebeche ? 0.00065 : 0) : p.lng;

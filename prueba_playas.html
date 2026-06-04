@@ -935,6 +935,7 @@
       background: rgba(13,17,23,0.82) !important;
       border: 1px solid rgba(48,54,61,0.7) !important;
       border-radius: 2px !important;
+      color: #ffffff !important;
       font-family: 'Rajdhani', sans-serif !important;
       font-size: 0.68rem !important;
       font-weight: 600 !important;
@@ -1446,6 +1447,9 @@
           </p>
           <p>
             El objetivo es construir la referencia cartográfica más completa sobre La Manga del Mar Menor disponible en abierto. El directorio crece de forma continua.
+          </p>
+          <p>
+            <span style="display:inline-block;font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;color:var(--accent2);border:1px solid var(--accent2);border-radius:2px;padding:1px 6px;margin-right:0.6em;vertical-align:middle;">NUEVO</span>El mapa incluye además el estado de las banderas de baño en tiempo real, con datos del servicio 112 de la Región de Murcia. La información se actualiza automáticamente y se muestra directamente sobre el mapa.
           </p>
         </div>
         <div class="about-panel">
@@ -19429,8 +19433,8 @@
           font-style: italic;
           font-size: ${FONT_SIZE}px;
           font-weight: 600;
-          color: #000000;
-          text-shadow: 0 0 4px rgba(255,255,255,0.9), 0 0 8px rgba(255,255,255,0.7);
+          color: #ffffff;
+          text-shadow: 0 0 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7);
           white-space: nowrap;
           pointer-events: none;
           letter-spacing: 0.02em;
@@ -20037,22 +20041,35 @@
     }
     map.on('zoomend', actualizarVisibilidadBanderas);
 
-    function svgBandera(color, voltear) {
-      const flip = voltear ? 'transform="scale(-1,1) translate(-20,0)"' : '';
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="30" viewBox="0 0 20 30">
+    function svgBandera(colorFill, colorStroke, voltear) {
+      const flip = voltear ? 'transform="scale(-1,1) translate(-44,0)"' : '';
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="29" height="32" viewBox="0 0 44 48">
         <g ${flip}>
-          <rect x="4" y="1" width="14" height="10" fill="${color}" stroke="${color}" stroke-width="1.5"/>
-          <line x1="3" y1="0" x2="3" y2="29" stroke="#8B4513" stroke-width="2.5"/>
+          <line x1="5" y1="0" x2="5" y2="47" stroke="#8B5E3C" stroke-width="4" stroke-linecap="round"/>
+          <rect x="5" y="3" width="36" height="23" fill="${colorFill}" stroke="${colorStroke}" stroke-width="0.8"/>
+          <ellipse cx="5" cy="47" rx="7" ry="3" fill="#c8a96e" opacity="0.6"/>
+        </g>
+      </svg>`;
+    }
+
+    function svgBanderaSinDatos(voltear) {
+      const flip = voltear ? 'transform="scale(-1,1) translate(-44,0)"' : '';
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="29" height="32" viewBox="0 0 44 48">
+        <g ${flip}>
+          <line x1="5" y1="0" x2="5" y2="47" stroke="#8B5E3C" stroke-width="4" stroke-linecap="round"/>
+          <rect x="5" y="3" width="36" height="11" fill="#ffffff"/>
+          <rect x="5" y="14" width="36" height="12" fill="#888888"/>
+          <ellipse cx="5" cy="47" rx="7" ry="3" fill="#c8a96e" opacity="0.6"/>
         </g>
       </svg>`;
     }
 
     function iconoBandera(bandera, voltear) {
       const b = (bandera || '').toUpperCase();
-      if (b === 'VERDE')    return svgBandera('#2ecc71', voltear);
-      if (b === 'AMARILLA') return svgBandera('#f1c40f', voltear);
-      if (b === 'ROJA')     return svgBandera('#e74c3c', voltear);
-      return svgBandera('#49b6ff', voltear);
+      if (b === 'VERDE')    return svgBandera('#27ae60', '#1e8449', voltear);
+      if (b === 'AMARILLA') return svgBandera('#f39c12', '#d68910', voltear);
+      if (b === 'ROJA')     return svgBandera('#c0392b', '#a93226', voltear);
+      return svgBanderaSinDatos(voltear);
     }
 
     fetch(PROXY_PLAYAS)
@@ -20077,16 +20094,19 @@
           const icono = L.divIcon({
             html: iconoBandera(p.bandera, esMarMenor),
             className: '',
-            iconSize: [20, 30],
-            iconAnchor: esMarMenor ? [17, 30] : [3, 30],
+            iconSize: [29, 32],
+            iconAnchor: esMarMenor ? [24, 32] : [5, 32],
           });
           const b = (p.bandera || '').toUpperCase();
           const colorTexto = b === 'VERDE' ? '#2ecc71' : b === 'AMARILLA' ? '#f1c40f' : b === 'ROJA' ? '#e74c3c' : '#aaaaaa';
+          const nombreCorto = p.nombre.replace(/^PLAYA\s+/i, '').replace(/\s*\(.*\)\s*/g, '').trim()
+            .toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+          const estadoUpper = (p.estado || 'SIN ESTADO').toUpperCase();
           const marker = L.marker([lat, lng], { icon: icono, zIndexOffset: -100 });
+          const sinDatos = b !== 'VERDE' && b !== 'AMARILLA' && b !== 'ROJA';
+          const lineaFecha = sinDatos ? '' : `<br><span style="color:#e6edf3;font-size:0.85em"><b>Act.</b> ${p.fecha}</span>`;
           marker.bindTooltip(
-            `<span style="color:${colorTexto};font-weight:bold">${p.nombre}</span><br>` +
-            `<span style="color:#8b949e;font-size:0.85em">${p.bandera} · ${p.estado}</span><br>` +
-            `<span style="color:#555;font-size:0.75em">${p.fecha}</span>`,
+            `<span style="color:${colorTexto};font-weight:bold">${nombreCorto} · ${estadoUpper}</span>${lineaFecha}`,
             { direction: 'top', offset: [6, -8], className: 'lm-tooltip' }
           );
           marker.addTo(banderasLayerGroup);

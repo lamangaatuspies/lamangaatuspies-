@@ -915,6 +915,8 @@
     .leaflet-interactive:focus {
       outline: none !important;
     }
+    .bandera-icon { background: none !important; border: none !important; box-shadow: none !important; }
+
     .lm-tooltip {
       background: #161b22 !important;
       border: 1px solid #30363d !important;
@@ -19062,7 +19064,11 @@
     document.getElementById('ppShare').addEventListener('click', function() {
       const nombre = document.getElementById('ppName').textContent;
       if (!nombre) return;
-      const url = window.location.origin + window.location.pathname + '?q=' + encodeURIComponent(nombre);
+      const esPlaya = document.getElementById('mapPopupPanel').dataset.tipo === 'playa';
+      const param = esPlaya
+        ? '?playa=' + encodeURIComponent(document.getElementById('mapPopupPanel').dataset.nombrePlaya)
+        : '?q=' + encodeURIComponent(nombre);
+      const url = window.location.origin + window.location.pathname + param;
       navigator.clipboard.writeText(url).then(() => {
         const btn = this;
         const tip = document.getElementById('ppShareTip');
@@ -19576,6 +19582,7 @@
         ? item.desc.map(d => '<span>' + d + '</span>').join(' ')
         : '';
       document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + item.lat + ',' + item.lng;
+      popupPanel.dataset.tipo = '';
       popupPanel.classList.add('visible');
     }
 
@@ -20041,35 +20048,19 @@
     }
     map.on('zoomend', actualizarVisibilidadBanderas);
 
-    function svgBandera(colorFill, colorStroke, voltear) {
-      const flip = voltear ? 'transform="scale(-1,1) translate(-44,0)"' : '';
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="29" height="32" viewBox="0 0 44 48">
-        <g ${flip}>
-          <line x1="5" y1="0" x2="5" y2="47" stroke="#8B5E3C" stroke-width="4" stroke-linecap="round"/>
-          <rect x="5" y="3" width="36" height="23" fill="${colorFill}" stroke="${colorStroke}" stroke-width="0.8"/>
-          <ellipse cx="5" cy="47" rx="7" ry="3" fill="#c8a96e" opacity="0.6"/>
-        </g>
-      </svg>`;
-    }
+    const ICONOS_BANDERA = {
+      VERDE:    L.icon({ iconUrl: 'Ban_Verde.png',    iconSize: [24, 32], iconAnchor: [5, 32], className: 'bandera-icon' }),
+      AMARILLA: L.icon({ iconUrl: 'Ban_Amarilla.png', iconSize: [24, 32], iconAnchor: [5, 32], className: 'bandera-icon' }),
+      ROJA:     L.icon({ iconUrl: 'Ban_Roja.png',     iconSize: [24, 32], iconAnchor: [5, 32], className: 'bandera-icon' }),
+      SINDATOS: L.icon({ iconUrl: 'Ban_Blanca.png',   iconSize: [24, 32], iconAnchor: [5, 32], className: 'bandera-icon' }),
+    };
 
-    function svgBanderaSinDatos(voltear) {
-      const flip = voltear ? 'transform="scale(-1,1) translate(-44,0)"' : '';
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="29" height="32" viewBox="0 0 44 48">
-        <g ${flip}>
-          <line x1="5" y1="0" x2="5" y2="47" stroke="#8B5E3C" stroke-width="4" stroke-linecap="round"/>
-          <rect x="5" y="3" width="36" height="11" fill="#ffffff"/>
-          <rect x="5" y="14" width="36" height="12" fill="#888888"/>
-          <ellipse cx="5" cy="47" rx="7" ry="3" fill="#c8a96e" opacity="0.6"/>
-        </g>
-      </svg>`;
-    }
-
-    function iconoBandera(bandera, voltear) {
+    function iconoBandera(bandera) {
       const b = (bandera || '').toUpperCase();
-      if (b === 'VERDE')    return svgBandera('#27ae60', '#1e8449', voltear);
-      if (b === 'AMARILLA') return svgBandera('#f39c12', '#d68910', voltear);
-      if (b === 'ROJA')     return svgBandera('#c0392b', '#a93226', voltear);
-      return svgBanderaSinDatos(voltear);
+      if (b === 'VERDE')    return ICONOS_BANDERA.VERDE;
+      if (b === 'AMARILLA') return ICONOS_BANDERA.AMARILLA;
+      if (b === 'ROJA')     return ICONOS_BANDERA.ROJA;
+      return ICONOS_BANDERA.SINDATOS;
     }
 
     fetch(PROXY_PLAYAS)
@@ -20091,18 +20082,13 @@
           const lat = p.lat;
           const esLebeche = p.nombre.toUpperCase().indexOf('LEBECHE') !== -1;
           const lng = esMarMenor ? p.lng - 0.0004 - (esLebeche ? 0.00065 : 0) : p.lng;
-          const icono = L.divIcon({
-            html: iconoBandera(p.bandera, esMarMenor),
-            className: '',
-            iconSize: [29, 32],
-            iconAnchor: esMarMenor ? [24, 32] : [5, 32],
-          });
+          const icono = iconoBandera(p.bandera);
           const b = (p.bandera || '').toUpperCase();
           const colorTexto = b === 'VERDE' ? '#2ecc71' : b === 'AMARILLA' ? '#f1c40f' : b === 'ROJA' ? '#e74c3c' : '#aaaaaa';
           const nombreCorto = p.nombre.replace(/^PLAYA\s+/i, '').replace(/\s*\(.*\)\s*/g, '').trim()
             .toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-          const estadoUpper = (p.estado || 'SIN ESTADO').toUpperCase();
-          const marker = L.marker([lat, lng], { icon: icono, zIndexOffset: -100 });
+          const estadoUpper = (p.estado || '').toUpperCase() === 'SIN ESTADO' || !(p.estado || '').trim() ? 'Sin datos' : (p.estado || '').toUpperCase();
+          const marker = L.marker([lat, lng], { icon: icono, zIndexOffset: -100, nombrePlaya: p.nombre });
           const sinDatos = b !== 'VERDE' && b !== 'AMARILLA' && b !== 'ROJA';
           const lineaFecha = sinDatos ? '' : `<br><span style="color:#e6edf3;font-size:0.85em"><b>Act.</b> ${p.fecha}</span>`;
           marker.bindTooltip(
@@ -20111,36 +20097,22 @@
           );
 
           marker.on('click', () => {
-            const municipioTexto = p.municipio
-              ? p.municipio.charAt(0) + p.municipio.slice(1).toLowerCase()
-              : '';
-            const BANDERAS_INFO = [
-              { b: 'VERDE',    color: '#27ae60', emoji: '🏊', texto: 'Baño seguro',             activa: b === 'VERDE'    },
-              { b: 'AMARILLA', color: '#f39c12', emoji: '⚠️', texto: 'Precaución, baño con cuidado', activa: b === 'AMARILLA' },
-              { b: 'ROJA',     color: '#e74c3c', emoji: '🚫', texto: 'Baño prohibido',           activa: b === 'ROJA'     },
-              { b: 'SIN DATOS',color: '#888888', emoji: '❓', texto: 'Sin información disponible', activa: sinDatos        },
-            ];
-            const filasHTML = BANDERAS_INFO.map(info => {
-              const highlight = info.activa
-                ? `background:rgba(255,255,255,0.07);border-left:3px solid ${info.color};padding-left:6px;border-radius:2px;`
-                : 'padding-left:9px;';
-              return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;${highlight}">
-                <span style="font-size:1em">${info.emoji}</span>
-                <span style="color:${info.color};font-weight:600;font-size:0.8em;min-width:58px;">${info.b}</span>
-                <span style="color:#8b949e;font-size:0.8em;">${info.texto}</span>
-              </div>`;
-            }).join('');
+            const imgUrl = b === 'VERDE' ? 'Ban_Verde.png' : b === 'AMARILLA' ? 'Ban_Amarilla.png' : b === 'ROJA' ? 'Ban_Roja.png' : 'Ban_Blanca.png';
+            const banderaHTML = `<div style="margin-bottom:8px;"><img src="${imgUrl}" style="height:40px;width:auto;"></div>`;
+            const estadoHTML = `<div style="color:${colorTexto};font-weight:700;font-size:1em;margin-bottom:6px;">ESTADO DE LA MAR: ${estadoUpper}</div>`;
             const fechaHTML = sinDatos ? '' :
-              `<div style="color:#555;font-size:0.75em;margin-top:6px;">Act. ${p.fecha}</div>`;
-            const horarioHTML = `<div style="color:#8b949e;font-size:0.75em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
+              `<div style="color:#e6edf3;font-size:1em;font-weight:600;margin-top:4px;">Act. ${p.fecha}</div>`;
+            const horarioHTML = `<div style="color:#8b949e;font-size:0.9em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
 
             document.getElementById('ppDot').style.background = colorTexto;
             document.getElementById('ppCapa').textContent = 'BANDERA DE BAÑO';
             document.getElementById('ppName').textContent = 'Playa ' + nombreCorto;
-            document.getElementById('ppKm').textContent = municipioTexto ? '· ' + municipioTexto : '';
+            document.getElementById('ppKm').textContent = kmMasCercano(lat, lng);
             document.getElementById('ppImg').style.display = 'none';
-            document.getElementById('ppDesc').innerHTML = filasHTML + fechaHTML + horarioHTML;
+            document.getElementById('ppDesc').innerHTML = banderaHTML + estadoHTML + fechaHTML + horarioHTML;
             document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + lat + ',' + lng;
+            popupPanel.dataset.tipo = 'playa';
+            popupPanel.dataset.nombrePlaya = p.nombre;
             popupPanel.classList.add('visible');
           });
           marker.addTo(banderasLayerGroup);
@@ -20148,6 +20120,34 @@
         actualizarVisibilidadBanderas();
       })
       .catch(() => { /* Si falla el proxy, el mapa sigue funcionando */ });
+
+    // ── ABRIR BANDERA DESDE URL (?playa=NombrePlaya) ──
+    (function abrirPlayaDesdeURL() {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('playa');
+      if (!q) return;
+      const nombre = q.toUpperCase().trim();
+      const intentar = (intentos) => {
+        const markers = [];
+        banderasLayerGroup.eachLayer(m => markers.push(m));
+        const marker = markers.find(m => m.options.nombrePlaya && m.options.nombrePlaya.toUpperCase().trim() === nombre);
+        if (marker) {
+          map.setView(marker.getLatLng(), 17, { animate: true });
+          marker.fire('click');
+          const searchWrap = document.querySelector('.search-wrap');
+          const mapFrame   = document.querySelector('.map-frame');
+          const navH       = document.querySelector('nav').offsetHeight;
+          const blockTop    = window.scrollY + searchWrap.getBoundingClientRect().top;
+          const blockBottom = window.scrollY + mapFrame.getBoundingClientRect().bottom;
+          const blockCenter = (blockTop + blockBottom) / 2;
+          const visibleH    = window.innerHeight - navH;
+          window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'smooth' });
+        } else if (intentos > 0) {
+          setTimeout(() => intentar(intentos - 1), 500);
+        }
+      };
+      setTimeout(() => intentar(10), 600);
+    })();
 
   }); // DOMContentLoaded
   </script>

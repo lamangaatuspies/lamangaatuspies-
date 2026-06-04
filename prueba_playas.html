@@ -20109,6 +20109,40 @@
             `<span style="color:${colorTexto};font-weight:bold">${nombreCorto} · ${estadoUpper}</span>${lineaFecha}`,
             { direction: 'top', offset: [6, -8], className: 'lm-tooltip' }
           );
+
+          marker.on('click', () => {
+            const municipioTexto = p.municipio
+              ? p.municipio.charAt(0) + p.municipio.slice(1).toLowerCase()
+              : '';
+            const BANDERAS_INFO = [
+              { b: 'VERDE',    color: '#27ae60', emoji: '🏊', texto: 'Baño seguro',             activa: b === 'VERDE'    },
+              { b: 'AMARILLA', color: '#f39c12', emoji: '⚠️', texto: 'Precaución, baño con cuidado', activa: b === 'AMARILLA' },
+              { b: 'ROJA',     color: '#e74c3c', emoji: '🚫', texto: 'Baño prohibido',           activa: b === 'ROJA'     },
+              { b: 'SIN DATOS',color: '#888888', emoji: '❓', texto: 'Sin información disponible', activa: sinDatos        },
+            ];
+            const filasHTML = BANDERAS_INFO.map(info => {
+              const highlight = info.activa
+                ? `background:rgba(255,255,255,0.07);border-left:3px solid ${info.color};padding-left:6px;border-radius:2px;`
+                : 'padding-left:9px;';
+              return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;${highlight}">
+                <span style="font-size:1em">${info.emoji}</span>
+                <span style="color:${info.color};font-weight:600;font-size:0.8em;min-width:58px;">${info.b}</span>
+                <span style="color:#8b949e;font-size:0.8em;">${info.texto}</span>
+              </div>`;
+            }).join('');
+            const fechaHTML = sinDatos ? '' :
+              `<div style="color:#555;font-size:0.75em;margin-top:6px;">Act. ${p.fecha}</div>`;
+            const horarioHTML = `<div style="color:#8b949e;font-size:0.75em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
+
+            document.getElementById('ppDot').style.background = colorTexto;
+            document.getElementById('ppCapa').textContent = 'BANDERA DE BAÑO';
+            document.getElementById('ppName').textContent = 'Playa ' + nombreCorto;
+            document.getElementById('ppKm').textContent = municipioTexto ? '· ' + municipioTexto : '';
+            document.getElementById('ppImg').style.display = 'none';
+            document.getElementById('ppDesc').innerHTML = filasHTML + fechaHTML + horarioHTML;
+            document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + lat + ',' + lng;
+            popupPanel.classList.add('visible');
+          });
           marker.addTo(banderasLayerGroup);
         });
         actualizarVisibilidadBanderas();

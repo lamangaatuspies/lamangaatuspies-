@@ -20116,7 +20116,7 @@
           const icono = iconoBandera(p.bandera, esMarMenor);
           const b = (p.bandera || '').toUpperCase();
           const colorTexto = b === 'VERDE' ? '#2ecc71' : b === 'AMARILLA' ? '#f1c40f' : b === 'ROJA' ? '#e74c3c' : '#aaaaaa';
-          const nombreCorto = p.nombre.replace(/^PLAYA\s+/i, '').replace(/\s*\(.*\)\s*/g, '').trim()
+          const nombreCorto = p.nombre.replace(/^PLAYA\s+/i, '').replace(/\s*\((LIMA\s*\d+|MAR MENOR)\)\s*/gi, '').trim()
             .toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
           const estadoUpper = (p.estado || '').toUpperCase() === 'SIN ESTADO' || !(p.estado || '').trim() ? 'Sin datos' : (p.estado || '').toUpperCase();
           const marker = L.marker([lat, lng], { icon: icono, zIndexOffset: -100, nombrePlaya: p.nombre });

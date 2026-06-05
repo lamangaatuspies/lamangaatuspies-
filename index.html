@@ -20003,6 +20003,27 @@
     }, { rootMargin: '-40% 0px -55% 0px' });
     sections.forEach(s => io.observe(s));
 
+    // ── NAV: contraer mapa expandido al navegar a otra sección ──
+    navLinks.forEach(a => {
+      if (a.getAttribute('href') !== '#mapa') {
+        a.addEventListener('click', function(e) {
+          if (mapaExpandido) {
+            e.preventDefault();
+            const href = this.getAttribute('href');
+            toggleExpandMap();
+            setTimeout(() => {
+              const target = document.querySelector(href);
+              if (target) {
+                const navH = document.querySelector('nav').offsetHeight;
+                const top  = window.scrollY + target.getBoundingClientRect().top - navH;
+                window.scrollTo({ top: top, behavior: 'smooth' });
+              }
+            }, 480);
+          }
+        });
+      }
+    });
+
     // ── NAV MAPA: centrado perfecto al hacer clic ──
     document.querySelector('nav a[href="#mapa"]').addEventListener('click', function(e) {
       e.preventDefault();

@@ -20132,7 +20132,7 @@
             const banderaHTML = `<div style="margin-bottom:8px;"><img src="${imgUrl}" style="height:40px;width:auto;"></div>`;
             const estadoHTML = `<div style="color:${colorTexto};font-weight:700;font-size:1em;margin-bottom:6px;">ESTADO DE LA MAR: ${estadoUpper}</div>`;
             const fechaHTML = sinDatos ? '' :
-              `<div style="color:#e6edf3;font-size:1em;font-weight:600;margin-top:4px;">Act. ${p.fecha}</div>`;
+              `<div style="color:#e6edf3;font-size:1em;font-weight:600;margin-top:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4a9eff;box-shadow:0 0 6px #4a9eff;animation:pulse 2s infinite;vertical-align:middle;margin-right:6px;"></span>Act. ${p.fecha}</div>`;
             const horarioHTML = `<div style="color:#8b949e;font-size:0.9em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
 
             document.getElementById('ppDot').style.background = colorTexto;

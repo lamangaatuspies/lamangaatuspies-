@@ -19439,7 +19439,7 @@
           font-style: italic;
           font-size: ${FONT_SIZE}px;
           font-weight: 600;
-          color: #fac028;
+          color: #d1a124;
           text-shadow: 0 0 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7);
           white-space: nowrap;
           pointer-events: none;
@@ -20128,6 +20128,7 @@
           );
 
           marker.on('click', () => {
+            registrarStats('clic_bandera', nombreCorto + ' · ' + estadoUpper);
             const imgUrl = b === 'VERDE' ? 'Ban_Verde.png' : b === 'AMARILLA' ? 'Ban_Amarilla.png' : b === 'ROJA' ? 'Ban_Roja.png' : 'Ban_Blanca.png';
             const banderaHTML = `<div style="margin-bottom:8px;"><img src="${imgUrl}" style="height:40px;width:auto;"></div>`;
             const estadoHTML = `<div style="color:${colorTexto};font-weight:700;font-size:1em;margin-bottom:6px;">ESTADO DE LA MAR: ${estadoUpper}</div>`;

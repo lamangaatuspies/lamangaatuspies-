@@ -463,6 +463,49 @@
     .spec-val.ok { color: var(--accent3); }
     .spec-val.hi { color: var(--accent); }
 
+    /* ── CHANGELOG ── */
+    .tl-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 0 1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border);
+      align-items: start;
+    }
+    .tl-item:last-child { border-bottom: none; }
+    .tl-date {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--ink-mid);
+      padding-top: 2px;
+      line-height: 1.4;
+    }
+    .tl-right { display: flex; flex-direction: column; gap: 3px; }
+    .tl-badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border-radius: 2px;
+      width: fit-content;
+    }
+    .tl-badge.launch { background: rgba(63,185,80,0.12); color: var(--accent3); border: 1px solid var(--accent3); }
+    .tl-badge.update { background: rgba(88,166,255,0.12); color: var(--accent);  border: 1px solid var(--accent); }
+    .tl-title {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+    .tl-desc {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--ink-mid);
+      line-height: 1.4;
+    }
+
     /* ── BUSCADOR ── */
     .search-wrap {
       margin-bottom: 0;
@@ -1450,47 +1493,33 @@
           <p>
             El objetivo es construir la referencia cartográfica más completa sobre La Manga del Mar Menor disponible en abierto. El directorio crece de forma continua.
           </p>
-          <p>
-            <span style="display:inline-block;font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;color:var(--accent2);border:1px solid var(--accent2);border-radius:2px;padding:1px 6px;margin-right:0.6em;vertical-align:middle;">NUEVO</span>El mapa incluye además el estado de las banderas de baño en tiempo real, con datos del servicio 112 de la Región de Murcia. La información se actualiza automáticamente y se muestra directamente sobre el mapa.
-          </p>
+
         </div>
         <div class="about-panel">
-          <h3>Ficha técnica</h3>
-          <div class="spec-row">
-            <span class="spec-key">Cobertura</span>
-            <span class="spec-val hi">21 km</span>
+          <h3>Actualizaciones</h3>
+          <div class="tl-item">
+            <div class="tl-date">Abr 2025</div>
+            <div class="tl-right">
+              <span class="tl-badge launch">Lanzamiento</span>
+              <span class="tl-title">Publicación del proyecto</span>
+              <span class="tl-desc">Directorio cartográfico con urbanizaciones, hoteles, restaurantes y sitios de interés.</span>
+            </div>
           </div>
-          <div class="spec-row">
-            <span class="spec-key">Total registros</span>
-            <span class="spec-val hi" id="spec-total">295+</span>
+          <div class="tl-item">
+            <div class="tl-date">Jun 2025</div>
+            <div class="tl-right">
+              <span class="tl-badge update">Actualización</span>
+              <span class="tl-title">Banderas de baño en tiempo real</span>
+              <span class="tl-desc">Estado de playas integrado desde el servicio 112 de la Región de Murcia.</span>
+            </div>
           </div>
-          <div class="spec-row">
-            <span class="spec-key">Capas temáticas</span>
-            <span class="spec-val">4</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-key">Metodología</span>
-            <span class="spec-val">Manual · verificado</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-key">Fotografía</span>
-            <span class="spec-val ok">Incluida</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-key">Enlace Google Maps</span>
-            <span class="spec-val ok">Incluido</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-key">Plataforma base</span>
-            <span class="spec-val">Leaflet · GitHub Pages</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-key">Licencia de datos</span>
-            <span class="spec-val">ODbL</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-key">Acceso</span>
-            <span class="spec-val ok">Libre y gratuito</span>
+          <div class="tl-item">
+            <div class="tl-date">Próximamente</div>
+            <div class="tl-right">
+              <span class="tl-badge update">Actualización</span>
+              <span class="tl-title">Numeración de salidas de la Gran Vía</span>
+              <span class="tl-desc">Identificación de cada salida a lo largo de los 21 km.</span>
+            </div>
           </div>
         </div>
       </div>
@@ -19047,9 +19076,6 @@
         document.getElementById('lcard-n-' + k).textContent = n[k];
         document.getElementById('lcard-' + k).dataset.num = n[k];
       });
-
-      // Ficha técnica
-      document.getElementById('spec-total').textContent  = total + '+';
 
       // Fecha automática en el status bar
       const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',

@@ -1308,6 +1308,9 @@
       display: block;
     }
 
+
+    /* ── SALIDAS GRAN VÍA ── */
+    .salida-icon { background: none !important; border: none !important; box-shadow: none !important; }
   </style>
 </head>
 <body>
@@ -1498,7 +1501,7 @@
         <div class="about-panel">
           <h3>Actualizaciones</h3>
           <div class="tl-item">
-            <div class="tl-date">Abr 2025</div>
+            <div class="tl-date">Abr 2026</div>
             <div class="tl-right">
               <span class="tl-badge launch">Lanzamiento</span>
               <span class="tl-title">Publicación del proyecto</span>
@@ -1506,7 +1509,7 @@
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-date">Jun 2025</div>
+            <div class="tl-date">Jun 2026</div>
             <div class="tl-right">
               <span class="tl-badge update">Actualización</span>
               <span class="tl-title">Banderas de baño en tiempo real</span>
@@ -1514,7 +1517,7 @@
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-date">Próximamente</div>
+            <div class="tl-date">Jun 2026</div>
             <div class="tl-right">
               <span class="tl-badge update">Actualización</span>
               <span class="tl-title">Numeración de salidas de la Gran Vía</span>
@@ -19345,7 +19348,7 @@
     });
 
     // ── KM POINTS LAYER ──
-    const KM_POINTS = [{"name": "Km 1", "lat": 37.642909, "lng": -0.714294, "img": "https://i.postimg.cc/BQNQ7Bd2/Km-1.png"}, {"name": "Km 2", "lat": 37.651527, "lng": -0.718569, "img": "https://i.postimg.cc/v8rWBC6C/Km-2.png"}, {"name": "Km 3", "lat": 37.660313, "lng": -0.723038, "img": "https://i.postimg.cc/gJTkkzKd/Km-3.png"}, {"name": "Km 4", "lat": 37.667566, "lng": -0.728277, "img": "https://i.postimg.cc/FFpwSWMq/Km-4.png"}, {"name": "Km 5", "lat": 37.676395, "lng": -0.731621, "img": "https://i.postimg.cc/ydYyCPLn/Km-5.png"}, {"name": "Km 5", "lat": 37.676395, "lng": -0.731621, "img": "https://i.postimg.cc/ydYyCPLn/Km-5.png"}, {"name": "Km 6", "lat": 37.684439, "lng": -0.735022, "img": "https://i.postimg.cc/cCPPK1hc/Km-6.png"}, {"name": "Km 7", "lat": 37.692243, "lng": -0.737785, "img": "https://i.postimg.cc/2SXqtPHN/Km-7.png"}, {"name": "Km 8", "lat": 37.700923, "lng": -0.740571, "img": "https://i.postimg.cc/rmZYRygX/Km-8.png"}, {"name": "Km 9", "lat": 37.709719, "lng": -0.742186, "img": "https://i.postimg.cc/TYKhDkdH/Km-9.png"}, {"name": "Km 10", "lat": 37.718119, "lng": -0.741722, "img": "https://i.postimg.cc/NFgJn9M1/Km-10.png"}, {"name": "Km 11", "lat": 37.726007, "lng": -0.740282, "img": "https://i.postimg.cc/gcSHpBtf/Km-11.png"}, {"name": "Km 12", "lat": 37.734448, "lng": -0.740424, "img": "https://i.postimg.cc/bvSvBgFz/Km-12.png"}, {"name": "Km 13", "lat": 37.742655, "lng": -0.737055, "img": "https://i.postimg.cc/Gm5FDMsz/Km-13.png"}, {"name": "Km 14", "lat": 37.74873, "lng": -0.737516, "img": "https://i.postimg.cc/59zfWj3J/Km-14.png"}, {"name": "Km 15", "lat": 37.755414, "lng": -0.744056, "img": "https://i.postimg.cc/P5WLX2QW/Km-15.png"}, {"name": "Km 16", "lat": 37.763361, "lng": -0.747955, "img": "https://i.postimg.cc/L88XS25B/Km-16.png"}, {"name": "Km 17", "lat": 37.771766, "lng": -0.746872, "img": "https://i.postimg.cc/85Dx8PP6/Km-17.png"}, {"name": "Km 18", "lat": 37.778563, "lng": -0.747221, "img": "https://i.postimg.cc/KvrNVr3B/Km-18.png"}, {"name": "Semáforo Cabo de Palos", "lat": 37.636019, "lng": -0.708328, "img": "https://i.postimg.cc/52gJ29xz/Semaforo-Cabo-de-palos.png"}];
+    const KM_POINTS = [{"name": "Km 1", "lat": 37.642909, "lng": -0.714294, "img": "https://i.postimg.cc/BQNQ7Bd2/Km-1.png"}, {"name": "Km 2", "lat": 37.651527, "lng": -0.718569, "img": "https://i.postimg.cc/v8rWBC6C/Km-2.png"}, {"name": "Km 3", "lat": 37.660313, "lng": -0.723038, "img": "https://i.postimg.cc/gJTkkzKd/Km-3.png"}, {"name": "Km 4", "lat": 37.667566, "lng": -0.728277, "img": "https://i.postimg.cc/FFpwSWMq/Km-4.png"}, {"name": "Km 5", "lat": 37.676395, "lng": -0.731621, "img": "https://i.postimg.cc/ydYyCPLn/Km-5.png"}, {"name": "Km 5", "lat": 37.676395, "lng": -0.731621, "img": "https://i.postimg.cc/ydYyCPLn/Km-5.png"}, {"name": "Km 6", "lat": 37.684439, "lng": -0.735022, "img": "https://i.postimg.cc/cCPPK1hc/Km-6.png"}, {"name": "Km 7", "lat": 37.692243, "lng": -0.737785, "img": "https://i.postimg.cc/2SXqtPHN/Km-7.png"}, {"name": "Km 8", "lat": 37.700923, "lng": -0.740571, "img": "https://i.postimg.cc/rmZYRygX/Km-8.png"}, {"name": "Km 9", "lat": 37.709719, "lng": -0.742186, "img": "https://i.postimg.cc/TYKhDkdH/Km-9.png"}, {"name": "Km 10", "lat": 37.718119, "lng": -0.741722, "img": "https://i.postimg.cc/NFgJn9M1/Km-10.png"}, {"name": "Km 11", "lat": 37.726007, "lng": -0.740282, "img": "https://i.postimg.cc/gcSHpBtf/Km-11.png"}, {"name": "Km 12", "lat": 37.734448, "lng": -0.740424, "img": "https://i.postimg.cc/bvSvBgFz/Km-12.png"}, {"name": "Km 13", "lat": 37.742655, "lng": -0.737055, "img": "https://i.postimg.cc/Gm5FDMsz/Km-13.png"}, {"name": "Km 14", "lat": 37.74873, "lng": -0.737516, "img": "https://i.postimg.cc/59zfWj3J/Km-14.png"}, {"name": "Km 15", "lat": 37.755414, "lng": -0.744056, "img": "https://i.postimg.cc/P5WLX2QW/Km-15.png"}, {"name": "Km 16", "lat": 37.763361, "lng": -0.747955, "img": "https://i.postimg.cc/L88XS25B/Km-16.png"}, {"name": "Km 17", "lat": 37.771766, "lng": -0.746872, "img": "https://i.postimg.cc/85Dx8PP6/Km-17.png"}, {"name": "Km 18", "lat": 37.778563, "lng": -0.747221, "img": "https://i.postimg.cc/KvrNVr3B/Km-18.png"}, {"name": "Km 0", "lat": 37.635619, "lng": -0.707999, "img": "https://i.postimg.cc/FRF2DQp1/km0.png"}];
 
     function kmLineWidth(zoom) {
       // At zoom 13: 18px, at zoom 17: 150px, at zoom 19: 260px
@@ -19537,10 +19540,87 @@
         .addTo(poligonosLabels);
     });
 
+
+    // ── CAPA SALIDAS GRAN VÍA (desactivada por defecto) ──
+    const SALIDAS_DATA = [{"name":"Salida 140","lat":37.771683,"lng":-0.746726,"angle":-9.49,"par":true},{"name":"Salida 138","lat":37.767187,"lng":-0.748011,"angle":-2.85,"par":true},{"name":"Salida 134","lat":37.759145,"lng":-0.74726,"angle":18.01,"par":true},{"name":"Salida 132","lat":37.757014,"lng":-0.746211,"angle":20.28,"par":true},{"name":"Salida 124","lat":37.748045,"lng":-0.734901,"angle":84.29,"par":true},{"name":"Salida 117 A","lat":37.737307,"lng":-0.738673,"angle":-12.34,"par":false},{"name":"Salida 116","lat":37.730975,"lng":-0.739671,"angle":6.25,"par":true},{"name":"Salida 115","lat":37.730218,"lng":-0.739347,"angle":4.81,"par":false},{"name":"Salida 113","lat":37.729097,"lng":-0.739142,"angle":4.51,"par":false},{"name":"Salida 111","lat":37.727638,"lng":-0.739002,"angle":3.51,"par":false},{"name":"Salida 114","lat":37.72537,"lng":-0.740598,"angle":-12.35,"par":true},{"name":"Salida 112","lat":37.72438,"lng":-0.740958,"angle":-10.52,"par":true},{"name":"Salida 110","lat":37.718181,"lng":-0.741624,"angle":-6.71,"par":true},{"name":"Salida 93","lat":37.717929,"lng":-0.741834,"angle":-7.82,"par":false},{"name":"Salida 108","lat":37.715966,"lng":-0.742614,"angle":-2.03,"par":true},{"name":"Salida 106","lat":37.714937,"lng":-0.742667,"angle":-1.68,"par":true},{"name":"Salida 104","lat":37.712649,"lng":-0.742,"angle":2.97,"par":true},{"name":"Salida 89","lat":37.711681,"lng":-0.742084,"angle":-1.91,"par":false},{"name":"Salida 102","lat":37.711679,"lng":-0.741896,"angle":0.0,"par":true},{"name":"Salida 100","lat":37.711092,"lng":-0.741948,"angle":-0.82,"par":true},{"name":"Salida 87","lat":37.710043,"lng":-0.742244,"angle":-0.83,"par":false},{"name":"Salida 98","lat":37.710037,"lng":-0.74204,"angle":0.9,"par":true},{"name":"Salida 96","lat":37.708921,"lng":-0.742162,"angle":0.0,"par":true},{"name":"Salida 94","lat":37.708105,"lng":-0.742464,"angle":1.59,"par":true},{"name":"Salida 85","lat":37.708109,"lng":-0.742672,"angle":95.44,"par":true},{"name":"Salida 90","lat":37.707252,"lng":-0.74254,"angle":2.92,"par":true},{"name":"Salida 83","lat":37.706855,"lng":-0.742755,"angle":-11.46,"par":false},{"name":"Salida 88","lat":37.706831,"lng":-0.742424,"angle":2.39,"par":true},{"name":"Salida 86","lat":37.706397,"lng":-0.742298,"angle":8.86,"par":true},{"name":"Salida 80","lat":37.704342,"lng":-0.741673,"angle":7.64,"par":true},{"name":"Salida 82","lat":37.705516,"lng":-0.741945,"angle":7.28,"par":true},{"name":"Salida 76","lat":37.703818,"lng":-0.741345,"angle":10.89,"par":true},{"name":"Salida 4","lat":37.641159,"lng":-0.713019,"angle":22.95,"par":true},{"name":"Salida 2","lat":37.640281,"lng":-0.712276,"angle":29.88,"par":true},{"name":"Salida 6","lat":37.641598,"lng":-0.713348,"angle":19.77,"par":true},{"name":"Salida 10","lat":37.643695,"lng":-0.714677,"angle":20.74,"par":true},{"name":"Salida 8","lat":37.642926,"lng":-0.71421,"angle":21.25,"par":true},{"name":"Salida 12","lat":37.646012,"lng":-0.714942,"angle":-7.94,"par":true},{"name":"Salida 18","lat":37.649816,"lng":-0.717124,"angle":23.48,"par":true},{"name":"Salida 16","lat":37.647748,"lng":-0.715476,"angle":25.45,"par":true},{"name":"Salida 14","lat":37.646864,"lng":-0.714926,"angle":19.44,"par":true},{"name":"Salida 20","lat":37.652226,"lng":-0.719013,"angle":31.0,"par":true},{"name":"Salida 22","lat":37.652903,"lng":-0.719628,"angle":31.7,"par":true},{"name":"Salida 24","lat":37.653888,"lng":-0.72046,"angle":34.75,"par":true},{"name":"Salida 26","lat":37.655343,"lng":-0.72065,"angle":17.3,"par":true},{"name":"Salida 28","lat":37.65662,"lng":-0.720813,"angle":7.65,"par":true},{"name":"Salida 36","lat":37.667247,"lng":-0.72773,"angle":30.89,"par":true},{"name":"Salida 40","lat":37.66986,"lng":-0.729427,"angle":15.52,"par":true},{"name":"Salida 38","lat":37.668959,"lng":-0.729005,"angle":15.22,"par":true},{"name":"Salida 30","lat":37.662984,"lng":-0.724782,"angle":3.8,"par":true},{"name":"Salida 1","lat":37.639234,"lng":-0.711298,"angle":10.43,"par":false},{"name":"Salida 3","lat":37.639791,"lng":-0.712076,"angle":37.5,"par":false},{"name":"Salida 5","lat":37.641784,"lng":-0.713776,"angle":28.9,"par":false},{"name":"Salida 9","lat":37.644757,"lng":-0.715294,"angle":23.0,"par":false},{"name":"Salida 15","lat":37.650848,"lng":-0.718117,"angle":27.35,"par":false},{"name":"Salida 13","lat":37.648903,"lng":-0.716648,"angle":24.15,"par":false},{"name":"Salida 11","lat":37.648466,"lng":-0.716306,"angle":25.41,"par":false},{"name":"Salida 17","lat":37.651596,"lng":-0.71871,"angle":33.39,"par":false},{"name":"Salida 19","lat":37.655044,"lng":-0.720803,"angle":5.99,"par":false},{"name":"Salida 21","lat":37.656581,"lng":-0.72117,"angle":6.56,"par":false},{"name":"Salida 32","lat":37.662976,"lng":-0.72501,"angle":4.09,"par":false},{"name":"Salida 35","lat":37.667814,"lng":-0.728635,"angle":26.57,"par":false},{"name":"Salida 37","lat":37.669966,"lng":-0.729814,"angle":13.47,"par":false},{"name":"Salida 41","lat":37.676479,"lng":-0.731816,"angle":2.29,"par":false},{"name":"Salida 81","lat":37.702715,"lng":-0.741049,"angle":6.82,"par":false},{"name":"Salida 74","lat":37.702738,"lng":-0.740838,"angle":8.13,"par":true},{"name":"Salida 79","lat":37.701612,"lng":-0.740826,"angle":7.59,"par":false},{"name":"Salida 75","lat":37.700522,"lng":-0.740577,"angle":7.13,"par":false},{"name":"Salida 70","lat":37.700552,"lng":-0.740372,"angle":8.13,"par":true},{"name":"Salida 68","lat":37.697692,"lng":-0.740025,"angle":-17.78,"par":true},{"name":"Salida 64","lat":37.694969,"lng":-0.738736,"angle":17.1,"par":true},{"name":"Salida 71","lat":37.694343,"lng":-0.738476,"angle":9.15,"par":false},{"name":"Salida 62","lat":37.69459,"lng":-0.73835,"angle":11.69,"par":true},{"name":"Salida 69","lat":37.693431,"lng":-0.738184,"angle":8.97,"par":false},{"name":"Salida 65","lat":37.691907,"lng":-0.737896,"angle":4.0,"par":false},{"name":"Salida 60","lat":37.692345,"lng":-0.737672,"angle":9.3,"par":true},{"name":"Salida 63","lat":37.689638,"lng":-0.737672,"angle":17.38,"par":false},{"name":"Salida 59","lat":37.686775,"lng":-0.736511,"angle":19.94,"par":false},{"name":"Salida 58","lat":37.68616,"lng":-0.735652,"angle":44.41,"par":true},{"name":"Salida 54","lat":37.684465,"lng":-0.734886,"angle":12.01,"par":true},{"name":"Salida 52","lat":37.683468,"lng":-0.734528,"angle":11.67,"par":true},{"name":"Salida 51","lat":37.682963,"lng":-0.734615,"angle":16.16,"par":false},{"name":"Salida 50","lat":37.682697,"lng":-0.734274,"angle":13.24,"par":true},{"name":"Salida 48","lat":37.679542,"lng":-0.733804,"angle":14.91,"par":true},{"name":"Salida 45","lat":37.679447,"lng":-0.734024,"angle":10.01,"par":false},{"name":"Salida 46","lat":37.678427,"lng":-0.73314,"angle":13.03,"par":true},{"name":"Salida 44","lat":37.677576,"lng":-0.732736,"angle":42.94,"par":true},{"name":"Salida 42","lat":37.675679,"lng":-0.731127,"angle":16.04,"par":true},{"name":"Salida 95","lat":37.718479,"lng":-0.741787,"angle":-6.84,"par":false},{"name":"Salida 97","lat":37.719017,"lng":-0.741686,"angle":-7.63,"par":false},{"name":"Salida 99","lat":37.719539,"lng":-0.741567,"angle":-9.34,"par":false},{"name":"Salida 101","lat":37.720143,"lng":-0.741435,"angle":-7.4,"par":false},{"name":"Salida 103","lat":37.720761,"lng":-0.741319,"angle":-7.59,"par":false},{"name":"Salida 105","lat":37.721378,"lng":-0.741193,"angle":-7.65,"par":false},{"name":"Salida 126","lat":37.749696,"lng":-0.738758,"angle":40.36,"par":true},{"name":"Salida 119 A","lat":37.751112,"lng":-0.741028,"angle":8.02,"par":false},{"name":"Salida 119","lat":37.76969,"lng":-0.747019,"angle":-5.19,"par":false},{"name":"Salida 121","lat":37.77197,"lng":-0.747071,"angle":22.81,"par":false},{"name":"Salida 142","lat":37.773159,"lng":-0.746778,"angle":-9.3,"par":true}];
+
+    function salidaIcon(name, angle, par) {
+      // Cambio 1: flecha apunta al mar (arrowRight = par)
+      //   Pares (Mediterráneo) → flecha derecha (hacia el mar, hacia la derecha)
+      //   Impares (Mar Menor)  → flecha izquierda (hacia el mar, hacia la izquierda)
+      // Cambio 2: caja ajustada al texto (H reducido)
+      // Cambio 3: fondo blanco roto (#f5f0e8)
+      const W = 78, H = 18, ARROW = 9;
+
+      const arrowRight = par; // par→flecha derecha (Mediterráneo), impar→flecha izquierda (Mar Menor)
+
+      const offsetX = arrowRight ? 0 : ARROW;
+
+      // Path unificado rect+triángulo sin costura
+      const pathData = arrowRight
+        ? `M 1,1 L ${W},1 L ${W + ARROW},${H/2} L ${W},${H-1} L 1,${H-1} Z`
+        : `M ${ARROW},1 L ${W+ARROW-1},1 L ${W+ARROW-1},${H-1} L ${ARROW},${H-1} L 0,${H/2} Z`;
+
+      const textX = arrowRight ? W/2 : (W/2 + ARROW);
+
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W + ARROW * 2}" height="${H}"
+        style="overflow:visible;display:block;">
+        <g transform="translate(${offsetX},0)">
+          <path d="${pathData}" fill="#f5f0e8" stroke="#333" stroke-width="0.8" stroke-linejoin="round"/>
+          <text x="${textX}" y="${H/2 + 1}"
+            text-anchor="middle" dominant-baseline="middle"
+            font-family="Rajdhani, sans-serif" font-size="13" font-weight="700"
+            letter-spacing="0.04em" fill="#cc3333">
+            ${name}
+          </text>
+        </g>
+      </svg>`;
+
+      // Ancla en el lado SIN flecha (el que toca la Gran Vía):
+      //   arrowRight=true  (par)   → flecha a la derecha → ancla en extremo izquierdo → anchorX = 0
+      //   arrowRight=false (impar) → flecha a la izquierda → ancla en extremo derecho del rect → anchorX = W + ARROW
+      const anchorX = arrowRight ? 0 : (W + ARROW);
+      const anchorY = H / 2;
+
+      return L.divIcon({
+        className: 'salida-icon',
+        html: `<div style="transform:rotate(${-angle}deg);transform-origin:${anchorX}px ${anchorY}px;display:inline-block;">${svg}</div>`,
+        iconAnchor: [anchorX, anchorY],
+        iconSize: [W + ARROW * 2, H],
+      });
+    }
+
+    const salidasLayerGroup = L.layerGroup();
+    SALIDAS_DATA.forEach(s => {
+      const marker = L.marker([s.lat, s.lng], {
+        icon: salidaIcon(s.name, s.angle, s.par),
+        interactive: false,
+        keyboard: false,
+      });
+      salidasLayerGroup.addLayer(marker);
+    });
+
     // Layer control — polígonos y sus etiquetas van juntos
     const overlays = {};
     Object.keys(GEODATA).forEach(name => { overlays[name] = leafletLayers[name]; });
     overlays['Polígonos'] = L.layerGroup([poligonosLayer, poligonosLabels]);
+    overlays['Salidas'] = salidasLayerGroup;
+
+    // ── VISIBILIDAD SALIDAS POR ZOOM (zoom 16, antes que urbanizaciones en zoom 17) ──
+    const ZOOM_SALIDAS = 16;
+    function actualizarVisibilidadSalidas() {
+      // Solo actuar si la capa está activa en el control de capas
+      if (!map.hasLayer(salidasLayerGroup)) return;
+      const pane = map.getPane('salidasPane');
+      if (pane) pane.style.display = map.getZoom() >= ZOOM_SALIDAS ? '' : 'none';
+    }
+    map.createPane('salidasPane');
+    // Reasignar los marcadores al pane
+    salidasLayerGroup.eachLayer(m => { m.options.pane = 'salidasPane'; });
+    map.on('zoomend', actualizarVisibilidadSalidas);
+    map.on('overlayadd',    function(e) { if (e.name === 'Salidas') actualizarVisibilidadSalidas(); });
+    map.on('overlayremove', function(e) { if (e.name === 'Salidas') { const p = map.getPane('salidasPane'); if(p) p.style.display = ''; } });
+
     L.control.layers(null, overlays, { collapsed: window.innerWidth < 600 }).addTo(map);
 
     // Colorear las etiquetas del control de capas con los colores de cada capa
@@ -19551,6 +19631,7 @@
         'Bares y Restaurantes':       '#fad201',
         'Sitios de Interés':          '#109010',
         'Polígonos':                  '#888888',
+        'Salidas':                    '#cc3333',
       };
       document.querySelectorAll('.leaflet-control-layers-overlays label').forEach(label => {
         const text = label.textContent.trim();

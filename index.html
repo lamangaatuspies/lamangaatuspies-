@@ -1179,6 +1179,14 @@
     .lista-sort-btn.active { color: #58a6ff; border-color: #58a6ff; }
 
     /* ── LISTA FILTRO TABS ── */
+    .lista-intro {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--ink-dim);
+      max-width: 65ch;
+      margin: 0 0 1.4rem;
+    }
+    .lista-intro strong { color: var(--ink); }
     .lista-filtro {
       display: flex;
       flex-wrap: wrap;
@@ -1445,9 +1453,14 @@
     <!-- LISTA -->
     <section id="lista">
       <div class="sec-head">
-        <h2>Lista de marcadores</h2>
+        <h2>Urbanizaciones y lugares de La Manga del Mar Menor</h2>
         <span class="sec-badge" id="badge-lista">— registros</span>
       </div>
+      <p class="lista-intro">
+        Explora el listado completo de <strong>urbanizaciones de La Manga del Mar Menor</strong>,
+        junto a hoteles, restaurantes y sitios de interés. Filtra por categoría o busca directamente
+        el nombre de la urbanización que buscas.
+      </p>
       <div class="lista-filtro" id="lista-filtro"></div>
       <div id="lista-wrap"></div>
     </section>
@@ -1498,7 +1511,7 @@
       <div class="about-wrap">
         <div class="about-text">
           <p>
-            <strong>La Manga del Mar Menor carece de un inventario cartográfico sistemático.</strong> Cualquier persona que quiera localizar un edificio concreto, saber en qué kilómetro está o conocer qué hay a su alrededor, se encuentra con información dispersa, incompleta y frecuentemente incorrecta.
+            <strong>La Manga del Mar Menor carece de un inventario cartográfico sistemático de sus urbanizaciones.</strong> Cualquier persona que quiera localizar una urbanización o edificio concreto, saber en qué kilómetro está o conocer qué hay a su alrededor, se encuentra con información dispersa, incompleta y frecuentemente incorrecta.
           </p>
           <p>
             Este proyecto nació de esa ausencia. Cada punto ha sido añadido al mapa de forma manual, verificado con imágenes satelitales y fuentes locales, y etiquetado con la información más relevante disponible. No es un scraping automatizado ni una importación masiva: es <strong>trabajo de campo digital, registro a registro.</strong>

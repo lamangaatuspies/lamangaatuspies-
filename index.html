@@ -20440,17 +20440,34 @@
     // ── LIGHTBOX ──
     const lightboxOverlay = document.getElementById('lightboxOverlay');
     const lightboxImg     = document.getElementById('lightboxImg');
+    let lbScale = 1;
 
     function openLightbox(src, alt) {
       lightboxImg.src = src;
       lightboxImg.alt = alt || '';
+      lightboxImg.style.transform = '';
+      lbScale = 1;
       lightboxOverlay.classList.add('visible');
       document.body.style.overflow = 'hidden';
+      // Móvil: permitir pinch-to-zoom
+      const vp = document.querySelector('meta[name="viewport"]');
+      if (vp) vp.content = 'width=device-width, initial-scale=1.0';
     }
     function closeLightbox() {
       lightboxOverlay.classList.remove('visible');
       document.body.style.overflow = '';
+      // Móvil: restaurar bloqueo de zoom
+      const vp = document.querySelector('meta[name="viewport"]');
+      if (vp) vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
     }
+
+    // Escritorio: zoom con rueda del ratón
+    lightboxImg.addEventListener('wheel', function(e) {
+      e.preventDefault();
+      lbScale += e.deltaY < 0 ? 0.15 : -0.15;
+      lbScale = Math.min(Math.max(lbScale, 0.5), 5);
+      lightboxImg.style.transform = 'scale(' + lbScale + ')';
+    }, { passive: false });
 
     document.getElementById('ppImg').addEventListener('click', function() {
       if (this.src && this.style.display !== 'none') openLightbox(this.src, this.alt);

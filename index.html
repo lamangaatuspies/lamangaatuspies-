@@ -3126,14 +3126,14 @@
     map.on('zoomend', actualizarVisibilidadBanderas);
 
     const ICONOS_BANDERA = {
-      VERDE:        L.icon({ iconUrl: 'Ban_Verde.png',        iconSize: [24, 32], iconAnchor: [5, 32],  className: 'bandera-icon' }),
-      AMARILLA:     L.icon({ iconUrl: 'Ban_Amarilla.png',     iconSize: [24, 32], iconAnchor: [5, 32],  className: 'bandera-icon' }),
-      ROJA:         L.icon({ iconUrl: 'Ban_Roja.png',         iconSize: [24, 32], iconAnchor: [5, 32],  className: 'bandera-icon' }),
-      SINDATOS:     L.icon({ iconUrl: 'Ban_Blanca.png',       iconSize: [24, 32], iconAnchor: [5, 32],  className: 'bandera-icon' }),
-      VERDE_VOL:    L.icon({ iconUrl: 'Ban_Verde_Vol.png',    iconSize: [24, 32], iconAnchor: [19, 32], className: 'bandera-icon' }),
-      AMARILLA_VOL: L.icon({ iconUrl: 'Ban_Amarilla_Vol.png', iconSize: [24, 32], iconAnchor: [19, 32], className: 'bandera-icon' }),
-      ROJA_VOL:     L.icon({ iconUrl: 'Ban_Roja_Vol.png',     iconSize: [24, 32], iconAnchor: [19, 32], className: 'bandera-icon' }),
-      SINDATOS_VOL: L.icon({ iconUrl: 'Ban_Blanca_Vol.png',   iconSize: [24, 32], iconAnchor: [19, 32], className: 'bandera-icon' }),
+      VERDE:        L.icon({ iconUrl: 'Banderitas/Ban_Verde.png',        iconSize: [24, 32], iconAnchor: [5, 32],  className: 'bandera-icon' }),
+      AMARILLA:     L.icon({ iconUrl: 'Banderitas/Ban_Amarilla.png',     iconSize: [24, 32], iconAnchor: [5, 32],  className: 'bandera-icon' }),
+      ROJA:         L.icon({ iconUrl: 'Banderitas/Ban_Roja.png',         iconSize: [24, 32], iconAnchor: [5, 32],  className: 'bandera-icon' }),
+      SINDATOS:     L.icon({ iconUrl: 'Banderitas/Ban_Blanca.png',       iconSize: [24, 32], iconAnchor: [5, 32],  className: 'bandera-icon' }),
+      VERDE_VOL:    L.icon({ iconUrl: 'Banderitas/Ban_Verde_Vol.png',    iconSize: [24, 32], iconAnchor: [19, 32], className: 'bandera-icon' }),
+      AMARILLA_VOL: L.icon({ iconUrl: 'Banderitas/Ban_Amarilla_Vol.png', iconSize: [24, 32], iconAnchor: [19, 32], className: 'bandera-icon' }),
+      ROJA_VOL:     L.icon({ iconUrl: 'Banderitas/Ban_Roja_Vol.png',     iconSize: [24, 32], iconAnchor: [19, 32], className: 'bandera-icon' }),
+      SINDATOS_VOL: L.icon({ iconUrl: 'Banderitas/Ban_Blanca_Vol.png',   iconSize: [24, 32], iconAnchor: [19, 32], className: 'bandera-icon' }),
     };
 
     function iconoBandera(bandera, voltear) {
@@ -3185,7 +3185,7 @@
 
           marker.on('click', () => {
             registrarStats('clic_bandera', nombreCorto + ' · ' + estadoUpper);
-            const imgUrl = b === 'VERDE' ? 'Ban_Verde.png' : b === 'AMARILLA' ? 'Ban_Amarilla.png' : b === 'ROJA' ? 'Ban_Roja.png' : 'Ban_Blanca.png';
+            const imgUrl = b === 'VERDE' ? 'Banderitas/Ban_Verde.png' : b === 'AMARILLA' ? 'Banderitas/Ban_Amarilla.png' : b === 'ROJA' ? 'Banderitas/Ban_Roja.png' : 'Banderitas/Ban_Blanca.png';
             const banderaHTML = `<div style="margin-bottom:8px;"><img src="${imgUrl}" style="height:40px;width:auto;"></div>`;
             const estadoHTML = `<div style="color:${colorTexto};font-weight:700;font-size:1em;margin-bottom:6px;">ESTADO DE LA MAR: ${estadoUpper}</div>`;
             const fechaHTML = sinDatos ? '' :

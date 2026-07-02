@@ -300,7 +300,7 @@
                 ]
             },
             "properties": {
-                "name": "Centro de Salud",
+                "name": "Centro de Salud Costa Calida",
                 "img": "img/centro-de-salud.jpg",
                 "desc": [
                     "Centro medico con servicio de urgencias"
@@ -1972,13 +1972,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Policia Local",
-                "img": "img/Policia-local.jpg",
-                "desc": [
-                    "Policia local de San Javier"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2002,6 +1995,50 @@
                         [
                             -0.736331,
                             37.686473
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Policia Local",
+                "img": "img/Policia-local.jpg",
+                "desc": [
+                    "Policia local de San Javier"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Centro de Salud Norte",
+                "img": "img/Centro-de-salud-norte",
+                "desc": [
+                    "Centro medico"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.747938,
+                            37.771581
+                        ],
+                        [
+                            -0.747635,
+                            37.771688
+                        ],
+                        [
+                            -0.74769,
+                            37.77174
+                        ],
+                        [
+                            -0.747971,
+                            37.771636
+                        ],
+                        [
+                            -0.747938,
+                            37.771581
                         ]
                     ]
                 ]

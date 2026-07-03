@@ -657,7 +657,7 @@
       z-index: 1000;
     }
     /* Leaflet popup custom style */
-    .leaflet-tile {
+    .leaflet-tile-pane {
       filter: saturate(1.3) contrast(1.15) brightness(1.05) hue-rotate(15deg);
     }
       background: #161b22 !important;
@@ -2159,6 +2159,7 @@
       attribution: 'Tiles © IGN España (PNOA) · Elaboración propia',
       maxZoom: 20,
       tms: true,
+      keepBuffer: 4,
     }).addTo(map);
 
     // ── LAYERS ──
@@ -2214,16 +2215,30 @@
           if (layer !== activeFeature) layer.setStyle ? layer.setStyle(normalStyle) : null;
         });
         layer.on('click', () => {
-          allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
+          const zoom = map.getZoom();
+          const prevActiveFeature = activeFeature;
+
+          // Revertir estilo/tooltip solo del elemento que estaba activo antes (no los 372)
+          if (prevActiveFeature && prevActiveFeature !== layer) {
+            const prevItem = allFeatures.find(f => f.layer === prevActiveFeature);
+            if (prevItem) {
+              prevActiveFeature.setStyle ? prevActiveFeature.setStyle(prevItem.normalStyle) : null;
+              if (prevActiveFeature.getLayers) {
+                prevActiveFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
+              }
+              actualizarTooltipItem(prevItem, zoom);
+            }
+          }
+
           activeFeature = layer;
           layer.setStyle ? layer.setStyle(activeStyle) : null;
           if (layer.getLayers) {
             layer.getLayers().forEach(sub => sub.setStyle(activeStyle));
           }
-          actualizarTooltips(map.getZoom());
           // Build item for panel
           const clickedItem = allFeatures.find(f => f.layer === layer);
           if (clickedItem) {
+            actualizarTooltipItem(clickedItem, zoom);
             registrarStats('clic_marcador', clickedItem.name);
             showMapPopup(clickedItem);
           }
@@ -2283,7 +2298,15 @@
       const marker = L.marker([km.lat, km.lng], { icon: kmIcon(km.name, map.getZoom()) });
       marker.on('click', () => {
         registrarStats('clic_marcador', km.name);
-        allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
+        if (activeFeature) {
+          const prevItem = allFeatures.find(f => f.layer === activeFeature);
+          if (prevItem) {
+            activeFeature.setStyle ? activeFeature.setStyle(prevItem.normalStyle) : null;
+            if (activeFeature.getLayers) {
+              activeFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
+            }
+          }
+        }
         activeFeature = null;
         map.closePopup();
         // Rellenar el panel con los datos del punto kilométrico
@@ -2601,9 +2624,17 @@
 
     popupClose.addEventListener('click', () => {
       popupPanel.classList.remove('visible');
-      allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
+      if (activeFeature) {
+        const prevItem = allFeatures.find(f => f.layer === activeFeature);
+        if (prevItem) {
+          activeFeature.setStyle ? activeFeature.setStyle(prevItem.normalStyle) : null;
+          if (activeFeature.getLayers) {
+            activeFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
+          }
+          actualizarTooltipItem(prevItem, map.getZoom());
+        }
+      }
       activeFeature = null;
-      actualizarTooltips(map.getZoom());
     });
 
     document.getElementById('ppMaps').addEventListener('click', () => {
@@ -2612,8 +2643,16 @@
     });
 
     function selectFeature(item) {
-      // Reset previous
-      allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
+      // Reset previous (solo el elemento que estaba activo, no todos)
+      if (activeFeature && activeFeature !== item.layer) {
+        const prevItem = allFeatures.find(f => f.layer === activeFeature);
+        if (prevItem) {
+          activeFeature.setStyle ? activeFeature.setStyle(prevItem.normalStyle) : null;
+          if (activeFeature.getLayers) {
+            activeFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
+          }
+        }
+      }
       map.closePopup();
 
       // Highlight layer
@@ -2682,8 +2721,17 @@
       input.value = '';
       dropdown.classList.remove('open');
       clearBtn.style.display = 'none';
-      allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
-      if (activeFeature) { map.closePopup(); activeFeature = null; }
+      if (activeFeature) {
+        const prevItem = allFeatures.find(f => f.layer === activeFeature);
+        if (prevItem) {
+          activeFeature.setStyle ? activeFeature.setStyle(prevItem.normalStyle) : null;
+          if (activeFeature.getLayers) {
+            activeFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
+          }
+        }
+        map.closePopup();
+        activeFeature = null;
+      }
       popupPanel.classList.remove('visible');
     }
 
@@ -2725,39 +2773,41 @@
     // ── ETIQUETAS PERMANENTES A PARTIR DE ZOOM 16 ──
     const ZOOM_LABELS = 17;
 
-    function actualizarTooltips(zoom) {
+    function actualizarTooltipItem({ name, capa, layer }, zoom) {
       const permanente = zoom >= ZOOM_LABELS;
-      allFeatures.forEach(({ name, capa, layer, cfg }) => {
-        const esActivo = layer === activeFeature;
-        layer.unbindTooltip();
-        if (esActivo) {
-          layer.bindTooltip(name, {
-            permanent: true,
-            direction: 'top',
-            offset: [0, -4],
-            className: 'lm-tooltip-active',
-          });
-        } else if (permanente) {
-          const TOOLTIP_COLORS = {
-            'Bares y Restaurantes': '#ffe566',
-            'Sitios de Interés':    '#6ddc6d',
-          };
-          const color = TOOLTIP_COLORS[capa] || '#e6edf3';
-          layer.bindTooltip(`<span style="color:${color}">${name}</span>`, {
-            permanent: true,
-            direction: 'top',
-            offset: [0, -4],
-            className: 'lm-tooltip-permanent',
-          });
-        } else {
-          layer.bindTooltip(name, {
-            sticky: true,
-            direction: 'top',
-            offset: [0, -4],
-            className: 'lm-tooltip',
-          });
-        }
-      });
+      const esActivo = layer === activeFeature;
+      layer.unbindTooltip();
+      if (esActivo) {
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'top',
+          offset: [0, -4],
+          className: 'lm-tooltip-active',
+        });
+      } else if (permanente) {
+        const TOOLTIP_COLORS = {
+          'Bares y Restaurantes': '#ffe566',
+          'Sitios de Interés':    '#6ddc6d',
+        };
+        const color = TOOLTIP_COLORS[capa] || '#e6edf3';
+        layer.bindTooltip(`<span style="color:${color}">${name}</span>`, {
+          permanent: true,
+          direction: 'top',
+          offset: [0, -4],
+          className: 'lm-tooltip-permanent',
+        });
+      } else {
+        layer.bindTooltip(name, {
+          sticky: true,
+          direction: 'top',
+          offset: [0, -4],
+          className: 'lm-tooltip',
+        });
+      }
+    }
+
+    function actualizarTooltips(zoom) {
+      allFeatures.forEach(f => actualizarTooltipItem(f, zoom));
     }
 
     // Aplicar al cargar

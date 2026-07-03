@@ -1895,6 +1895,11 @@
   <script>
   document.addEventListener('DOMContentLoaded', async function() {
     // ******************* CARGA DE DATOS DESDE GEOJSON *************************************
+    // Utilidad: oscurece un color hex. Solo hay 4 colores de capa en todo el mapa,
+    // así que esta función se define una vez y su resultado se cachea por capa (ver más abajo).
+    function darkenColor(c) {
+      return '#' + c.replace('#','').match(/.{2}/g).map(h => Math.max(0, parseInt(h,16) - 80).toString(16).padStart(2,'0')).join('');
+    }
     function centroide(geometry) {
       if (geometry.type === 'Point') {
         return { lat: geometry.coordinates[1], lng: geometry.coordinates[0] };
@@ -2174,15 +2179,16 @@
       const cfg = CAPA_CONFIG[capaName];
       const layerGroup = L.featureGroup();
 
+      // Estos 3 estilos solo dependen de la capa (cfg.color/cfg.fill), no de cada feature,
+      // así que se calculan una vez aquí en vez de 262/54/41/15 veces dentro del bucle.
+      const normalStyle = { color: cfg.color, weight: 1.5, fillColor: cfg.fill, fillOpacity: 0.25 };
+      const hoverStyle  = { color: cfg.color, weight: 2.5, fillColor: cfg.fill, fillOpacity: 0.50 };
+      const activeStyle = { color: darkenColor(cfg.color), weight: 3, fillColor: cfg.fill, fillOpacity: 0.80 };
+
       features.forEach(ft => {
         let layer;
         const geom = ft.geometry;
         const props = ft.properties;
-
-        const normalStyle = { color: cfg.color, weight: 1.5, fillColor: cfg.fill, fillOpacity: 0.25 };
-        const hoverStyle  = { color: cfg.color, weight: 2.5, fillColor: cfg.fill, fillOpacity: 0.50 };
-        const darkenColor = c => '#' + c.replace('#','').match(/.{2}/g).map(h => Math.max(0, parseInt(h,16) - 80).toString(16).padStart(2,'0')).join('');
-        const activeStyle = { color: darkenColor(cfg.color), weight: 3, fillColor: cfg.fill, fillOpacity: 0.80 };
 
         if (geom.type === 'Polygon' || geom.type === 'MultiPolygon') {
           layer = L.geoJSON(ft, { style: normalStyle });
@@ -2195,18 +2201,8 @@
           return;
         }
 
-        // Popup content
-        const popupHtml = `
-          <div class="lp-wrap">
-            <div class="lp-capa">
-              <span class="lp-dot" style="background:${cfg.color}"></span>
-              ${cfg.label}
-            </div>
-            <div class="lp-name">${props.name}</div>
-            ${props.img ? `<img class="lp-img" src="${props.img}" alt="${props.name}"/>` : ''}
-            ${props.desc && props.desc.length ? `<div class="lp-desc">${props.desc.map(d=>'<span>'+d+'</span>').join(' ')}</div>` : ''}
-            <a class="lp-maps" href="https://www.google.com/maps?q=${props.lat},${props.lng}" target="_blank">↗ Ver en Google Maps</a>
-          </div>`;
+        // Nota: el contenido del popup se muestra por el panel lateral (showMapPopup),
+        // no por el popup nativo de Leaflet — por eso no se usa bindPopup aquí.
 
         layer.on('mouseover', () => {
           if (layer !== activeFeature) layer.setStyle ? layer.setStyle(hoverStyle) : null;
@@ -2830,19 +2826,22 @@
 
     // ── LISTA DE MARCADORES ──
     // ── KM CON DECIMAL (ámbito global, usada en popup y en lista) ──
+    // La tabla de referencia solo depende de KM_POINTS (fijo), no de lat/lng,
+    // así que se calcula una sola vez y se reutiliza en cada llamada.
+    const KMS_REF = KM_POINTS
+      .filter(kp => kp.name.startsWith('Km'))
+      .map(kp => ({ n: parseInt(kp.name.replace('Km ','')), lat: kp.lat, lng: kp.lng }))
+      .filter(kp => !isNaN(kp.n))
+      .sort((a, b) => a.n - b.n)
+      .filter((kp, i, arr) => i === 0 || kp.n !== arr[i-1].n);
+
+    function distKm(a, b) {
+      const d = (a.lat - b.lat) ** 2 + (a.lng - b.lng) ** 2;
+      return Math.sqrt(d);
+    }
+
     function kmMasCercano(lat, lng) {
-      const kms = KM_POINTS
-        .filter(kp => kp.name.startsWith('Km'))
-        .map(kp => ({ n: parseInt(kp.name.replace('Km ','')), lat: kp.lat, lng: kp.lng }))
-        .filter(kp => !isNaN(kp.n))
-        .sort((a, b) => a.n - b.n)
-        .filter((kp, i, arr) => i === 0 || kp.n !== arr[i-1].n);
-
-      function dist(a, b) {
-        const d = (a.lat - b.lat) ** 2 + (a.lng - b.lng) ** 2;
-        return Math.sqrt(d);
-      }
-
+      const kms = KMS_REF;
       let mejorKm = kms[0].n, mejorDist = Infinity;
       for (let i = 0; i < kms.length - 1; i++) {
         const A = kms[i], B = kms[i + 1];
@@ -2850,11 +2849,11 @@
         const bx = lat - A.lat,   by = lng - A.lng;
         const t  = Math.max(0, Math.min(1, (bx*ax + by*ay) / (ax*ax + ay*ay)));
         const px = A.lat + t * ax, py = A.lng + t * ay;
-        const d  = dist({ lat: px, lng: py }, { lat, lng });
+        const d  = distKm({ lat: px, lng: py }, { lat, lng });
         if (d < mejorDist) { mejorDist = d; mejorKm = A.n + t; }
       }
       const ultimo = kms[kms.length - 1];
-      if (dist({ lat: ultimo.lat, lng: ultimo.lng }, { lat, lng }) < mejorDist) mejorKm = ultimo.n;
+      if (distKm({ lat: ultimo.lat, lng: ultimo.lng }, { lat, lng }) < mejorDist) mejorKm = ultimo.n;
 
       return 'Km ' + mejorKm.toFixed(1).replace('.', ',');
     }
@@ -2878,14 +2877,17 @@
 
       CAPAS_LISTA.forEach(capa => {
         const items = (GEODATA[capa.key] || [])
-          .map(f => ({
-            name:  f.properties.name,
-            lat:   f.properties.lat,
-            lng:   f.properties.lng,
-            desc:  Array.isArray(f.properties.desc) ? f.properties.desc : [],
-            km:    kmMasCercano(f.properties.lat, f.properties.lng),
-            kmNum: parseFloat(kmMasCercano(f.properties.lat, f.properties.lng).replace('Km ','').replace(',','.')) || 0,
-          }));
+          .map(f => {
+            const km = kmMasCercano(f.properties.lat, f.properties.lng);
+            return {
+              name:  f.properties.name,
+              lat:   f.properties.lat,
+              lng:   f.properties.lng,
+              desc:  Array.isArray(f.properties.desc) ? f.properties.desc : [],
+              km,
+              kmNum: parseFloat(km.replace('Km ','').replace(',','.')) || 0,
+            };
+          });
 
         // ── Edificios sin marcador propio: heredan posición/Km de su urbanización ──
         if (capa.key === 'Urbanizaciones y Edificios') {

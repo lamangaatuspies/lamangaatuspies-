@@ -2215,16 +2215,30 @@
           if (layer !== activeFeature) layer.setStyle ? layer.setStyle(normalStyle) : null;
         });
         layer.on('click', () => {
-          allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
+          const zoom = map.getZoom();
+          const prevActiveFeature = activeFeature;
+
+          // Revertir estilo/tooltip solo del elemento que estaba activo antes (no los 372)
+          if (prevActiveFeature && prevActiveFeature !== layer) {
+            const prevItem = allFeatures.find(f => f.layer === prevActiveFeature);
+            if (prevItem) {
+              prevActiveFeature.setStyle ? prevActiveFeature.setStyle(prevItem.normalStyle) : null;
+              if (prevActiveFeature.getLayers) {
+                prevActiveFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
+              }
+              actualizarTooltipItem(prevItem, zoom);
+            }
+          }
+
           activeFeature = layer;
           layer.setStyle ? layer.setStyle(activeStyle) : null;
           if (layer.getLayers) {
             layer.getLayers().forEach(sub => sub.setStyle(activeStyle));
           }
-          actualizarTooltips(map.getZoom());
           // Build item for panel
           const clickedItem = allFeatures.find(f => f.layer === layer);
           if (clickedItem) {
+            actualizarTooltipItem(clickedItem, zoom);
             registrarStats('clic_marcador', clickedItem.name);
             showMapPopup(clickedItem);
           }
@@ -2602,9 +2616,17 @@
 
     popupClose.addEventListener('click', () => {
       popupPanel.classList.remove('visible');
-      allFeatures.forEach(f => { if (f.layer.setStyle) f.layer.setStyle(f.normalStyle); });
+      if (activeFeature) {
+        const prevItem = allFeatures.find(f => f.layer === activeFeature);
+        if (prevItem) {
+          activeFeature.setStyle ? activeFeature.setStyle(prevItem.normalStyle) : null;
+          if (activeFeature.getLayers) {
+            activeFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
+          }
+          actualizarTooltipItem(prevItem, map.getZoom());
+        }
+      }
       activeFeature = null;
-      actualizarTooltips(map.getZoom());
     });
 
     document.getElementById('ppMaps').addEventListener('click', () => {
@@ -2726,39 +2748,41 @@
     // ── ETIQUETAS PERMANENTES A PARTIR DE ZOOM 16 ──
     const ZOOM_LABELS = 17;
 
-    function actualizarTooltips(zoom) {
+    function actualizarTooltipItem({ name, capa, layer }, zoom) {
       const permanente = zoom >= ZOOM_LABELS;
-      allFeatures.forEach(({ name, capa, layer, cfg }) => {
-        const esActivo = layer === activeFeature;
-        layer.unbindTooltip();
-        if (esActivo) {
-          layer.bindTooltip(name, {
-            permanent: true,
-            direction: 'top',
-            offset: [0, -4],
-            className: 'lm-tooltip-active',
-          });
-        } else if (permanente) {
-          const TOOLTIP_COLORS = {
-            'Bares y Restaurantes': '#ffe566',
-            'Sitios de Interés':    '#6ddc6d',
-          };
-          const color = TOOLTIP_COLORS[capa] || '#e6edf3';
-          layer.bindTooltip(`<span style="color:${color}">${name}</span>`, {
-            permanent: true,
-            direction: 'top',
-            offset: [0, -4],
-            className: 'lm-tooltip-permanent',
-          });
-        } else {
-          layer.bindTooltip(name, {
-            sticky: true,
-            direction: 'top',
-            offset: [0, -4],
-            className: 'lm-tooltip',
-          });
-        }
-      });
+      const esActivo = layer === activeFeature;
+      layer.unbindTooltip();
+      if (esActivo) {
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'top',
+          offset: [0, -4],
+          className: 'lm-tooltip-active',
+        });
+      } else if (permanente) {
+        const TOOLTIP_COLORS = {
+          'Bares y Restaurantes': '#ffe566',
+          'Sitios de Interés':    '#6ddc6d',
+        };
+        const color = TOOLTIP_COLORS[capa] || '#e6edf3';
+        layer.bindTooltip(`<span style="color:${color}">${name}</span>`, {
+          permanent: true,
+          direction: 'top',
+          offset: [0, -4],
+          className: 'lm-tooltip-permanent',
+        });
+      } else {
+        layer.bindTooltip(name, {
+          sticky: true,
+          direction: 'top',
+          offset: [0, -4],
+          className: 'lm-tooltip',
+        });
+      }
+    }
+
+    function actualizarTooltips(zoom) {
+      allFeatures.forEach(f => actualizarTooltipItem(f, zoom));
     }
 
     // Aplicar al cargar

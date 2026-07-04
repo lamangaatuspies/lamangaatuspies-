@@ -2120,7 +2120,7 @@
             "properties": {
                 "name": "Maldito Vecino",
                 "img": "img/Maldito-vecino.jpg",
-                "desc": "[\"Chiringuito\"]"
+                "desc": ["Chiringuito"]
             },
             "geometry": {
                 "type": "Polygon",

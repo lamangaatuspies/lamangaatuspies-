@@ -1931,7 +1931,9 @@
 
     await Promise.all(
       Object.entries(FUENTES_GEODATA).map(async ([capa, archivo]) => {
-        const res = await fetch(archivo);
+        // Cache-busting: se añade un timestamp único a cada carga para evitar que
+        // el navegador o la CDN de GitHub Pages sirvan una copia antigua del geojson.
+        const res = await fetch(archivo + '?t=' + Date.now());
         if (!res.ok) throw new Error(`No se pudo cargar ${archivo} (${res.status})`);
         const data = await res.json();
         data.features.forEach(ft => {

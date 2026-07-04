@@ -2117,18 +2117,13 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Maldito Vecino",
-                "img": "img/Maldito-vecino.jpg",
-                "desc": ["Chiringuito"]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
                     [
                         [
-                            -0.724433,
-                            37.637442
+                            -0.724394,
+                            37.637479
                         ],
                         [
                             -0.724489,
@@ -2139,14 +2134,21 @@
                             37.637293
                         ],
                         [
-                            -0.724282,
-                            37.637373
+                            -0.724261,
+                            37.637404
                         ],
                         [
-                            -0.724433,
-                            37.637442
+                            -0.724394,
+                            37.637479
                         ]
                     ]
+                ]
+            },
+            "properties": {
+                "name": "Maldito Vecino",
+                "img": "img/Maldito-vecino.jpg",
+                "desc": [
+                    "Chiringuito"
                 ]
             }
         }

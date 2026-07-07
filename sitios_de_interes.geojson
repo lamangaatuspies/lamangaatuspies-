@@ -2009,13 +2009,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Centro de Salud Norte",
-                "img": "img/Centro-de-salud-Norte.jpg",
-                "desc": [
-                    "Centro medico"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2039,6 +2032,48 @@
                         [
                             -0.747938,
                             37.771581
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Centro de Salud Norte",
+                "img": "img/Centro-de-salud-Norte.jpg",
+                "desc": [
+                    "Centro medico"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Edificio MULTIUSOS",
+                "img": "img/Multiusos.jpg",
+                "desc": "[\"Club de Personas Mayores\", \"Biblioteca\",\"Asociación de Vecinos\",\"Consultorio de Atención Primaria\"]"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.721098,
+                            37.657398
+                        ],
+                        [
+                            -0.721019,
+                            37.657229
+                        ],
+                        [
+                            -0.720792,
+                            37.657303
+                        ],
+                        [
+                            -0.720899,
+                            37.657462
+                        ],
+                        [
+                            -0.721098,
+                            37.657398
                         ]
                     ]
                 ]

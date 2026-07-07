@@ -2049,7 +2049,7 @@
             "properties": {
                 "name": "Edificio MULTIUSOS",
                 "img": "img/Multiusos.jpg",
-                "desc": "[\"Club de Personas Mayores\", \"Biblioteca\",\"Asociación de Vecinos\",\"Consultorio de Atención Primaria\"]"
+                "desc": "["Club de Personas Mayores", "Biblioteca","Asociación de Vecinos","Consultorio de Atención Primaria"]"
             },
             "geometry": {
                 "type": "Polygon",

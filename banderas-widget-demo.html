@@ -195,8 +195,28 @@
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
   }
 
-  fetch(PROXY_PLAYAS)
-    .then(function (r) { return r.json(); })
+  // ── VERSIÓN DE PRUEBA: datos de muestra en vez de fetch real ──
+  // Solo para previsualizar el diseño con banderas de colores. NO usar en producción.
+  var DATOS_DEMO = {
+    ok: true,
+    playas: [
+      { municipio: 'CARTAGENA', nombre: 'BARCO PERDIDO III (ZEUS)', bandera: 'VERDE',    estado: 'Mar plana',    fecha: '08/07/2026 11:03' },
+      { municipio: 'CARTAGENA', nombre: 'CALA DEL BARCO',           bandera: 'VERDE',    estado: 'Mar plana',    fecha: '08/07/2026 11:03' },
+      { municipio: 'CARTAGENA', nombre: 'CALA DEL PINO',            bandera: 'AMARILLA', estado: 'Marejadilla',  fecha: '08/07/2026 10:50' },
+      { municipio: 'CARTAGENA', nombre: 'CAVANNA',                  bandera: 'VERDE',    estado: 'Mar plana',    fecha: '08/07/2026 11:03' },
+      { municipio: 'CARTAGENA', nombre: 'ENTREMARES',                bandera: 'ROJA',     estado: 'Marejada, prohibido el baño', fecha: '08/07/2026 10:40' },
+      { municipio: 'CARTAGENA', nombre: 'GALUA',                    bandera: 'VERDE',    estado: 'Mar plana',    fecha: '08/07/2026 11:03' },
+      { municipio: 'CARTAGENA', nombre: 'LA GOLA',                  bandera: 'SIN DATOS', estado: '',            fecha: '' },
+      { municipio: 'CARTAGENA', nombre: 'PUERTO BELLO',             bandera: 'AMARILLA', estado: 'Marejadilla',  fecha: '08/07/2026 10:55' },
+      { municipio: 'CARTAGENA', nombre: 'SIRENAS',                  bandera: 'VERDE',    estado: 'Mar plana',    fecha: '08/07/2026 11:03' },
+      { municipio: 'SAN JAVIER', nombre: 'BANCO DEL TABAL',         bandera: 'VERDE',    estado: 'Mar plana',    fecha: '08/07/2026 10:58' },
+      { municipio: 'SAN JAVIER', nombre: 'BARNUEVO',                bandera: 'ROJA',     estado: 'Marejada, prohibido el baño', fecha: '08/07/2026 10:35' },
+      { municipio: 'SAN JAVIER', nombre: 'CASTILLICOS',             bandera: 'VERDE',    estado: 'Mar plana',    fecha: '08/07/2026 10:58' },
+      { municipio: 'SAN JAVIER', nombre: 'COLON I (SUR)',           bandera: 'AMARILLA', estado: 'Marejadilla',  fecha: '08/07/2026 10:45' },
+    ]
+  };
+
+  Promise.resolve(DATOS_DEMO)
     .then(function (data) {
       if (!data.ok || !data.playas || !data.playas.length) {
         contenido.innerHTML = '<div class="estado-error">No se ha podido cargar el estado de las playas.</div>';

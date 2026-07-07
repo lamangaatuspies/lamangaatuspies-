@@ -2049,7 +2049,7 @@
             "properties": {
                 "name": "Edificio MULTIUSOS",
                 "img": "img/Multiusos.jpg",
-                "desc": ["Club de Personas Mayores", "Biblioteca","Asociación de Vecinos","Centro de Salud Cavanna"]
+                "desc": ["Club de Personas Mayores", "Biblioteca","Asociación de Vecinos","Consultorio Cavanna"]
             },
             "geometry": {
                 "type": "Polygon",

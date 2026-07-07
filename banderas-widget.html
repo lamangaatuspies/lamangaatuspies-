@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banderas de playa - La Manga a tus pies</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --card-bg: #ffffff;
+    --header-bg: #eaf2fc;
+    --header-text: #185fa5;
+    --text: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --border: #e2e2e2;
+    --link-hover: #f5f8fc;
+    --verde-bg: #e6f7ec; --verde-text: #1a7a41;
+    --amarilla-bg: #fff8e1; --amarilla-text: #8a6d00;
+    --roja-bg: #fdeceb; --roja-text: #b53228;
+    --gris-bg: #f0f0f0; --gris-text: #757575;
+  }
+  html[data-tema="oscuro"] {
+    --bg: #0d1117;
+    --card-bg: #0d1117;
+    --header-bg: #132030;
+    --header-text: #7fb2e8;
+    --text: #e6edf3;
+    --text-secondary: #9aa5b1;
+    --border: #24303d;
+    --link-hover: #16202b;
+    --verde-bg: rgba(46,204,113,0.12); --verde-text: #4fd47c;
+    --amarilla-bg: rgba(241,196,15,0.12); --amarilla-text: #f1c40f;
+    --roja-bg: rgba(231,76,60,0.12); --roja-text: #ff6b5e;
+    --gris-bg: rgba(255,255,255,0.06); --gris-text: #9aa5b1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .widget {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .widget-header {
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .grupo-titulo {
+    padding: 10px 16px 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+  .fila-playa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    font-size: 14px;
+    transition: background 0.15s;
+  }
+  .fila-playa:hover { background: var(--link-hover); }
+  .badge {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+  .badge.verde { background: var(--verde-bg); color: var(--verde-text); }
+  .badge.amarilla { background: var(--amarilla-bg); color: var(--amarilla-text); }
+  .badge.roja { background: var(--roja-bg); color: var(--roja-text); }
+  .badge.gris { background: var(--gris-bg); color: var(--gris-text); }
+  .pie {
+    padding: 8px 16px;
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
+  }
+  .pie a { color: inherit; }
+  .estado-carga, .estado-error {
+    padding: 24px 16px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+</style>
+</head>
+<body>
+  <div class="widget">
+    <div class="widget-header">Estado de las banderas de playa</div>
+    <div id="contenido">
+      <div class="estado-carga">Cargando estado de las playas…</div>
+    </div>
+    <div class="pie">Datos: <a href="https://lamangaatuspies.com" target="_top">lamangaatuspies.com</a></div>
+  </div>
+
+<script>
+(function () {
+  // Tema: ?tema=oscuro en la URL del iframe activa el tema oscuro. Por defecto, claro.
+  var params = new URLSearchParams(window.location.search);
+  var tema = params.get('tema') === 'oscuro' ? 'oscuro' : 'claro';
+  document.documentElement.setAttribute('data-tema', tema);
+
+  var PROXY_PLAYAS = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=playas";
+  var contenido = document.getElementById('contenido');
+
+  function nombreCorto(nombre) {
+    return nombre
+      .replace(/^PLAYA\s+/i, '')
+      .replace(/\s*\((LIMA\s*\d+|MAR MENOR)\)\s*/gi, '')
+      .trim()
+      .toLowerCase()
+      .replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+
+  function claseBandera(b) {
+    b = (b || '').toUpperCase();
+    if (b === 'VERDE') return 'verde';
+    if (b === 'AMARILLA') return 'amarilla';
+    if (b === 'ROJA') return 'roja';
+    return 'gris';
+  }
+
+  function textoBandera(b) {
+    b = (b || '').toUpperCase();
+    if (b === 'VERDE') return 'Verde';
+    if (b === 'AMARILLA') return 'Amarilla';
+    if (b === 'ROJA') return 'Roja';
+    return 'Sin datos';
+  }
+
+  function capitalizar(s) {
+    s = s || 'Otros';
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  }
+
+  fetch(PROXY_PLAYAS)
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (!data.ok || !data.playas || !data.playas.length) {
+        contenido.innerHTML = '<div class="estado-error">No se ha podido cargar el estado de las playas.</div>';
+        return;
+      }
+
+      // Agrupar por municipio, conservando el orden en que aparecen en el feed
+      var grupos = {};
+      var ordenMunicipios = [];
+      data.playas.forEach(function (p) {
+        var mun = p.municipio || 'OTROS';
+        if (!grupos[mun]) {
+          grupos[mun] = [];
+          ordenMunicipios.push(mun);
+        }
+        grupos[mun].push(p);
+      });
+      ordenMunicipios.sort();
+
+      var html = '';
+      ordenMunicipios.forEach(function (mun) {
+        html += '<div class="grupo-titulo">' + capitalizar(mun) + '</div>';
+        grupos[mun].forEach(function (p) {
+          var clase = claseBandera(p.bandera);
+          // target="_top" es clave: al estar el widget dentro de un <iframe>,
+          // sin esto el enlace intentaría abrir el mapa DENTRO del propio widget.
+          var url = 'https://lamangaatuspies.com/?playa=' + encodeURIComponent(p.nombre);
+          html += '<a class="fila-playa" href="' + url + '" target="_top">' +
+                    '<span>' + nombreCorto(p.nombre) + '</span>' +
+                    '<span class="badge ' + clase + '">' + textoBandera(p.bandera) + '</span>' +
+                  '</a>';
+        });
+      });
+
+      contenido.innerHTML = html;
+    })
+    .catch(function () {
+      contenido.innerHTML = '<div class="estado-error">No se ha podido cargar el estado de las playas.</div>';
+    });
+})();
+</script>
+</body>
+</html>

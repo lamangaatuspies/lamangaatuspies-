@@ -1946,29 +1946,6 @@
     );
     // ****************************** FIN CARGA DE DATOS ********************************************
 
-    // ── SALTO RÁPIDO A UBICACIÓN DESDE URL (?q=NombreEdificio) ──
-    // Optimización: en vez de esperar a que se construyan los 350 marcadores de Leaflet
-    // (más abajo) para recién entonces mover el mapa, buscamos el elemento directamente
-    // en los datos crudos (ya tienen lat/lng calculados por centroide()) y centramos el
-    // mapa YA. Es una operación casi instantánea porque no depende de que existan los
-    // marcadores todavía. El ajuste fino (zoom exacto al polígono, popup, resaltado)
-    // se sigue haciendo más abajo en abrirDesdeURL(), una vez existen los marcadores,
-    // pero al partir ya centrados el resultado se percibe mucho más rápido.
-    (function saltoRapidoDesdeURL() {
-      const params = new URLSearchParams(window.location.search);
-      const q = params.get('q');
-      if (!q) return;
-      const nombre = q.toLowerCase();
-      let encontrado = null;
-      for (const features of Object.values(GEODATA)) {
-        encontrado = features.find(ft => ft.properties.name && ft.properties.name.toLowerCase() === nombre)
-                  || features.find(ft => ft.properties.name && ft.properties.name.toLowerCase().includes(nombre));
-        if (encontrado) break;
-      }
-      if (!encontrado) return;
-      map.setView([encontrado.properties.lat, encontrado.properties.lng], 17, { animate: false });
-    })();
-
     const CAPA_CONFIG = {
       'Urbanizaciones y Edificios': { color: '#1f938a', fill: '#1f938a', label: 'Urbanización' },
       'Hoteles':                    { color: '#ef5d69', fill: '#ef5d69', label: 'Hotel' },
@@ -2056,6 +2033,29 @@
       }
     });
     new ExpandControl().addTo(map);
+
+    // ── SALTO RÁPIDO A UBICACIÓN DESDE URL (?q=NombreEdificio) ──
+    // Optimización: en vez de esperar a que se construyan los 350 marcadores de Leaflet
+    // (más abajo) para recién entonces mover el mapa, buscamos el elemento directamente
+    // en los datos crudos (ya tienen lat/lng calculados por centroide()) y centramos el
+    // mapa YA. Es una operación casi instantánea porque no depende de que existan los
+    // marcadores todavía. El ajuste fino (zoom exacto al polígono, popup, resaltado)
+    // se sigue haciendo más abajo en abrirDesdeURL(), una vez existen los marcadores,
+    // pero al partir ya centrados el resultado se percibe mucho más rápido.
+    (function saltoRapidoDesdeURL() {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q');
+      if (!q) return;
+      const nombre = q.toLowerCase();
+      let encontrado = null;
+      for (const features of Object.values(GEODATA)) {
+        encontrado = features.find(ft => ft.properties.name && ft.properties.name.toLowerCase() === nombre)
+                  || features.find(ft => ft.properties.name && ft.properties.name.toLowerCase().includes(nombre));
+        if (encontrado) break;
+      }
+      if (!encontrado) return;
+      map.setView([encontrado.properties.lat, encontrado.properties.lng], 17, { animate: false });
+    })();
 
     let mapaExpandido = false;
     const iconExpand = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">

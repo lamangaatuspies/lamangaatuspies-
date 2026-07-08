@@ -107,6 +107,10 @@
     color: var(--text-secondary);
     margin-top: 2px;
   }
+  .estado-color { font-weight: 600; }
+  .estado-color.verde { color: var(--verde-text); }
+  .estado-color.amarilla { color: var(--amarilla-text); }
+  .estado-color.roja { color: var(--roja-text); }
   .pie {
     padding: 8px 16px;
     text-align: right;
@@ -149,6 +153,14 @@
       .trim()
       .toLowerCase()
       .replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+
+  function claseBandera(b) {
+    b = (b || '').toUpperCase();
+    if (b === 'VERDE') return 'verde';
+    if (b === 'AMARILLA') return 'amarilla';
+    if (b === 'ROJA') return 'roja';
+    return 'gris';
   }
 
   function textoBandera(b) {
@@ -202,16 +214,17 @@
         grupos[mun].forEach(function (p) {
           var b = (p.bandera || '').toUpperCase();
           var sinDatos = b !== 'VERDE' && b !== 'AMARILLA' && b !== 'ROJA';
+          var clase = claseBandera(p.bandera);
           // target="_blank" abre el mapa en una pestaña nueva, así el usuario no
           // pierde la página del periódico (u otra web) donde está el widget.
           var url = 'https://lamangaatuspies.com/?playa=' + encodeURIComponent(p.nombre);
           var meta = sinDatos ? '' :
             '<div class="fila-meta">' +
-              (p.estado ? 'Estado de la mar: ' + p.estado : '') +
+              (p.estado ? 'Estado de la mar: <span class="estado-color ' + clase + '">' + p.estado + '</span>' : '') +
               (p.estado && p.fecha ? ' · ' : '') +
               (p.fecha ? 'Actualizado: ' + p.fecha : '') +
             '</div>';
-          html += '<a class="fila-playa" href="' + url + '" target="_blank" rel="noopener">' +
+          html += '<a class="fila-playa" href="' + url + '" target="_blank" rel="noopener" title="Pincha para verlo en lamangaatuspies.com">' +
                     '<div class="fila-info">' +
                       '<div class="fila-nombre-linea">' +
                         '<span class="fila-nombre">' + nombreCorto(p.nombre) + '</span>' +

@@ -809,11 +809,17 @@
       .map-popup-panel[data-tipo="playa"] {
         max-height: 60vh;
         overflow-y: auto;
+        overflow-x: hidden;
       }
       .map-popup-panel[data-tipo="playa"] .lp-desc {
         display: block;
         font-size: 0.62rem;
         line-height: 1.5;
+        overflow-wrap: break-word;
+        word-break: break-word;
+      }
+      .map-popup-panel[data-tipo="playa"] .lp-desc div {
+        max-width: 100%;
       }
       .lp-km { font-size: 0.38rem; white-space: nowrap; }
       .lp-capa { font-size: 0.48rem; white-space: nowrap; }

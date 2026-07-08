@@ -85,8 +85,8 @@
   }
   .fila-playa:hover { background: var(--link-hover); }
   .fila-icono {
-    width: 18px;
-    height: 24px;
+    width: 22px;
+    height: 30px;
     flex-shrink: 0;
     object-fit: contain;
   }
@@ -97,7 +97,6 @@
   .fila-nombre-linea {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 8px;
   }
   .fila-nombre {
@@ -108,17 +107,6 @@
     color: var(--text-secondary);
     margin-top: 2px;
   }
-  .badge {
-    font-size: 12px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .badge.verde { background: var(--verde-bg); color: var(--verde-text); }
-  .badge.amarilla { background: var(--amarilla-bg); color: var(--amarilla-text); }
-  .badge.roja { background: var(--roja-bg); color: var(--roja-text); }
-  .badge.gris { background: var(--gris-bg); color: var(--gris-text); }
   .pie {
     padding: 8px 16px;
     text-align: right;
@@ -161,14 +149,6 @@
       .trim()
       .toLowerCase()
       .replace(/\b\w/g, function (c) { return c.toUpperCase(); });
-  }
-
-  function claseBandera(b) {
-    b = (b || '').toUpperCase();
-    if (b === 'VERDE') return 'verde';
-    if (b === 'AMARILLA') return 'amarilla';
-    if (b === 'ROJA') return 'roja';
-    return 'gris';
   }
 
   function textoBandera(b) {
@@ -220,7 +200,6 @@
       ordenMunicipios.forEach(function (mun) {
         html += '<div class="grupo-titulo">' + capitalizar(mun) + '</div>';
         grupos[mun].forEach(function (p) {
-          var clase = claseBandera(p.bandera);
           var b = (p.bandera || '').toUpperCase();
           var sinDatos = b !== 'VERDE' && b !== 'AMARILLA' && b !== 'ROJA';
           // target="_blank" abre el mapa en una pestaña nueva, así el usuario no
@@ -228,19 +207,18 @@
           var url = 'https://lamangaatuspies.com/?playa=' + encodeURIComponent(p.nombre);
           var meta = sinDatos ? '' :
             '<div class="fila-meta">' +
-              (p.estado ? p.estado : '') +
+              (p.estado ? 'Estado de la mar: ' + p.estado : '') +
               (p.estado && p.fecha ? ' · ' : '') +
               (p.fecha ? 'Actualizado: ' + p.fecha : '') +
             '</div>';
           html += '<a class="fila-playa" href="' + url + '" target="_blank" rel="noopener">' +
-                    '<img class="fila-icono" src="' + iconoBanderaUrl(p.bandera) + '" alt="' + textoBandera(p.bandera) + '">' +
                     '<div class="fila-info">' +
                       '<div class="fila-nombre-linea">' +
                         '<span class="fila-nombre">' + nombreCorto(p.nombre) + '</span>' +
-                        '<span class="badge ' + clase + '">' + textoBandera(p.bandera) + '</span>' +
                       '</div>' +
                       meta +
                     '</div>' +
+                    '<img class="fila-icono" src="' + iconoBanderaUrl(p.bandera) + '" alt="' + textoBandera(p.bandera) + '">' +
                   '</a>';
         });
       });

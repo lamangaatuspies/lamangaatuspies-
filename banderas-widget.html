@@ -58,6 +58,20 @@
     padding: 12px 16px;
     font-size: 14px;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .widget-credito {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--header-text);
+    opacity: 0.8;
+    white-space: nowrap;
+  }
+  .widget-credito a {
+    color: inherit;
   }
   .grupo-titulo {
     padding: 8px 16px;
@@ -111,14 +125,6 @@
   .estado-color.verde { color: var(--verde-text); }
   .estado-color.amarilla { color: var(--amarilla-text); }
   .estado-color.roja { color: var(--roja-text); }
-  .pie {
-    padding: 8px 16px;
-    text-align: right;
-    font-size: 11px;
-    color: var(--text-secondary);
-    border-top: 1px solid var(--border);
-  }
-  .pie a { color: inherit; }
   .estado-carga, .estado-error {
     padding: 24px 16px;
     text-align: center;
@@ -129,11 +135,13 @@
 </head>
 <body>
   <div class="widget">
-    <div class="widget-header">Estado de las banderas de playa</div>
+    <div class="widget-header">
+      <span>Estado de las banderas de playa</span>
+      <span class="widget-credito">Datos: <a href="https://lamangaatuspies.com" target="_blank" rel="noopener">lamangaatuspies.com</a></span>
+    </div>
     <div id="contenido">
       <div class="estado-carga">Cargando estado de las playas…</div>
     </div>
-    <div class="pie">Datos: <a href="https://lamangaatuspies.com" target="_blank" rel="noopener">lamangaatuspies.com</a></div>
   </div>
 
 <script>

@@ -2151,6 +2151,44 @@
                     "Chiringuito"
                 ]
             }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Panaderia Cafeteria Dominique",
+                "img": "img/Cafeteria-dominique.jpg",
+                "desc": [
+                    "Cafeteria",
+                    "Panaderia"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.743078,
+                            37.714402
+                        ],
+                        [
+                            -0.743196,
+                            37.714402
+                        ],
+                        [
+                            -0.743221,
+                            37.714159
+                        ],
+                        [
+                            -0.743076,
+                            37.714144
+                        ],
+                        [
+                            -0.743078,
+                            37.714402
+                        ]
+                    ]
+                ]
+            }
         }
     ]
 }

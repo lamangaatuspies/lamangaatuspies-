@@ -806,6 +806,36 @@
       .map-popup-panel .lp-wrap { padding: 0.6rem 0.8rem; }
       .lp-name { font-size: 0.85rem; }
       .lp-desc { display: none; }
+      .map-popup-panel[data-tipo="playa"] {
+        max-height: 70vh;
+        overflow: visible;
+      }
+      .map-popup-panel[data-tipo="playa"] .lp-capa {
+        padding-right: 1.6rem;
+        flex-wrap: wrap;
+        white-space: normal;
+      }
+      .map-popup-panel[data-tipo="playa"] .lp-capa span {
+        white-space: normal;
+      }
+      .map-popup-panel[data-tipo="playa"] .map-popup-close {
+        position: absolute;
+        top: 0.3rem;
+        right: 0.3rem;
+      }
+      .map-popup-panel[data-tipo="playa"] .lp-desc {
+        display: block;
+        font-size: 0.62rem;
+        line-height: 1.5;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        max-height: 26vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .map-popup-panel[data-tipo="playa"] .lp-desc div {
+        max-width: 100%;
+      }
       .lp-km { font-size: 0.38rem; white-space: nowrap; }
       .lp-capa { font-size: 0.48rem; white-space: nowrap; }
       .lp-maps { font-size: 0.46rem; white-space: nowrap; padding: 0.25rem 0.5rem; }

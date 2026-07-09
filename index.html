@@ -2023,7 +2023,7 @@
       const param = esPlaya
         ? '?playa=' + encodeURIComponent(document.getElementById('mapPopupPanel').dataset.nombrePlaya)
         : '?q=' + encodeURIComponent(nombre);
-      const url = window.location.origin + window.location.pathname + param;
+      const url = window.location.origin + window.location.pathname + param + '#mapa';
       navigator.clipboard.writeText(url).then(() => {
         const btn = this;
         const tip = document.getElementById('ppShareTip');
@@ -2810,6 +2810,9 @@
       // nada más cargar los datos, así que aquí solo hace falta un pequeño margen para que
       // el mapa termine de estabilizar su tamaño/renderizado antes del ajuste fino
       // (zoom exacto al polígono + popup), en vez del retardo fijo de 400ms de antes.
+      // El scroll grueso hasta la sección del mapa ya lo hace el navegador de forma nativa
+      // e instantánea gracias al ancla #mapa del enlace, así que aquí el reajuste fino
+      // usa 'auto' (instantáneo) en vez de 'smooth' para no producir una segunda animación.
       setTimeout(() => {
         selectFeature(item);
         // Centrar el bloque mapa+buscador en pantalla
@@ -2820,7 +2823,7 @@
         const blockBottom = window.scrollY + mapFrame.getBoundingClientRect().bottom;
         const blockCenter = (blockTop + blockBottom) / 2;
         const visibleH    = window.innerHeight - navH;
-        window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'smooth' });
+        window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'auto' });
       }, 100);
     })();
 
@@ -3339,7 +3342,7 @@
           const blockBottom = window.scrollY + mapFrame.getBoundingClientRect().bottom;
           const blockCenter = (blockTop + blockBottom) / 2;
           const visibleH    = window.innerHeight - navH;
-          window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'smooth' });
+          window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'auto' });
         } else if (intentos > 0) {
           setTimeout(() => intentar(intentos - 1), 500);
         }

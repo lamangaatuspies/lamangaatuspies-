@@ -3394,9 +3394,9 @@
 
     function actualizarVisibilidadFarmacias() {
       if (map.getZoom() >= ZOOM_FARMACIAS) {
-        if (!map.hasLayer(farmaciasLayerGroup)) farmaciasLayerGroup.addTo(map);
+        if (!map.hasLayer(farmaciasLayerGroup)) { farmaciasLayerGroup.addTo(map); setTimeout(colorearControlCapas, 50); }
       } else {
-        if (map.hasLayer(farmaciasLayerGroup)) map.removeLayer(farmaciasLayerGroup);
+        if (map.hasLayer(farmaciasLayerGroup)) { map.removeLayer(farmaciasLayerGroup); setTimeout(colorearControlCapas, 50); }
       }
     }
     map.on('zoomend', actualizarVisibilidadFarmacias);

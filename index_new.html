@@ -3388,6 +3388,19 @@
 
     const farmaciasLayerGroup = L.featureGroup();
 
+    // Nivel de zoom a partir del cual se muestran los iconos de farmacia.
+    // Antes se mostraban siempre; ahora solo a partir de este zoom (ajustable).
+    const ZOOM_FARMACIAS = 15;
+
+    function actualizarVisibilidadFarmacias() {
+      if (map.getZoom() >= ZOOM_FARMACIAS) {
+        if (!map.hasLayer(farmaciasLayerGroup)) farmaciasLayerGroup.addTo(map);
+      } else {
+        if (map.hasLayer(farmaciasLayerGroup)) map.removeLayer(farmaciasLayerGroup);
+      }
+    }
+    map.on('zoomend', actualizarVisibilidadFarmacias);
+
     // El turno de guardia cambia a las 9:30 (no a medianoche), confirmado con el
     // Colegio Oficial de Farmacéuticos: la guardia de "hoy" empieza a las 9:30 de hoy
     // y acaba a las 9:30 de mañana. Por eso, antes de las 9:30 la farmacia que sigue
@@ -3489,7 +3502,12 @@
             document.getElementById('ppCapa').textContent = 'FARMACIA';
             document.getElementById('ppName').textContent = f.nombre;
             document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);
-            document.getElementById('ppImg').style.display = 'none';
+            const imgEl = document.getElementById('ppImg');
+            imgEl.onerror = function() { imgEl.style.display = 'none'; imgEl.onerror = null; };
+            imgEl.src = 'img/Farmacias/' + f.id + '.jpg';
+            imgEl.style.display = 'block';
+            if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
+            else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
             document.getElementById('ppDesc').innerHTML = guardiaHTML + estadoHTML + dirHTML + horarioHTML + telHTML;
             document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + f.lat + ',' + f.lng;
             popupPanel.dataset.tipo = 'farmacia';
@@ -3499,8 +3517,9 @@
           marker.addTo(farmaciasLayerGroup);
         });
 
-        // Añadir la capa al control (checkbox propio, visible por defecto)
-        farmaciasLayerGroup.addTo(map);
+        // Añadir la capa al control (checkbox propio) y aplicar la visibilidad
+        // según el zoom actual (igual que las banderas)
+        actualizarVisibilidadFarmacias();
         layerControl.addOverlay(farmaciasLayerGroup, 'Farmacias');
         setTimeout(colorearControlCapas, 100);
 

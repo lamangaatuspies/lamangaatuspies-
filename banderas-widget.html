@@ -151,8 +151,58 @@
   var tema = params.get('tema') === 'oscuro' ? 'oscuro' : 'claro';
   document.documentElement.setAttribute('data-tema', tema);
 
-  var PROXY_PLAYAS = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=playas";
+  var COORDENADAS_PLAYAS = {
+    'BARCO PERDIDO III (ZEUS)':                  { lat: 37.63902, lng: -0.70723 },
+    'CALA DEL BARCO':                            { lat: 37.58740, lng: -0.79263 },
+    'CALA DEL PINO':                             { lat: 37.66692, lng: -0.73221 },
+    'CAVANNA':                                   { lat: 37.65939, lng: -0.72451 },
+    'GALUA':                                     { lat: 37.65928, lng: -0.72069 },
+    'LA GOLA':                                   { lat: 37.65070, lng: -0.72279 },
+    'PUERTO BELLO':                              { lat: 37.64824, lng: -0.71926 },
+    'SIRENAS':                                   { lat: 37.64327, lng: -0.71140 },
+    'ENTREMARES':                                { lat: 37.64865, lng: -0.71474 },
+    'BANCO DEL TABAL (LIMA 5)':                  { lat: 37.67197, lng: -0.72843 },
+    'BARNUEVO (LIMA 1)':                         { lat: 37.79665, lng: -0.80292 },
+    'CASTILLICOS (LIMA 4)':                      { lat: 37.81286, lng: -0.79268 },
+    'COLON I (SUR) (LIMA 2)':                    { lat: 37.80164, lng: -0.80101 },
+    'COLON II (NORTE) (LIMA 3)':                 { lat: 37.80632, lng: -0.79802 },
+    'EL ARENAL I (SUR) (LIMA 9)':                { lat: 37.70517, lng: -0.74010 },
+    'EL ARENAL II (NORTE) (LIMA 10)':            { lat: 37.71483, lng: -0.74088 },
+    'ENSENADA DEL ESPARTO (CENTRO) (LIMA 14)':   { lat: 37.75608, lng: -0.74336 },
+    'ENSENADA DEL ESPARTO (NORTE) (LIMA 15)':    { lat: 37.76469, lng: -0.74669 },
+    'ENSENADA DEL ESPARTO (SUR) (LIMA 13)':      { lat: 37.74855, lng: -0.73377 },
+    'ESTACIO (NORTE) (LIMA 12)':                 { lat: 37.73174, lng: -0.73830 },
+    'ESTACIO (SUR) (LIMA 11)':                   { lat: 37.72478, lng: -0.73911 },
+    'LEBECHE (MAR MENOR) (LIMA 19)':             { lat: 37.68576, lng: -0.73709 },
+    'MISTRAL (MAR MENOR) (LIMA 17)':             { lat: 37.73708, lng: -0.73880 },
+    'PEDRUCHILLO (MAR MENOR) (LIMA 18)':         { lat: 37.70613, lng: -0.74327 },
+    'PEDRUCHO I (SUR) (LIMA 6)':                 { lat: 37.67975, lng: -0.73187 },
+    'PEDRUCHO II (CENTRO) (LIMA 7)':             { lat: 37.68758, lng: -0.73481 },
+    'PEDRUCHO III (NORTE) (LIMA 8)':             { lat: 37.69715, lng: -0.73793 },
+    'VENEZIOLA (MAR MENOR) (LIMA 16)':           { lat: 37.77093, lng: -0.75006 },
+  };
+
+  var FLAGS_COPLA = { 100: '', 200: 'VERDE', 300: 'AMARILLA', 400: 'ROJA' };
+  var ESTADOS_MAR_COPLA = { 0: '', 1: 'Llana', 2: 'Rizada' };
+
   var contenido = document.getElementById('contenido');
+
+  function construirPlayas(items, municipio) {
+    var playas = [];
+    items.forEach(function (item) {
+      var nombre = (item.name || '').toUpperCase().trim();
+      var coords = COORDENADAS_PLAYAS[nombre];
+      if (!coords) return;
+      playas.push({
+        nombre: item.name || '',
+        bandera: FLAGS_COPLA[item.flag] || '',
+        estado: ESTADOS_MAR_COPLA[item.seaState] || '',
+        fecha: item.updateDate || '',
+        municipio: municipio
+      });
+    });
+    return playas;
+  }
 
   function nombreCorto(nombre) {
     return nombre
@@ -190,15 +240,16 @@
     return 'Banderitas/Ban_Blanca.png';
   }
 
-  function capitalizar(s) {
-    s = s || 'Otros';
-    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-  }
+  Promise.all([
+    fetch("https://web-app.112rmurcia.com/copla-service/copla/BeachFlag?idmun=30035").then(function (r) { return r.json(); }).catch(function () { return []; }),
+    fetch("https://web-app.112rmurcia.com/copla-service/copla/BeachFlag?idmun=30016").then(function (r) { return r.json(); }).catch(function () { return []; })
+  ])
+    .then(function (resultados) {
+      var sanJavier = construirPlayas(resultados[0], 'San Javier');
+      var cartagena = construirPlayas(resultados[1], 'Cartagena');
+      var playas = sanJavier.concat(cartagena);
 
-  fetch(PROXY_PLAYAS)
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      if (!data.ok || !data.playas || !data.playas.length) {
+      if (!playas.length) {
         contenido.innerHTML = '<div class="estado-error">No se ha podido cargar el estado de las playas.</div>';
         return;
       }
@@ -206,8 +257,8 @@
       // Agrupar por municipio, conservando el orden en que aparecen en el feed
       var grupos = {};
       var ordenMunicipios = [];
-      data.playas.forEach(function (p) {
-        var mun = p.municipio || 'OTROS';
+      playas.forEach(function (p) {
+        var mun = p.municipio || 'Otros';
         if (!grupos[mun]) {
           grupos[mun] = [];
           ordenMunicipios.push(mun);
@@ -218,7 +269,7 @@
 
       var html = '';
       ordenMunicipios.forEach(function (mun) {
-        html += '<div class="grupo-titulo">' + capitalizar(mun) + '</div>';
+        html += '<div class="grupo-titulo">' + mun + '</div>';
         grupos[mun].forEach(function (p) {
           var b = (p.bandera || '').toUpperCase();
           var sinDatos = b !== 'VERDE' && b !== 'AMARILLA' && b !== 'ROJA';

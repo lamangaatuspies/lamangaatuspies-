@@ -3490,7 +3490,7 @@
           const estadoLabel = deGuardia ? 'DE GUARDIA HOY' : (abierta ? 'ABIERTA' : 'CERRADA');
           const estadoColor = deGuardia ? '#ff3b30' : (abierta ? '#00a651' : '#8b949e');
           marker.bindTooltip(
-            `<span style="color:${estadoColor};font-weight:bold">${f.nombre} · ${estadoLabel}</span>`,
+            `<span style="color:#00a651;font-weight:bold">${f.nombre}</span> · <span style="color:${estadoColor};font-weight:bold">${estadoLabel}</span>`,
             { direction: 'top', offset: [0, -14], className: 'lm-tooltip' }
           );
 

@@ -2599,12 +2599,11 @@
     overlays['Polígonos'] = L.layerGroup([poligonosLayer, poligonosLabels]);
     overlays['Salidas'] = salidasLayerGroup;
 
-    // Farmacias: la capa se crea vacía aquí (para que el checkbox aparezca
-    // desde el primer instante, igual que el resto) y se rellena de marcadores
-    // más adelante, cuando responda el proxy de Apps Script.
+    // Farmacias: la capa se crea vacía aquí. NO se registra en `overlays` para
+    // que la opción no aparezca en el menú de capas del mapa mientras el
+    // feature flag FARMACIAS_HABILITADAS esté en false (ver más abajo).
     const farmaciasLayerGroup = L.featureGroup();
     farmaciasLayerGroup.addTo(map); // activa por defecto, como el resto
-    overlays['Farmacias'] = farmaciasLayerGroup;
 
     // ── VISIBILIDAD FARMACIAS POR ZOOM (mismo patrón que Salidas: pane propio,
     // independiente del checkbox del control de capas) ──
@@ -3419,6 +3418,12 @@
     // ── FARMACIAS DE LA MANGA (+ turno de guardia) ──
     // farmaciasLayerGroup, su pane y su lógica de zoom ya se crearon arriba,
     // junto al resto de capas, para que el checkbox aparezca desde el inicio.
+    //
+    // DESACTIVADO TEMPORALMENTE (ver nota): el horario "currentDaySchedule" que
+    // devuelve la API del Colegio de Farmacéuticos no parece variar según el día
+    // de la semana, por lo que el estado "abierta/cerrada" no es fiable en
+    // domingos y festivos. Poner a `true` en cuanto se confirme el dato.
+    const FARMACIAS_HABILITADAS = false;
     const PROXY_FARMACIAS = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=farmacias";
 
     // El turno de guardia cambia a las 9:30 (no a medianoche), confirmado con el
@@ -3480,7 +3485,7 @@
       return L.divIcon({ html, className: 'farmacia-icon', iconSize: [26, 26], iconAnchor: [13, 13] });
     }
 
-    fetch(PROXY_FARMACIAS)
+    if (FARMACIAS_HABILITADAS) fetch(PROXY_FARMACIAS)
       .then(r => r.json())
       .then(data => {
         if (!data.ok || !Array.isArray(data.farmacias) || !data.farmacias.length) return;

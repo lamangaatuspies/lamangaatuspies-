@@ -3514,7 +3514,7 @@
             document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);
             const imgEl = document.getElementById('ppImg');
             imgEl.onerror = function() { imgEl.style.display = 'none'; imgEl.onerror = null; };
-            imgEl.src = 'img/Farmacias/' + f.id + '.jpg';
+            imgEl.src = 'img/' + f.id + '.jpg';
             imgEl.style.display = 'block';
             if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
             else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }

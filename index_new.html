@@ -2587,6 +2587,27 @@
     overlays['Polígonos'] = L.layerGroup([poligonosLayer, poligonosLabels]);
     overlays['Salidas'] = salidasLayerGroup;
 
+    // Farmacias: la capa se crea vacía aquí (para que el checkbox aparezca
+    // desde el primer instante, igual que el resto) y se rellena de marcadores
+    // más adelante, cuando responda el proxy de Apps Script.
+    const farmaciasLayerGroup = L.featureGroup();
+    farmaciasLayerGroup.addTo(map); // activa por defecto, como el resto
+    overlays['Farmacias'] = farmaciasLayerGroup;
+
+    // ── VISIBILIDAD FARMACIAS POR ZOOM (mismo patrón que Salidas: pane propio,
+    // independiente del checkbox del control de capas) ──
+    const ZOOM_FARMACIAS = 15;
+    map.createPane('farmaciasPane');
+    function actualizarVisibilidadFarmacias() {
+      if (!map.hasLayer(farmaciasLayerGroup)) return;
+      const pane = map.getPane('farmaciasPane');
+      if (pane) pane.style.display = map.getZoom() >= ZOOM_FARMACIAS ? '' : 'none';
+    }
+    actualizarVisibilidadFarmacias(); // estado inicial, antes de que lleguen los datos
+    map.on('zoomend', actualizarVisibilidadFarmacias);
+    map.on('overlayadd',    function(e) { if (e.name === 'Farmacias') actualizarVisibilidadFarmacias(); });
+    map.on('overlayremove', function(e) { if (e.name === 'Farmacias') { const p = map.getPane('farmaciasPane'); if (p) p.style.display = ''; } });
+
     // ── VISIBILIDAD SALIDAS POR ZOOM (zoom 16, antes que urbanizaciones en zoom 17) ──
     const ZOOM_SALIDAS = 16;
     function actualizarVisibilidadSalidas() {
@@ -3384,29 +3405,13 @@
       .catch(() => { /* Si falla el proxy, el mapa sigue funcionando */ });
 
     // ── FARMACIAS DE LA MANGA (+ turno de guardia) ──
+    // farmaciasLayerGroup, su pane y su lógica de zoom ya se crearon arriba,
+    // junto al resto de capas, para que el checkbox aparezca desde el inicio.
     const PROXY_FARMACIAS = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=farmacias";
 
-    const farmaciasLayerGroup = L.featureGroup();
-
-    // Nivel de zoom a partir del cual se ven los iconos de farmacia.
-    // Usa el mismo patrón que "Salidas": un pane propio que se oculta/muestra
-    // por CSS según el zoom, SIN añadir/quitar la capa del mapa — así el
-    // checkbox del control de capas queda totalmente independiente del zoom.
-    const ZOOM_FARMACIAS = 15;
-    map.createPane('farmaciasPane');
-
-    function actualizarVisibilidadFarmacias() {
-      // Solo actuar si la capa está activa en el control (checkbox marcado)
-      if (!map.hasLayer(farmaciasLayerGroup)) return;
-      const pane = map.getPane('farmaciasPane');
-      if (pane) pane.style.display = map.getZoom() >= ZOOM_FARMACIAS ? '' : 'none';
-    }
-    map.on('zoomend', actualizarVisibilidadFarmacias);
-    map.on('overlayadd',    function(e) { if (e.name === 'Farmacias') actualizarVisibilidadFarmacias(); });
-    map.on('overlayremove', function(e) { if (e.name === 'Farmacias') { const p = map.getPane('farmaciasPane'); if (p) p.style.display = ''; } });
-
-
     // El turno de guardia cambia a las 9:30 (no a medianoche), confirmado con el
+    // Colegio Oficial de Farmacéuticos: la guardia de "hoy" empieza a las 9:30 de hoy
+    // y acaba a las 9:30 de mañana. Por eso, antes de las 9:30 la farmacia que sigue
     // Colegio Oficial de Farmacéuticos: la guardia de "hoy" empieza a las 9:30 de hoy
     // y acaba a las 9:30 de mañana. Por eso, antes de las 9:30 la farmacia que sigue
     // realmente de guardia es la de "ayer".
@@ -3522,13 +3527,10 @@
           marker.addTo(farmaciasLayerGroup);
         });
 
-        // Añadir la capa al mapa (estado por defecto: activa/checkbox marcado),
-        // registrarla en el control, y solo entonces aplicar la visibilidad
-        // por zoom (el pane, no el checkbox)
-        farmaciasLayerGroup.addTo(map);
-        layerControl.addOverlay(farmaciasLayerGroup, 'Farmacias');
+        // La capa y su checkbox ya existían desde el inicio; solo falta
+        // sincronizar la visibilidad del pane con el zoom actual, ahora que
+        // ya tiene marcadores dentro
         actualizarVisibilidadFarmacias();
-        setTimeout(colorearControlCapas, 100);
 
         // Actualizar contador y tarjeta (no pasan por actualizarContadores() porque
         // los datos no viven en GEODATA, sino que llegan async del proxy)

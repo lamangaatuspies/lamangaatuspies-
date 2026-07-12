@@ -3388,18 +3388,23 @@
 
     const farmaciasLayerGroup = L.featureGroup();
 
-    // Nivel de zoom a partir del cual se muestran los iconos de farmacia.
-    // Antes se mostraban siempre; ahora solo a partir de este zoom (ajustable).
+    // Nivel de zoom a partir del cual se ven los iconos de farmacia.
+    // Usa el mismo patrón que "Salidas": un pane propio que se oculta/muestra
+    // por CSS según el zoom, SIN añadir/quitar la capa del mapa — así el
+    // checkbox del control de capas queda totalmente independiente del zoom.
     const ZOOM_FARMACIAS = 15;
+    map.createPane('farmaciasPane');
 
     function actualizarVisibilidadFarmacias() {
-      if (map.getZoom() >= ZOOM_FARMACIAS) {
-        if (!map.hasLayer(farmaciasLayerGroup)) { farmaciasLayerGroup.addTo(map); setTimeout(colorearControlCapas, 50); }
-      } else {
-        if (map.hasLayer(farmaciasLayerGroup)) { map.removeLayer(farmaciasLayerGroup); setTimeout(colorearControlCapas, 50); }
-      }
+      // Solo actuar si la capa está activa en el control (checkbox marcado)
+      if (!map.hasLayer(farmaciasLayerGroup)) return;
+      const pane = map.getPane('farmaciasPane');
+      if (pane) pane.style.display = map.getZoom() >= ZOOM_FARMACIAS ? '' : 'none';
     }
     map.on('zoomend', actualizarVisibilidadFarmacias);
+    map.on('overlayadd',    function(e) { if (e.name === 'Farmacias') actualizarVisibilidadFarmacias(); });
+    map.on('overlayremove', function(e) { if (e.name === 'Farmacias') { const p = map.getPane('farmaciasPane'); if (p) p.style.display = ''; } });
+
 
     // El turno de guardia cambia a las 9:30 (no a medianoche), confirmado con el
     // Colegio Oficial de Farmacéuticos: la guardia de "hoy" empieza a las 9:30 de hoy
@@ -3471,7 +3476,7 @@
           const abierta   = deGuardia ? true : farmaciaAbiertaAhora(f.horario, minAhora);
           const estado    = deGuardia ? 'guardia' : (abierta ? 'abierta' : 'cerrada');
 
-          const marker = L.marker([f.lat, f.lng], { icon: iconoFarmacia(estado), nombreFarmacia: f.nombre, zIndexOffset: deGuardia ? 500 : 0 });
+          const marker = L.marker([f.lat, f.lng], { icon: iconoFarmacia(estado), nombreFarmacia: f.nombre, zIndexOffset: deGuardia ? 500 : 0, pane: 'farmaciasPane' });
 
           const estadoLabel = deGuardia ? 'DE GUARDIA HOY' : (abierta ? 'ABIERTA' : 'CERRADA');
           const estadoColor = deGuardia ? '#ff3b30' : (abierta ? '#00a651' : '#8b949e');
@@ -3517,10 +3522,12 @@
           marker.addTo(farmaciasLayerGroup);
         });
 
-        // Añadir la capa al control (checkbox propio) y aplicar la visibilidad
-        // según el zoom actual (igual que las banderas)
-        actualizarVisibilidadFarmacias();
+        // Añadir la capa al mapa (estado por defecto: activa/checkbox marcado),
+        // registrarla en el control, y solo entonces aplicar la visibilidad
+        // por zoom (el pane, no el checkbox)
+        farmaciasLayerGroup.addTo(map);
         layerControl.addOverlay(farmaciasLayerGroup, 'Farmacias');
+        actualizarVisibilidadFarmacias();
         setTimeout(colorearControlCapas, 100);
 
         // Actualizar contador y tarjeta (no pasan por actualizarContadores() porque

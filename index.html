@@ -165,6 +165,10 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
+    @keyframes haloFarmacia {
+      0%   { transform: scale(1);   opacity: 0.55; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
 
     .hero h1 {
       font-family: var(--sans);
@@ -214,8 +218,8 @@
       overflow-x: auto;
     }
     .status-item {
-      padding: 0.7rem 1.8rem 0.7rem 0;
-      margin-right: 1.8rem;
+      padding: 0.7rem 1.4rem 0.7rem 0;
+      margin-right: 1.4rem;
       border-right: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -1725,8 +1729,12 @@
       <span>Sitios de interés</span>
       <span class="status-val" id="cnt-sit">26</span>
     </div>
-    <div class="status-item" style="margin-left:auto; border-right:none; border-left:1px solid var(--border); padding-left:1.8rem;">
-      <span>Última actualización</span>
+    <div class="status-item">
+      <span>Farmacias</span>
+      <span class="status-val" id="cnt-farm">—</span>
+    </div>
+    <div class="status-item" style="margin-left:auto; border-right:none; border-left:1px solid var(--border); padding-left:1.4rem;">
+      <span>Actualizado</span>
       <span class="status-val" id="status-fecha">Mayo 2025</span>
     </div>
   </div>
@@ -1838,6 +1846,14 @@
           <div class="lcard-name">Sitios de Interés</div>
           <div class="lcard-desc">Puntos de referencia geográficos, culturales y de servicios que completan el conocimiento del territorio.</div>
         </div>
+        <div class="lcard" id="lcard-farm" data-num="0">
+          <div class="lcard-tag" style="color:#00a651;">
+            <span style="background:#00a651;box-shadow:0 0 6px #00a651;"></span>CAPA 05
+          </div>
+          <div class="lcard-n" id="lcard-n-farm" style="color:#00a651;">—</div>
+          <div class="lcard-name">Farmacias</div>
+          <div class="lcard-desc">Farmacias de La Manga con estado de apertura y turno de guardia diario, sincronizado en tiempo real con el Colegio Oficial de Farmacéuticos de la Región de Murcia.</div>
+        </div>
       </div>
 
       <div class="about-wrap">
@@ -1877,6 +1893,14 @@
               <span class="tl-badge update">Actualización</span>
               <span class="tl-title">Numeración de salidas de la Gran Vía</span>
               <span class="tl-desc">Identificación de cada salida a lo largo de los 21 km.</span>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">Jul 2026</div>
+            <div class="tl-right">
+              <span class="tl-badge update">Actualización</span>
+              <span class="tl-title">Farmacias con estado en tiempo real</span>
+              <span class="tl-desc">Qué farmacia está abierta ahora mismo y cuál está de guardia hoy, sincronizado con el Colegio Oficial de Farmacéuticos de la Región de Murcia.</span>
             </div>
           </div>
         </div>
@@ -2575,6 +2599,27 @@
     overlays['Polígonos'] = L.layerGroup([poligonosLayer, poligonosLabels]);
     overlays['Salidas'] = salidasLayerGroup;
 
+    // Farmacias: la capa se crea vacía aquí (para que el checkbox aparezca
+    // desde el primer instante, igual que el resto) y se rellena de marcadores
+    // más adelante, cuando responda el proxy de Apps Script.
+    const farmaciasLayerGroup = L.featureGroup();
+    farmaciasLayerGroup.addTo(map); // activa por defecto, como el resto
+    overlays['Farmacias'] = farmaciasLayerGroup;
+
+    // ── VISIBILIDAD FARMACIAS POR ZOOM (mismo patrón que Salidas: pane propio,
+    // independiente del checkbox del control de capas) ──
+    const ZOOM_FARMACIAS = 15;
+    map.createPane('farmaciasPane');
+    function actualizarVisibilidadFarmacias() {
+      if (!map.hasLayer(farmaciasLayerGroup)) return;
+      const pane = map.getPane('farmaciasPane');
+      if (pane) pane.style.display = map.getZoom() >= ZOOM_FARMACIAS ? '' : 'none';
+    }
+    actualizarVisibilidadFarmacias(); // estado inicial, antes de que lleguen los datos
+    map.on('zoomend', actualizarVisibilidadFarmacias);
+    map.on('overlayadd',    function(e) { if (e.name === 'Farmacias') actualizarVisibilidadFarmacias(); });
+    map.on('overlayremove', function(e) { if (e.name === 'Farmacias') { const p = map.getPane('farmaciasPane'); if (p) p.style.display = ''; } });
+
     // ── VISIBILIDAD SALIDAS POR ZOOM (zoom 16, antes que urbanizaciones en zoom 17) ──
     const ZOOM_SALIDAS = 16;
     function actualizarVisibilidadSalidas() {
@@ -2590,10 +2635,11 @@
     map.on('overlayadd',    function(e) { if (e.name === 'Salidas') actualizarVisibilidadSalidas(); });
     map.on('overlayremove', function(e) { if (e.name === 'Salidas') { const p = map.getPane('salidasPane'); if(p) p.style.display = ''; } });
 
-    L.control.layers(null, overlays, { collapsed: window.innerWidth < 600 }).addTo(map);
+    const layerControl = L.control.layers(null, overlays, { collapsed: window.innerWidth < 600 }).addTo(map);
 
     // Colorear las etiquetas del control de capas con los colores de cada capa
-    setTimeout(() => {
+    // (función reutilizable: se llama al inicio y de nuevo cuando se añaden capas async, como Farmacias)
+    function colorearControlCapas() {
       const CAPA_COLORS = {
         'Urbanizaciones y Edificios': '#1f938a',
         'Hoteles':                    '#ef5d69',
@@ -2601,6 +2647,7 @@
         'Sitios de Interés':          '#109010',
         'Polígonos':                  '#888888',
         'Salidas':                    '#cc3333',
+        'Farmacias':                  '#00a651',
       };
       document.querySelectorAll('.leaflet-control-layers-overlays label').forEach(label => {
         const text = label.textContent.trim();
@@ -2613,7 +2660,8 @@
           if (input) input.style.accentColor = color;
         }
       });
-    }, 100);
+    }
+    setTimeout(colorearControlCapas, 100);
 
     // Esri imagery date — se consultan los metadatos del servicio para obtener el año real
     const dateNote = L.control({ position: 'bottomleft' });
@@ -3225,7 +3273,39 @@
 
 
     // ── BANDERAS DE PLAYAS ──
-    const PROXY_PLAYAS = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=playas";
+    const COORDENADAS_PLAYAS = {
+      'BARCO PERDIDO III (ZEUS)':                  { lat: 37.63902, lng: -0.70723 },
+      'CALA DEL BARCO':                            { lat: 37.58740, lng: -0.79263 },
+      'CALA DEL PINO':                             { lat: 37.66692, lng: -0.73221 },
+      'CAVANNA':                                   { lat: 37.65939, lng: -0.72451 },
+      'GALUA':                                     { lat: 37.65928, lng: -0.72069 },
+      'LA GOLA':                                   { lat: 37.65070, lng: -0.72279 },
+      'PUERTO BELLO':                              { lat: 37.64824, lng: -0.71926 },
+      'SIRENAS':                                   { lat: 37.64327, lng: -0.71140 },
+      'ENTREMARES':                                { lat: 37.64865, lng: -0.71474 },
+      'BANCO DEL TABAL (LIMA 5)':                  { lat: 37.67197, lng: -0.72843 },
+      'BARNUEVO (LIMA 1)':                         { lat: 37.79665, lng: -0.80292 },
+      'CASTILLICOS (LIMA 4)':                      { lat: 37.81286, lng: -0.79268 },
+      'COLON I (SUR) (LIMA 2)':                    { lat: 37.80164, lng: -0.80101 },
+      'COLON II (NORTE) (LIMA 3)':                 { lat: 37.80632, lng: -0.79802 },
+      'EL ARENAL I (SUR) (LIMA 9)':                { lat: 37.70517, lng: -0.74010 },
+      'EL ARENAL II (NORTE) (LIMA 10)':            { lat: 37.71483, lng: -0.74088 },
+      'ENSENADA DEL ESPARTO (CENTRO) (LIMA 14)':   { lat: 37.75608, lng: -0.74336 },
+      'ENSENADA DEL ESPARTO (NORTE) (LIMA 15)':    { lat: 37.76469, lng: -0.74669 },
+      'ENSENADA DEL ESPARTO (SUR) (LIMA 13)':      { lat: 37.74855, lng: -0.73377 },
+      'ESTACIO (NORTE) (LIMA 12)':                 { lat: 37.73174, lng: -0.73830 },
+      'ESTACIO (SUR) (LIMA 11)':                   { lat: 37.72478, lng: -0.73911 },
+      'LEBECHE (MAR MENOR) (LIMA 19)':             { lat: 37.68576, lng: -0.73709 },
+      'MISTRAL (MAR MENOR) (LIMA 17)':             { lat: 37.73708, lng: -0.73880 },
+      'PEDRUCHILLO (MAR MENOR) (LIMA 18)':         { lat: 37.70613, lng: -0.74327 },
+      'PEDRUCHO I (SUR) (LIMA 6)':                 { lat: 37.67975, lng: -0.73187 },
+      'PEDRUCHO II (CENTRO) (LIMA 7)':             { lat: 37.68758, lng: -0.73481 },
+      'PEDRUCHO III (NORTE) (LIMA 8)':             { lat: 37.69715, lng: -0.73793 },
+      'VENEZIOLA (MAR MENOR) (LIMA 16)':           { lat: 37.77093, lng: -0.75006 },
+    };
+
+    const FLAGS_COPLA = { 100: '', 200: 'VERDE', 300: 'AMARILLA', 400: 'ROJA' };
+    const ESTADOS_MAR_COPLA = { 0: '', 1: 'Llana', 2: 'Rizada' };
 
     const banderasLayerGroup = L.featureGroup();
 
@@ -3263,13 +3343,27 @@
       return ICONOS_BANDERA.SINDATOS;
     }
 
-    fetch(PROXY_PLAYAS)
-      .then(r => r.json())
-      .then(data => {
-        if (!data.ok) return;
-        const playas = data.playas.filter(p =>
-          p.municipio === 'CARTAGENA' || p.municipio === 'SAN JAVIER'
-        );
+    Promise.all([
+      fetch("https://web-app.112rmurcia.com/copla-service/copla/BeachFlag?idmun=30035").then(r => r.json()).catch(() => []),
+      fetch("https://web-app.112rmurcia.com/copla-service/copla/BeachFlag?idmun=30016").then(r => r.json()).catch(() => [])
+    ])
+      .then(([sanJavier, cartagena]) => {
+        const items = [].concat(sanJavier, cartagena);
+        const playas = [];
+        items.forEach(item => {
+          const nombre = (item.name || '').toUpperCase().trim();
+          const coords = COORDENADAS_PLAYAS[nombre];
+          if (!coords) return;
+          playas.push({
+            nombre: item.name || '',
+            bandera: FLAGS_COPLA[item.flag] || '',
+            estado: ESTADOS_MAR_COPLA[item.seaState] || '',
+            lat: coords.lat,
+            lng: coords.lng,
+            fecha: item.updateDate || ''
+          });
+        });
+
         playas.forEach(p => {
           if (!p.lat || !p.lng) return;
           const MAR_MENOR = [
@@ -3321,6 +3415,146 @@
         actualizarVisibilidadBanderas();
       })
       .catch(() => { /* Si falla el proxy, el mapa sigue funcionando */ });
+
+    // ── FARMACIAS DE LA MANGA (+ turno de guardia) ──
+    // farmaciasLayerGroup, su pane y su lógica de zoom ya se crearon arriba,
+    // junto al resto de capas, para que el checkbox aparezca desde el inicio.
+    const PROXY_FARMACIAS = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=farmacias";
+
+    // El turno de guardia cambia a las 9:30 (no a medianoche), confirmado con el
+    // Colegio Oficial de Farmacéuticos: la guardia de "hoy" empieza a las 9:30 de hoy
+    // y acaba a las 9:30 de mañana. Por eso, antes de las 9:30 la farmacia que sigue
+    // Colegio Oficial de Farmacéuticos: la guardia de "hoy" empieza a las 9:30 de hoy
+    // y acaba a las 9:30 de mañana. Por eso, antes de las 9:30 la farmacia que sigue
+    // realmente de guardia es la de "ayer".
+    const CORTE_GUARDIA_MIN = 9 * 60 + 30;
+
+    function minutosAhoraMadrid() {
+      const ahora = new Date().toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour12: false });
+      const [h, m] = ahora.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    function parseTramosHorario(str) {
+      if (!str) return [];
+      return str.split('|')
+        .map(t => t.trim())
+        .map(tramo => {
+          const m = tramo.match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})$/);
+          if (!m) return null;
+          return {
+            inicio: parseInt(m[1], 10) * 60 + parseInt(m[2], 10),
+            fin:    parseInt(m[3], 10) * 60 + parseInt(m[4], 10),
+          };
+        })
+        .filter(Boolean);
+    }
+
+    function farmaciaAbiertaAhora(horario, minAhora) {
+      const tramos = parseTramosHorario(horario);
+      if (!tramos.length) return false; // sin dato fiable → nunca asumimos "abierta"
+      return tramos.some(t => minAhora >= t.inicio && minAhora <= t.fin);
+    }
+
+    function farmaciaDeGuardiaAhora(f, minAhora) {
+      return minAhora < CORTE_GUARDIA_MIN ? !!f.deGuardiaAyer : !!f.deGuardiaHoy;
+    }
+
+    // Icono: cruz de farmacia. Verde = abierta o de guardia. Marrón apagado = cerrada.
+    // Punto rojo pulsante en la esquina = de guardia ahora mismo.
+    function iconoFarmacia(estado) {
+      const color = estado === 'cerrada' ? '#7a6a52' : '#00a651';
+      const halo = estado === 'guardia'
+        ? '<div style="position:absolute;inset:0;border-radius:6px;background:#f0883e;opacity:0.55;animation:haloFarmacia 1.8s ease-out infinite;"></div>'
+        : '';
+      const html = `
+        <div style="position:relative;width:26px;height:26px;">
+          ${halo}
+          <div style="position:relative;width:26px;height:26px;border-radius:6px;background:${color};box-shadow:0 1px 4px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;">
+            <div style="position:relative;width:14px;height:14px;">
+              <div style="position:absolute;top:0;left:5px;width:4px;height:14px;background:#fff;border-radius:1px;"></div>
+              <div style="position:absolute;top:5px;left:0;width:14px;height:4px;background:#fff;border-radius:1px;"></div>
+            </div>
+          </div>
+        </div>`;
+      return L.divIcon({ html, className: 'farmacia-icon', iconSize: [26, 26], iconAnchor: [13, 13] });
+    }
+
+    fetch(PROXY_FARMACIAS)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.ok || !Array.isArray(data.farmacias) || !data.farmacias.length) return;
+
+        const minAhora = minutosAhoraMadrid();
+
+        data.farmacias.forEach(f => {
+          if (!f.lat || !f.lng) return;
+          const deGuardia = farmaciaDeGuardiaAhora(f, minAhora);
+          const abierta   = deGuardia ? true : farmaciaAbiertaAhora(f.horario, minAhora);
+          const estado    = deGuardia ? 'guardia' : (abierta ? 'abierta' : 'cerrada');
+
+          const marker = L.marker([f.lat, f.lng], { icon: iconoFarmacia(estado), nombreFarmacia: f.nombre, zIndexOffset: deGuardia ? 500 : 0, pane: 'farmaciasPane' });
+
+          const estadoLabel = deGuardia ? 'DE GUARDIA HOY' : (abierta ? 'ABIERTA' : 'CERRADA');
+          const estadoColor = deGuardia ? '#ff3b30' : (abierta ? '#00a651' : '#8b949e');
+          marker.bindTooltip(
+            `<span style="color:#00a651;font-weight:bold">${f.nombre}</span> · <span style="color:${estadoColor};font-weight:bold">${estadoLabel}</span>`,
+            { direction: 'top', offset: [0, -14], className: 'lm-tooltip' }
+          );
+
+          marker.on('click', () => {
+            registrarStats('clic_farmacia', f.nombre + ' · ' + estadoLabel);
+            const guardiaHTML = deGuardia
+              ? `<div style="color:#ff3b30;font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA HOY — servicio 24h</div>`
+              : '';
+            const estadoHTML = !deGuardia
+              ? `<div style="color:${estadoColor};font-weight:700;font-size:1em;margin-bottom:6px;">${abierta ? '🟢 ABIERTA AHORA' : '⚪ CERRADA AHORA'}</div>`
+              : '';
+            const horarioHTML = f.horario
+              ? `<div style="color:#8b949e;font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
+              : '';
+            const telHTML = f.telefono
+              ? `<div style="color:#e6edf3;font-size:0.95em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:#4a9eff;">${f.telefono}</a></div>`
+              : '';
+            const dirHTML = f.direccion
+              ? `<div style="color:#8b949e;font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
+              : '';
+
+            document.getElementById('ppDot').style.background = estadoColor;
+            document.getElementById('ppCapa').textContent = 'FARMACIA';
+            document.getElementById('ppName').textContent = f.nombre;
+            document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);
+            const imgEl = document.getElementById('ppImg');
+            imgEl.onerror = function() { imgEl.style.display = 'none'; imgEl.onerror = null; };
+            imgEl.src = 'img/' + f.id + '.jpg';
+            imgEl.style.display = 'block';
+            if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
+            else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
+            document.getElementById('ppDesc').innerHTML = guardiaHTML + estadoHTML + dirHTML + horarioHTML + telHTML;
+            document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + f.lat + ',' + f.lng;
+            popupPanel.dataset.tipo = 'farmacia';
+            popupPanel.classList.add('visible');
+          });
+
+          marker.addTo(farmaciasLayerGroup);
+        });
+
+        // La capa y su checkbox ya existían desde el inicio; solo falta
+        // sincronizar la visibilidad del pane con el zoom actual, ahora que
+        // ya tiene marcadores dentro
+        actualizarVisibilidadFarmacias();
+
+        // Actualizar contador y tarjeta (no pasan por actualizarContadores() porque
+        // los datos no viven en GEODATA, sino que llegan async del proxy)
+        const total = data.farmacias.length;
+        const cntFarm = document.getElementById('cnt-farm');
+        if (cntFarm) cntFarm.textContent = total;
+        const lcardN = document.getElementById('lcard-n-farm');
+        if (lcardN) lcardN.textContent = total;
+        const lcard = document.getElementById('lcard-farm');
+        if (lcard) lcard.dataset.num = total;
+      })
+      .catch(() => { /* Si falla el proxy, el mapa sigue funcionando sin farmacias */ });
 
     // ── ABRIR BANDERA DESDE URL (?playa=NombrePlaya) ──
     (function abrirPlayaDesdeURL() {

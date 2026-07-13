@@ -3538,6 +3538,48 @@
         if (lcardN) lcardN.textContent = total;
         const lcard = document.getElementById('lcard-farm');
         if (lcard) lcard.dataset.num = total;
+
+        // DIAGNÓSTICO TEMPORAL: bloque de Farmacias en la pestaña LISTA, con
+        // TODAS las que devuelve el proxy (no solo las que tienen coordenadas
+        // válidas), para comparar visualmente y detectar la que sobra.
+        // No está integrado en los tabs de filtro ni en el clic-a-mapa —
+        // quitar este bloque una vez resuelto el desfase del contador.
+        (function anadirFarmaciasALista() {
+          const wrap = document.getElementById('lista-wrap');
+          if (!wrap) return;
+
+          const items = data.farmacias
+            .map(f => ({
+              name: f.nombre,
+              lat:  f.lat,
+              lng:  f.lng,
+              km:   (f.lat && f.lng) ? kmMasCercano(f.lat, f.lng) : '—',
+              sinCoords: !f.lat || !f.lng,
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name, 'es'));
+
+          const grupo = document.createElement('div');
+          grupo.className = 'lista-grupo';
+          grupo.dataset.capaKey = 'Farmacias';
+          grupo.innerHTML = `
+            <div class="lista-grupo-header">
+              <span class="lista-grupo-dot" style="background:#00a651"></span>
+              <span class="lista-grupo-nombre">Farmacias (diagnóstico)</span>
+              <span class="lista-grupo-count">${items.length} registros del proxy</span>
+            </div>
+            <div class="lista-tabla">${items.map(item => `
+              <div class="lista-fila" title="Diagnóstico — sin navegación a mapa">
+                <span class="lista-td-km" style="${item.sinCoords ? 'color:#e53935;' : ''}">${item.sinCoords ? 'Sin coords' : item.km}</span>
+                <span class="lista-td-nombre">${item.name}</span>
+              </div>`).join('')}</div>`;
+          wrap.appendChild(grupo);
+
+          const badge = document.getElementById('badge-lista');
+          if (badge) {
+            const actual = parseInt(badge.textContent) || 0;
+            badge.textContent = (actual + items.length) + ' registros';
+          }
+        })();
       })
       .catch(() => { /* Si falla el proxy, el mapa sigue funcionando sin farmacias */ });
 

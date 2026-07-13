@@ -3475,7 +3475,7 @@
           marker.on('click', () => {
             registrarStats('clic_farmacia', f.nombre + (deGuardia ? ' · DE GUARDIA HOY' : ''));
             const guardiaHTML = deGuardia
-              ? `<div style="color:#e53935;font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA HOY — servicio 24h</div>`
+              ? `<div style="color:#e53935;font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA AHORA — servicio 24h</div>`
               : '';
             const horarioHTML = f.horario
               ? `<div style="color:#8b949e;font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
@@ -3516,6 +3516,22 @@
         // Se cuentan solo las farmacias con lat/lng válidos, que son las que
         // realmente se pintan como marcador (ver filtro más arriba en el forEach).
         const total = data.farmacias.filter(f => f.lat && f.lng).length;
+
+        // DIAGNÓSTICO TEMPORAL: detectar farmacias con coordenadas duplicadas
+        // o casi idénticas, que se solaparían visualmente como un solo icono.
+        // Quitar este bloque una vez resuelto el desfase del contador.
+        (function diagnosticoCoordsFarmacias() {
+          const vistos = [];
+          data.farmacias.forEach(f => {
+            if (!f.lat || !f.lng) return;
+            const choque = vistos.find(v => Math.abs(v.lat - f.lat) < 0.0003 && Math.abs(v.lng - f.lng) < 0.0003);
+            if (choque) {
+              console.warn('[farmacias] posible solape de coordenadas:', choque.nombre, '↔', f.nombre, '(' + f.lat + ',' + f.lng + ')');
+            }
+            vistos.push({ nombre: f.nombre, lat: f.lat, lng: f.lng });
+          });
+          console.table(data.farmacias.map(f => ({ nombre: f.nombre, lat: f.lat, lng: f.lng })));
+        })();
         const cntFarm = document.getElementById('cnt-farm');
         if (cntFarm) cntFarm.textContent = total;
         const lcardN = document.getElementById('lcard-n-farm');

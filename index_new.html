@@ -2963,6 +2963,10 @@
       return 'Km ' + mejorKm.toFixed(1).replace('.', ',');
     }
 
+    // Se rellena al final de construirLista() y permite añadir el grupo de
+    // Farmacias más tarde, cuando lleguen los datos async del proxy.
+    let listaFarmaciasAPI = null;
+
     (function construirLista() {
 
       const CAPAS_LISTA = [
@@ -3131,16 +3135,7 @@
       });
 
       // ── Click en fila → ver en mapa (ignora clics en píldoras de tag) ──
-      wrap.addEventListener('click', function(e) {
-        if (e.target.closest('.lista-tag')) return;
-        const fila = e.target.closest('.lista-fila');
-        if (!fila) return;
-        const esAlias = fila.dataset.alias === '1';
-        const name = esAlias ? fila.dataset.target : fila.dataset.name;
-        const item = allFeatures.find(f => f.name === name);
-        if (!item) return;
-        registrarStats('clic_lista', esAlias ? `${fila.dataset.name} → ${name}` : name);
-        // Navegar al mapa
+      function irAlMapaDesdeLista(lat, lng, abrirPopup) {
         const searchWrap = document.querySelector('.search-wrap');
         const mapFrame   = document.querySelector('.map-frame');
         const navH       = document.querySelector('nav').offsetHeight;
@@ -3149,12 +3144,104 @@
         const blockCenter = (blockTop + blockBottom) / 2;
         const visibleH    = window.innerHeight - navH;
         window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'smooth' });
-        // Zoom y popup
         setTimeout(() => {
-          map.setView([item.lat, item.lng], 17, { animate: true });
-          selectFeature(item);
+          map.setView([lat, lng], 17, { animate: true });
+          abrirPopup();
         }, 350);
+      }
+
+      wrap.addEventListener('click', function(e) {
+        if (e.target.closest('.lista-tag')) return;
+        const fila = e.target.closest('.lista-fila');
+        if (!fila) return;
+
+        // Fila de farmacia: busca su marcador ya creado en el mapa y reutiliza
+        // su propio manejador de clic para abrir el popup con todos los datos.
+        if (fila.dataset.farmaciaId) {
+          const entry = farmaciaMarkersById[fila.dataset.farmaciaId];
+          if (!entry) return;
+          registrarStats('clic_lista', 'Farmacia ' + entry.f.nombre);
+          irAlMapaDesdeLista(entry.f.lat, entry.f.lng, () => entry.marker.fire('click'));
+          return;
+        }
+
+        const esAlias = fila.dataset.alias === '1';
+        const name = esAlias ? fila.dataset.target : fila.dataset.name;
+        const item = allFeatures.find(f => f.name === name);
+        if (!item) return;
+        registrarStats('clic_lista', esAlias ? `${fila.dataset.name} → ${name}` : name);
+        irAlMapaDesdeLista(item.lat, item.lng, () => selectFeature(item));
       });
+
+      // ── Exponer API para añadir el grupo de Farmacias (datos async) ──
+      listaFarmaciasAPI = {
+        agregarGrupo(items) {
+          items.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+
+          function renderFilas(lista) {
+            if (!lista.length) return '<div class="lista-empty">Sin resultados para este filtro.</div>';
+            return lista.map(item => `
+              <div class="lista-fila" data-farmacia-id="${item.id}" title="Ver en el mapa">
+                <span class="lista-td-km">${item.km}</span>
+                <span class="lista-td-nombre">Farmacia ${item.name}</span>
+              </div>`).join('');
+          }
+
+          const grupo = document.createElement('div');
+          grupo.className = 'lista-grupo';
+          grupo.dataset.capaKey = 'Farmacias';
+          grupo.innerHTML = `
+            <div class="lista-grupo-header">
+              <span class="lista-grupo-dot" style="background:#00a651"></span>
+              <span class="lista-grupo-nombre">Farmacias</span>
+              <span class="lista-grupo-count">${items.length} registros</span>
+              <div class="lista-sort-btns">
+                <button class="lista-sort-btn active" data-sort="nombre" title="Ordenar alfabéticamente">A–Z</button>
+                <button class="lista-sort-btn" data-sort="km" title="Ordenar por kilómetro">Km</button>
+              </div>
+            </div>
+            <div class="lista-tabla">${renderFilas(items)}</div>`;
+          wrap.appendChild(grupo);
+          grupos.push({ el: grupo, key: 'Farmacias', items });
+          if (filtroActivo !== 'todas' && filtroActivo !== 'Farmacias') grupo.style.display = 'none';
+
+          let sortActual = 'nombre';
+          function rerender() {
+            const base = [...items].sort((a, b) =>
+              sortActual === 'km'
+                ? a.kmNum - b.kmNum || a.name.localeCompare(b.name, 'es')
+                : a.name.localeCompare(b.name, 'es')
+            );
+            grupo.querySelector('.lista-tabla').innerHTML = renderFilas(base);
+            grupo.querySelector('.lista-grupo-count').textContent = base.length + ' registros';
+          }
+
+          grupo.querySelectorAll('.lista-sort-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const tipo = this.dataset.sort;
+              if (tipo === sortActual) return;
+              sortActual = tipo;
+              grupo.querySelectorAll('.lista-sort-btn').forEach(b => b.classList.remove('active'));
+              this.classList.add('active');
+              rerender();
+            });
+          });
+
+          // Pestaña de filtro propia
+          const btnFarm = document.createElement('button');
+          btnFarm.className = 'lista-filtro-btn';
+          btnFarm.dataset.capa = 'Farmacias';
+          btnFarm.innerHTML = `<span class="filtro-dot" style="background:#00a651"></span>Farmacias <span class="filtro-count">${items.length}</span>`;
+          btnFarm.title = 'Filtrar por: Farmacias';
+          btnFarm.addEventListener('click', () => aplicarFiltro('Farmacias'));
+          filtro.appendChild(btnFarm);
+
+          // Totales
+          totalLista += items.length;
+          document.getElementById('badge-lista').textContent = totalLista + ' registros';
+          btnTodas.innerHTML = `Todas <span class="filtro-count">${totalLista}</span>`;
+        }
+      };
     })();
 
     // ── LIGHTBOX ──
@@ -3452,6 +3539,11 @@
       return L.divIcon({ html, className: 'farmacia-icon', iconSize: [26, 26], iconAnchor: [13, 13] });
     }
 
+    // Índice de marcadores de farmacia por id, para que las filas de la
+    // pestaña LISTA puedan reutilizar el marcador ya creado (navegar y
+    // abrir su popup) sin duplicar la lógica de apertura.
+    const farmaciaMarkersById = {};
+
     fetch(PROXY_FARMACIAS)
       .then(r => r.json())
       .then(data => {
@@ -3504,6 +3596,7 @@
           });
 
           marker.addTo(farmaciasLayerGroup);
+          farmaciaMarkersById[f.id] = { marker, f, deGuardia };
         });
 
         // La capa y su checkbox ya existían desde el inicio; solo falta
@@ -3517,21 +3610,6 @@
         // realmente se pintan como marcador (ver filtro más arriba en el forEach).
         const total = data.farmacias.filter(f => f.lat && f.lng).length;
 
-        // DIAGNÓSTICO TEMPORAL: detectar farmacias con coordenadas duplicadas
-        // o casi idénticas, que se solaparían visualmente como un solo icono.
-        // Quitar este bloque una vez resuelto el desfase del contador.
-        (function diagnosticoCoordsFarmacias() {
-          const vistos = [];
-          data.farmacias.forEach(f => {
-            if (!f.lat || !f.lng) return;
-            const choque = vistos.find(v => Math.abs(v.lat - f.lat) < 0.0003 && Math.abs(v.lng - f.lng) < 0.0003);
-            if (choque) {
-              console.warn('[farmacias] posible solape de coordenadas:', choque.nombre, '↔', f.nombre, '(' + f.lat + ',' + f.lng + ')');
-            }
-            vistos.push({ nombre: f.nombre, lat: f.lat, lng: f.lng });
-          });
-          console.table(data.farmacias.map(f => ({ nombre: f.nombre, lat: f.lat, lng: f.lng })));
-        })();
         const cntFarm = document.getElementById('cnt-farm');
         if (cntFarm) cntFarm.textContent = total;
         const lcardN = document.getElementById('lcard-n-farm');
@@ -3539,47 +3617,23 @@
         const lcard = document.getElementById('lcard-farm');
         if (lcard) lcard.dataset.num = total;
 
-        // DIAGNÓSTICO TEMPORAL: bloque de Farmacias en la pestaña LISTA, con
-        // TODAS las que devuelve el proxy (no solo las que tienen coordenadas
-        // válidas), para comparar visualmente y detectar la que sobra.
-        // No está integrado en los tabs de filtro ni en el clic-a-mapa —
-        // quitar este bloque una vez resuelto el desfase del contador.
-        (function anadirFarmaciasALista() {
-          const wrap = document.getElementById('lista-wrap');
-          if (!wrap) return;
-
-          const items = data.farmacias
-            .map(f => ({
-              name: f.nombre,
-              lat:  f.lat,
-              lng:  f.lng,
-              km:   (f.lat && f.lng) ? kmMasCercano(f.lat, f.lng) : '—',
-              sinCoords: !f.lat || !f.lng,
-            }))
-            .sort((a, b) => a.name.localeCompare(b.name, 'es'));
-
-          const grupo = document.createElement('div');
-          grupo.className = 'lista-grupo';
-          grupo.dataset.capaKey = 'Farmacias';
-          grupo.innerHTML = `
-            <div class="lista-grupo-header">
-              <span class="lista-grupo-dot" style="background:#00a651"></span>
-              <span class="lista-grupo-nombre">Farmacias (diagnóstico)</span>
-              <span class="lista-grupo-count">${items.length} registros del proxy</span>
-            </div>
-            <div class="lista-tabla">${items.map(item => `
-              <div class="lista-fila" title="Diagnóstico — sin navegación a mapa">
-                <span class="lista-td-km" style="${item.sinCoords ? 'color:#e53935;' : ''}">${item.sinCoords ? 'Sin coords' : item.km}</span>
-                <span class="lista-td-nombre">${item.name}</span>
-              </div>`).join('')}</div>`;
-          wrap.appendChild(grupo);
-
-          const badge = document.getElementById('badge-lista');
-          if (badge) {
-            const actual = parseInt(badge.textContent) || 0;
-            badge.textContent = (actual + items.length) + ' registros';
-          }
-        })();
+        // Añadir el grupo de Farmacias a la pestaña LISTA, con el mismo
+        // formato (orden A–Z/Km, pestaña de filtro, clic → mapa) que el
+        // resto de capas.
+        if (listaFarmaciasAPI) {
+          const itemsLista = data.farmacias
+            .filter(f => f.lat && f.lng)
+            .map(f => {
+              const km = kmMasCercano(f.lat, f.lng);
+              return {
+                id:    f.id,
+                name:  f.nombre,
+                km,
+                kmNum: parseFloat(km.replace('Km ','').replace(',','.')) || 0,
+              };
+            });
+          listaFarmaciasAPI.agregarGrupo(itemsLista);
+        }
       })
       .catch(() => { /* Si falla el proxy, el mapa sigue funcionando sin farmacias */ });
 

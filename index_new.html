@@ -3467,7 +3467,7 @@
 
           marker.bindTooltip(
             deGuardia
-              ? `<span style="color:#00a651;font-weight:bold">Farmacia ${f.nombre}</span> · <span style="color:#e53935;font-weight:bold">DE GUARDIA HOY</span>`
+              ? `<span style="color:#00a651;font-weight:bold">Farmacia ${f.nombre}</span> · <span style="color:#e53935;font-weight:bold">DE GUARDIA AHORA</span>`
               : `<span style="color:#00a651;font-weight:bold">Farmacia ${f.nombre}</span>`,
             { direction: 'top', offset: [0, -14], className: 'lm-tooltip' }
           );
@@ -3512,8 +3512,10 @@
         actualizarVisibilidadFarmacias();
 
         // Actualizar contador y tarjeta (no pasan por actualizarContadores() porque
-        // los datos no viven en GEODATA, sino que llegan async del proxy)
-        const total = data.farmacias.length;
+        // los datos no viven en GEODATA, sino que llegan async del proxy).
+        // Se cuentan solo las farmacias con lat/lng válidos, que son las que
+        // realmente se pintan como marcador (ver filtro más arriba en el forEach).
+        const total = data.farmacias.filter(f => f.lat && f.lng).length;
         const cntFarm = document.getElementById('cnt-farm');
         if (cntFarm) cntFarm.textContent = total;
         const lcardN = document.getElementById('lcard-n-farm');

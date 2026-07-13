@@ -2154,14 +2154,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Panaderia Cafeteria Dominique",
-                "img": "img/Cafeteria-dominique.jpg",
-                "desc": [
-                    "Cafeteria",
-                    "Panaderia"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2185,6 +2177,51 @@
                         [
                             -0.743078,
                             37.714402
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Panaderia Cafeteria Dominique",
+                "img": "img/Cafeteria-dominique.jpg",
+                "desc": [
+                    "Cafeteria",
+                    "Panaderia"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "El Ancla",
+                "img": "img/El-ancla.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.743192,
+                            37.772447
+                        ],
+                        [
+                            -0.743451,
+                            37.772254
+                        ],
+                        [
+                            -0.743376,
+                            37.77219
+                        ],
+                        [
+                            -0.743092,
+                            37.772409
+                        ],
+                        [
+                            -0.743192,
+                            37.772447
                         ]
                     ]
                 ]

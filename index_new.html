@@ -165,14 +165,6 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
-    @keyframes haloFarmaciaA {
-      0%   { transform: scale(1);   opacity: 0.9; }
-      100% { transform: scale(2.6); opacity: 0; }
-    }
-    @keyframes haloFarmaciaB {
-      0%   { transform: scale(1);   opacity: 0.9; }
-      100% { transform: scale(2.6); opacity: 0; }
-    }
 
     .hero h1 {
       font-family: var(--sans);
@@ -3445,16 +3437,11 @@
 
     // Icono: cruz de farmacia, siempre verde (ya no distinguimos abierta/cerrada,
     // ese dato no es fiable — ver conversación sobre horarios liberalizados).
-    // Doble halo ámbar pulsante = de guardia ahora mismo.
+    // Borde rojo fijo de 5px = de guardia ahora mismo.
     function iconoFarmacia(deGuardia) {
-      const halo = deGuardia
-        ? `<div style="position:absolute;inset:0;border-radius:6px;background:#f0883e;opacity:0.9;animation:haloFarmaciaA 1.8s ease-out infinite;"></div>
-           <div style="position:absolute;inset:0;border-radius:6px;background:#f0883e;opacity:0.9;animation:haloFarmaciaB 1.8s ease-out infinite;animation-delay:0.6s;"></div>`
-        : '';
-      const borde = deGuardia ? 'box-shadow:0 0 0 2px #f0883e, 0 1px 4px rgba(0,0,0,0.6);' : 'box-shadow:0 1px 4px rgba(0,0,0,0.6);';
+      const borde = deGuardia ? 'box-shadow:0 0 0 5px #e53935, 0 1px 4px rgba(0,0,0,0.6);' : 'box-shadow:0 1px 4px rgba(0,0,0,0.6);';
       const html = `
         <div style="position:relative;width:26px;height:26px;">
-          ${halo}
           <div style="position:relative;width:26px;height:26px;border-radius:6px;background:#00a651;${borde}display:flex;align-items:center;justify-content:center;">
             <div style="position:relative;width:14px;height:14px;">
               <div style="position:absolute;top:0;left:5px;width:4px;height:14px;background:#fff;border-radius:1px;"></div>
@@ -3480,7 +3467,7 @@
 
           marker.bindTooltip(
             deGuardia
-              ? `<span style="color:#00a651;font-weight:bold">${f.nombre}</span> · <span style="color:#f0883e;font-weight:bold">DE GUARDIA HOY</span>`
+              ? `<span style="color:#00a651;font-weight:bold">${f.nombre}</span> · <span style="color:#e53935;font-weight:bold">DE GUARDIA HOY</span>`
               : `<span style="color:#00a651;font-weight:bold">${f.nombre}</span>`,
             { direction: 'top', offset: [0, -14], className: 'lm-tooltip' }
           );
@@ -3488,7 +3475,7 @@
           marker.on('click', () => {
             registrarStats('clic_farmacia', f.nombre + (deGuardia ? ' · DE GUARDIA HOY' : ''));
             const guardiaHTML = deGuardia
-              ? `<div style="color:#f0883e;font-weight:700;font-size:1em;margin-bottom:6px;">🟠 DE GUARDIA HOY — servicio 24h</div>`
+              ? `<div style="color:#e53935;font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA HOY — servicio 24h</div>`
               : '';
             const horarioHTML = f.horario
               ? `<div style="color:#8b949e;font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
@@ -3500,7 +3487,7 @@
               ? `<div style="color:#8b949e;font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
               : '';
 
-            document.getElementById('ppDot').style.background = deGuardia ? '#f0883e' : '#00a651';
+            document.getElementById('ppDot').style.background = deGuardia ? '#e53935' : '#00a651';
             document.getElementById('ppCapa').textContent = 'FARMACIA';
             document.getElementById('ppName').textContent = f.nombre;
             document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);

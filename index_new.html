@@ -838,6 +838,21 @@
       }
       .lp-km { font-size: 0.38rem; white-space: nowrap; }
       .lp-capa { font-size: 0.48rem; white-space: nowrap; }
+
+      /* Farmacias: en móvil ocultamos aviso de guardia, dirección y horario,
+         pero mostramos el teléfono — es lo más útil para llamar desde el móvil. */
+      .map-popup-panel[data-tipo="farmacia"] .lp-desc {
+        display: block;
+        font-size: 0.7rem;
+      }
+      .map-popup-panel[data-tipo="farmacia"] .lp-desc > div:not(.pp-tel) {
+        display: none;
+      }
+      .map-popup-panel[data-tipo="farmacia"] .lp-desc .pp-tel {
+        margin-top: 0 !important;
+        border-top: none !important;
+        padding-top: 0 !important;
+      }
       .lp-maps { font-size: 0.46rem; white-space: nowrap; padding: 0.25rem 0.5rem; }
       .lp-share { width: 1.4rem; height: 1.4rem; flex-shrink: 0; }
       .map-popup-close {
@@ -3573,7 +3588,7 @@
               ? `<div style="color:#8b949e;font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
               : '';
             const telHTML = f.telefono
-              ? `<div style="color:#e6edf3;font-size:0.95em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:#4a9eff;">${f.telefono}</a></div>`
+              ? `<div class="pp-tel" style="color:#e6edf3;font-size:0.95em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:#4a9eff;">${f.telefono}</a></div>`
               : '';
             const dirHTML = f.direccion
               ? `<div style="color:#8b949e;font-size:0.85em;margin-top:4px;">${f.direccion}</div>`

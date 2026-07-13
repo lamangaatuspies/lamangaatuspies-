@@ -165,10 +165,6 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
-    @keyframes haloFarmacia {
-      0%   { transform: scale(1);   opacity: 0.55; }
-      100% { transform: scale(2.4); opacity: 0; }
-    }
 
     .hero h1 {
       font-family: var(--sans);
@@ -842,6 +838,21 @@
       }
       .lp-km { font-size: 0.38rem; white-space: nowrap; }
       .lp-capa { font-size: 0.48rem; white-space: nowrap; }
+
+      /* Farmacias: en móvil ocultamos aviso de guardia, dirección y horario,
+         pero mostramos el teléfono — es lo más útil para llamar desde el móvil. */
+      .map-popup-panel[data-tipo="farmacia"] .lp-desc {
+        display: block;
+        font-size: 0.7rem;
+      }
+      .map-popup-panel[data-tipo="farmacia"] .lp-desc > div:not(.pp-tel) {
+        display: none;
+      }
+      .map-popup-panel[data-tipo="farmacia"] .lp-desc .pp-tel {
+        margin-top: 0 !important;
+        border-top: none !important;
+        padding-top: 0 !important;
+      }
       .lp-maps { font-size: 0.46rem; white-space: nowrap; padding: 0.25rem 0.5rem; }
       .lp-share { width: 1.4rem; height: 1.4rem; flex-shrink: 0; }
       .map-popup-close {
@@ -1852,7 +1863,7 @@
           </div>
           <div class="lcard-n" id="lcard-n-farm" style="color:#00a651;">—</div>
           <div class="lcard-name">Farmacias</div>
-          <div class="lcard-desc">Farmacias de La Manga con estado de apertura y turno de guardia diario, sincronizado en tiempo real con el Colegio Oficial de Farmacéuticos de la Región de Murcia.</div>
+          <div class="lcard-desc">Farmacias de La Manga con turno de guardia diario en tiempo real, sincronizado con el Colegio Oficial de Farmacéuticos de la Región de Murcia.</div>
         </div>
       </div>
 
@@ -1899,8 +1910,8 @@
             <div class="tl-date">Jul 2026</div>
             <div class="tl-right">
               <span class="tl-badge update">Actualización</span>
-              <span class="tl-title">Farmacias con estado en tiempo real</span>
-              <span class="tl-desc">Qué farmacia está abierta ahora mismo y cuál está de guardia hoy, sincronizado con el Colegio Oficial de Farmacéuticos de la Región de Murcia.</span>
+              <span class="tl-title">Farmacias con turno de guardia</span>
+              <span class="tl-desc">Qué farmacia está de guardia hoy, sincronizado en tiempo real con el Colegio Oficial de Farmacéuticos de la Región de Murcia.</span>
             </div>
           </div>
         </div>
@@ -2599,11 +2610,12 @@
     overlays['Polígonos'] = L.layerGroup([poligonosLayer, poligonosLabels]);
     overlays['Salidas'] = salidasLayerGroup;
 
-    // Farmacias: la capa se crea vacía aquí. NO se registra en `overlays` para
-    // que la opción no aparezca en el menú de capas del mapa mientras el
-    // feature flag FARMACIAS_HABILITADAS esté en false (ver más abajo).
+    // Farmacias: la capa se crea vacía aquí (para que el checkbox aparezca
+    // desde el primer instante, igual que el resto) y se rellena de marcadores
+    // más adelante, cuando responda el proxy de Apps Script.
     const farmaciasLayerGroup = L.featureGroup();
     farmaciasLayerGroup.addTo(map); // activa por defecto, como el resto
+    overlays['Farmacias'] = farmaciasLayerGroup;
 
     // ── VISIBILIDAD FARMACIAS POR ZOOM (mismo patrón que Salidas: pane propio,
     // independiente del checkbox del control de capas) ──
@@ -2966,6 +2978,10 @@
       return 'Km ' + mejorKm.toFixed(1).replace('.', ',');
     }
 
+    // Se rellena al final de construirLista() y permite añadir el grupo de
+    // Farmacias más tarde, cuando lleguen los datos async del proxy.
+    let listaFarmaciasAPI = null;
+
     (function construirLista() {
 
       const CAPAS_LISTA = [
@@ -3134,16 +3150,7 @@
       });
 
       // ── Click en fila → ver en mapa (ignora clics en píldoras de tag) ──
-      wrap.addEventListener('click', function(e) {
-        if (e.target.closest('.lista-tag')) return;
-        const fila = e.target.closest('.lista-fila');
-        if (!fila) return;
-        const esAlias = fila.dataset.alias === '1';
-        const name = esAlias ? fila.dataset.target : fila.dataset.name;
-        const item = allFeatures.find(f => f.name === name);
-        if (!item) return;
-        registrarStats('clic_lista', esAlias ? `${fila.dataset.name} → ${name}` : name);
-        // Navegar al mapa
+      function irAlMapaDesdeLista(lat, lng, abrirPopup) {
         const searchWrap = document.querySelector('.search-wrap');
         const mapFrame   = document.querySelector('.map-frame');
         const navH       = document.querySelector('nav').offsetHeight;
@@ -3152,12 +3159,104 @@
         const blockCenter = (blockTop + blockBottom) / 2;
         const visibleH    = window.innerHeight - navH;
         window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'smooth' });
-        // Zoom y popup
         setTimeout(() => {
-          map.setView([item.lat, item.lng], 17, { animate: true });
-          selectFeature(item);
+          map.setView([lat, lng], 17, { animate: true });
+          abrirPopup();
         }, 350);
+      }
+
+      wrap.addEventListener('click', function(e) {
+        if (e.target.closest('.lista-tag')) return;
+        const fila = e.target.closest('.lista-fila');
+        if (!fila) return;
+
+        // Fila de farmacia: busca su marcador ya creado en el mapa y reutiliza
+        // su propio manejador de clic para abrir el popup con todos los datos.
+        if (fila.dataset.farmaciaId) {
+          const entry = farmaciaMarkersById[fila.dataset.farmaciaId];
+          if (!entry) return;
+          registrarStats('clic_lista', 'Farmacia ' + entry.f.nombre);
+          irAlMapaDesdeLista(entry.f.lat, entry.f.lng, () => entry.marker.fire('click'));
+          return;
+        }
+
+        const esAlias = fila.dataset.alias === '1';
+        const name = esAlias ? fila.dataset.target : fila.dataset.name;
+        const item = allFeatures.find(f => f.name === name);
+        if (!item) return;
+        registrarStats('clic_lista', esAlias ? `${fila.dataset.name} → ${name}` : name);
+        irAlMapaDesdeLista(item.lat, item.lng, () => selectFeature(item));
       });
+
+      // ── Exponer API para añadir el grupo de Farmacias (datos async) ──
+      listaFarmaciasAPI = {
+        agregarGrupo(items) {
+          items.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+
+          function renderFilas(lista) {
+            if (!lista.length) return '<div class="lista-empty">Sin resultados para este filtro.</div>';
+            return lista.map(item => `
+              <div class="lista-fila" data-farmacia-id="${item.id}" title="Ver en el mapa">
+                <span class="lista-td-km">${item.km}</span>
+                <span class="lista-td-nombre">Farmacia ${item.name}</span>
+              </div>`).join('');
+          }
+
+          const grupo = document.createElement('div');
+          grupo.className = 'lista-grupo';
+          grupo.dataset.capaKey = 'Farmacias';
+          grupo.innerHTML = `
+            <div class="lista-grupo-header">
+              <span class="lista-grupo-dot" style="background:#00a651"></span>
+              <span class="lista-grupo-nombre">Farmacias</span>
+              <span class="lista-grupo-count">${items.length} registros</span>
+              <div class="lista-sort-btns">
+                <button class="lista-sort-btn active" data-sort="nombre" title="Ordenar alfabéticamente">A–Z</button>
+                <button class="lista-sort-btn" data-sort="km" title="Ordenar por kilómetro">Km</button>
+              </div>
+            </div>
+            <div class="lista-tabla">${renderFilas(items)}</div>`;
+          wrap.appendChild(grupo);
+          grupos.push({ el: grupo, key: 'Farmacias', items });
+          if (filtroActivo !== 'todas' && filtroActivo !== 'Farmacias') grupo.style.display = 'none';
+
+          let sortActual = 'nombre';
+          function rerender() {
+            const base = [...items].sort((a, b) =>
+              sortActual === 'km'
+                ? a.kmNum - b.kmNum || a.name.localeCompare(b.name, 'es')
+                : a.name.localeCompare(b.name, 'es')
+            );
+            grupo.querySelector('.lista-tabla').innerHTML = renderFilas(base);
+            grupo.querySelector('.lista-grupo-count').textContent = base.length + ' registros';
+          }
+
+          grupo.querySelectorAll('.lista-sort-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const tipo = this.dataset.sort;
+              if (tipo === sortActual) return;
+              sortActual = tipo;
+              grupo.querySelectorAll('.lista-sort-btn').forEach(b => b.classList.remove('active'));
+              this.classList.add('active');
+              rerender();
+            });
+          });
+
+          // Pestaña de filtro propia
+          const btnFarm = document.createElement('button');
+          btnFarm.className = 'lista-filtro-btn';
+          btnFarm.dataset.capa = 'Farmacias';
+          btnFarm.innerHTML = `<span class="filtro-dot" style="background:#00a651"></span>Farmacias <span class="filtro-count">${items.length}</span>`;
+          btnFarm.title = 'Filtrar por: Farmacias';
+          btnFarm.addEventListener('click', () => aplicarFiltro('Farmacias'));
+          filtro.appendChild(btnFarm);
+
+          // Totales
+          totalLista += items.length;
+          document.getElementById('badge-lista').textContent = totalLista + ' registros';
+          btnTodas.innerHTML = `Todas <span class="filtro-count">${totalLista}</span>`;
+        }
+      };
     })();
 
     // ── LIGHTBOX ──
@@ -3418,12 +3517,6 @@
     // ── FARMACIAS DE LA MANGA (+ turno de guardia) ──
     // farmaciasLayerGroup, su pane y su lógica de zoom ya se crearon arriba,
     // junto al resto de capas, para que el checkbox aparezca desde el inicio.
-    //
-    // DESACTIVADO TEMPORALMENTE (ver nota): el horario "currentDaySchedule" que
-    // devuelve la API del Colegio de Farmacéuticos no parece variar según el día
-    // de la semana, por lo que el estado "abierta/cerrada" no es fiable en
-    // domingos y festivos. Poner a `true` en cuanto se confirme el dato.
-    const FARMACIAS_HABILITADAS = false;
     const PROXY_FARMACIAS = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=farmacias";
 
     // El turno de guardia cambia a las 9:30 (no a medianoche), confirmado con el
@@ -3440,42 +3533,18 @@
       return h * 60 + m;
     }
 
-    function parseTramosHorario(str) {
-      if (!str) return [];
-      return str.split('|')
-        .map(t => t.trim())
-        .map(tramo => {
-          const m = tramo.match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})$/);
-          if (!m) return null;
-          return {
-            inicio: parseInt(m[1], 10) * 60 + parseInt(m[2], 10),
-            fin:    parseInt(m[3], 10) * 60 + parseInt(m[4], 10),
-          };
-        })
-        .filter(Boolean);
-    }
-
-    function farmaciaAbiertaAhora(horario, minAhora) {
-      const tramos = parseTramosHorario(horario);
-      if (!tramos.length) return false; // sin dato fiable → nunca asumimos "abierta"
-      return tramos.some(t => minAhora >= t.inicio && minAhora <= t.fin);
-    }
-
     function farmaciaDeGuardiaAhora(f, minAhora) {
       return minAhora < CORTE_GUARDIA_MIN ? !!f.deGuardiaAyer : !!f.deGuardiaHoy;
     }
 
-    // Icono: cruz de farmacia. Verde = abierta o de guardia. Marrón apagado = cerrada.
-    // Punto rojo pulsante en la esquina = de guardia ahora mismo.
-    function iconoFarmacia(estado) {
-      const color = estado === 'cerrada' ? '#7a6a52' : '#00a651';
-      const halo = estado === 'guardia'
-        ? '<div style="position:absolute;inset:0;border-radius:6px;background:#f0883e;opacity:0.55;animation:haloFarmacia 1.8s ease-out infinite;"></div>'
-        : '';
+    // Icono: cruz de farmacia, siempre verde (ya no distinguimos abierta/cerrada,
+    // ese dato no es fiable — ver conversación sobre horarios liberalizados).
+    // Borde rojo fijo de 5px = de guardia ahora mismo.
+    function iconoFarmacia(deGuardia) {
+      const borde = deGuardia ? 'box-shadow:0 0 0 5px #e53935, 0 1px 4px rgba(0,0,0,0.6);' : 'box-shadow:0 1px 4px rgba(0,0,0,0.6);';
       const html = `
         <div style="position:relative;width:26px;height:26px;">
-          ${halo}
-          <div style="position:relative;width:26px;height:26px;border-radius:6px;background:${color};box-shadow:0 1px 4px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;">
+          <div style="position:relative;width:26px;height:26px;border-radius:6px;background:#00a651;${borde}display:flex;align-items:center;justify-content:center;">
             <div style="position:relative;width:14px;height:14px;">
               <div style="position:absolute;top:0;left:5px;width:4px;height:14px;background:#fff;border-radius:1px;"></div>
               <div style="position:absolute;top:5px;left:0;width:14px;height:4px;background:#fff;border-radius:1px;"></div>
@@ -3485,7 +3554,12 @@
       return L.divIcon({ html, className: 'farmacia-icon', iconSize: [26, 26], iconAnchor: [13, 13] });
     }
 
-    if (FARMACIAS_HABILITADAS) fetch(PROXY_FARMACIAS)
+    // Índice de marcadores de farmacia por id, para que las filas de la
+    // pestaña LISTA puedan reutilizar el marcador ya creado (navegar y
+    // abrir su popup) sin duplicar la lógica de apertura.
+    const farmaciaMarkersById = {};
+
+    fetch(PROXY_FARMACIAS)
       .then(r => r.json())
       .then(data => {
         if (!data.ok || !Array.isArray(data.farmacias) || !data.farmacias.length) return;
@@ -3495,37 +3569,32 @@
         data.farmacias.forEach(f => {
           if (!f.lat || !f.lng) return;
           const deGuardia = farmaciaDeGuardiaAhora(f, minAhora);
-          const abierta   = deGuardia ? true : farmaciaAbiertaAhora(f.horario, minAhora);
-          const estado    = deGuardia ? 'guardia' : (abierta ? 'abierta' : 'cerrada');
 
-          const marker = L.marker([f.lat, f.lng], { icon: iconoFarmacia(estado), nombreFarmacia: f.nombre, zIndexOffset: deGuardia ? 500 : 0, pane: 'farmaciasPane' });
+          const marker = L.marker([f.lat, f.lng], { icon: iconoFarmacia(deGuardia), nombreFarmacia: f.nombre, zIndexOffset: deGuardia ? 500 : 0, pane: 'farmaciasPane' });
 
-          const estadoLabel = deGuardia ? 'DE GUARDIA HOY' : (abierta ? 'ABIERTA' : 'CERRADA');
-          const estadoColor = deGuardia ? '#ff3b30' : (abierta ? '#00a651' : '#8b949e');
           marker.bindTooltip(
-            `<span style="color:#00a651;font-weight:bold">${f.nombre}</span> · <span style="color:${estadoColor};font-weight:bold">${estadoLabel}</span>`,
+            deGuardia
+              ? `<span style="color:#00a651;font-weight:bold">Farmacia ${f.nombre}</span> · <span style="color:#e53935;font-weight:bold">DE GUARDIA AHORA</span>`
+              : `<span style="color:#00a651;font-weight:bold">Farmacia ${f.nombre}</span>`,
             { direction: 'top', offset: [0, -14], className: 'lm-tooltip' }
           );
 
           marker.on('click', () => {
-            registrarStats('clic_farmacia', f.nombre + ' · ' + estadoLabel);
+            registrarStats('clic_farmacia', f.nombre + (deGuardia ? ' · DE GUARDIA HOY' : ''));
             const guardiaHTML = deGuardia
-              ? `<div style="color:#ff3b30;font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA HOY — servicio 24h</div>`
-              : '';
-            const estadoHTML = !deGuardia
-              ? `<div style="color:${estadoColor};font-weight:700;font-size:1em;margin-bottom:6px;">${abierta ? '🟢 ABIERTA AHORA' : '⚪ CERRADA AHORA'}</div>`
+              ? `<div style="color:#e53935;font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA AHORA — servicio 24h</div>`
               : '';
             const horarioHTML = f.horario
               ? `<div style="color:#8b949e;font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
               : '';
             const telHTML = f.telefono
-              ? `<div style="color:#e6edf3;font-size:0.95em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:#4a9eff;">${f.telefono}</a></div>`
+              ? `<div class="pp-tel" style="color:#e6edf3;font-size:0.95em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:#4a9eff;">${f.telefono}</a></div>`
               : '';
             const dirHTML = f.direccion
               ? `<div style="color:#8b949e;font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
               : '';
 
-            document.getElementById('ppDot').style.background = estadoColor;
+            document.getElementById('ppDot').style.background = deGuardia ? '#e53935' : '#00a651';
             document.getElementById('ppCapa').textContent = 'FARMACIA';
             document.getElementById('ppName').textContent = f.nombre;
             document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);
@@ -3535,13 +3604,14 @@
             imgEl.style.display = 'block';
             if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
             else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
-            document.getElementById('ppDesc').innerHTML = guardiaHTML + estadoHTML + dirHTML + horarioHTML + telHTML;
+            document.getElementById('ppDesc').innerHTML = guardiaHTML + dirHTML + horarioHTML + telHTML;
             document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + f.lat + ',' + f.lng;
             popupPanel.dataset.tipo = 'farmacia';
             popupPanel.classList.add('visible');
           });
 
           marker.addTo(farmaciasLayerGroup);
+          farmaciaMarkersById[f.id] = { marker, f, deGuardia };
         });
 
         // La capa y su checkbox ya existían desde el inicio; solo falta
@@ -3550,14 +3620,35 @@
         actualizarVisibilidadFarmacias();
 
         // Actualizar contador y tarjeta (no pasan por actualizarContadores() porque
-        // los datos no viven en GEODATA, sino que llegan async del proxy)
-        const total = data.farmacias.length;
+        // los datos no viven en GEODATA, sino que llegan async del proxy).
+        // Se cuentan solo las farmacias con lat/lng válidos, que son las que
+        // realmente se pintan como marcador (ver filtro más arriba en el forEach).
+        const total = data.farmacias.filter(f => f.lat && f.lng).length;
+
         const cntFarm = document.getElementById('cnt-farm');
         if (cntFarm) cntFarm.textContent = total;
         const lcardN = document.getElementById('lcard-n-farm');
         if (lcardN) lcardN.textContent = total;
         const lcard = document.getElementById('lcard-farm');
         if (lcard) lcard.dataset.num = total;
+
+        // Añadir el grupo de Farmacias a la pestaña LISTA, con el mismo
+        // formato (orden A–Z/Km, pestaña de filtro, clic → mapa) que el
+        // resto de capas.
+        if (listaFarmaciasAPI) {
+          const itemsLista = data.farmacias
+            .filter(f => f.lat && f.lng)
+            .map(f => {
+              const km = kmMasCercano(f.lat, f.lng);
+              return {
+                id:    f.id,
+                name:  f.nombre,
+                km,
+                kmNum: parseFloat(km.replace('Km ','').replace(',','.')) || 0,
+              };
+            });
+          listaFarmaciasAPI.agregarGrupo(itemsLista);
+        }
       })
       .catch(() => { /* Si falla el proxy, el mapa sigue funcionando sin farmacias */ });
 

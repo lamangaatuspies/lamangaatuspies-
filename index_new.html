@@ -61,6 +61,11 @@
       --accent2:   #f0883e;
       --accent3:   #3fb950;
       --border:    #30363d;
+      --flag-verde:     #2ecc71;
+      --flag-amarilla:  #f1c40f;
+      --flag-roja:      #e74c3c;
+      --farmacia-verde: #00a651;
+      --farmacia-roja:  #e53935;
       --mono:      'Share Tech Mono', monospace;
       --sans:      'Rajdhani', sans-serif;
       --serif:     'Crimson Pro', serif;
@@ -73,12 +78,17 @@
       --surface:   #ffffff;
       --surface2:  #eef1f4;
       --ink:       #1c2430;
-      --ink-mid:   #57606f;
+      --ink-mid:   #4b5563;
       --ink-dim:   #8a92a0;
       --accent:    #1f6feb;
       --accent2:   #d9670b;
       --accent3:   #1f8a3d;
       --border:    #d7dce3;
+      --flag-verde:     #15803d;
+      --flag-amarilla:  #b45309;
+      --flag-roja:      #b91c1c;
+      --farmacia-verde: #0d7a3d;
+      --farmacia-roja:  #c0392b;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -3545,7 +3555,7 @@
           const lng = esMarMenor ? p.lng - 0.0004 - (esLebeche ? 0.00065 : 0) : p.lng;
           const icono = iconoBandera(p.bandera, esMarMenor);
           const b = (p.bandera || '').toUpperCase();
-          const colorTexto = b === 'VERDE' ? '#2ecc71' : b === 'AMARILLA' ? '#f1c40f' : b === 'ROJA' ? '#e74c3c' : '#aaaaaa';
+          const colorTexto = b === 'VERDE' ? 'var(--flag-verde)' : b === 'AMARILLA' ? 'var(--flag-amarilla)' : b === 'ROJA' ? 'var(--flag-roja)' : 'var(--ink-mid)';
           const nombreCorto = p.nombre.replace(/^PLAYA\s+/i, '').replace(/\s*\((LIMA\s*\d+|MAR MENOR)\)\s*/gi, '').trim()
             .toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
           const estadoUpper = (p.estado || '').toUpperCase() === 'SIN ESTADO' || !(p.estado || '').trim() ? 'Sin datos' : (p.estado || '').toUpperCase();
@@ -3643,15 +3653,15 @@
 
           marker.bindTooltip(
             deGuardia
-              ? `<span style="color:#00a651;font-weight:bold">Farmacia ${f.nombre}</span> · <span style="color:#e53935;font-weight:bold">DE GUARDIA AHORA</span>`
-              : `<span style="color:#00a651;font-weight:bold">Farmacia ${f.nombre}</span>`,
+              ? `<span style="color:var(--farmacia-verde);font-weight:bold">Farmacia ${f.nombre}</span> · <span style="color:var(--farmacia-roja);font-weight:bold">DE GUARDIA AHORA</span>`
+              : `<span style="color:var(--farmacia-verde);font-weight:bold">Farmacia ${f.nombre}</span>`,
             { direction: 'top', offset: [0, -14], className: 'lm-tooltip' }
           );
 
           marker.on('click', () => {
             registrarStats('clic_farmacia', f.nombre + (deGuardia ? ' · DE GUARDIA HOY' : ''));
             const guardiaHTML = deGuardia
-              ? `<div style="color:#e53935;font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA AHORA — servicio 24h</div>`
+              ? `<div style="color:var(--farmacia-roja);font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA AHORA — servicio 24h</div>`
               : '';
             const horarioHTML = f.horario
               ? `<div style="color:var(--ink-mid);font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
@@ -3663,7 +3673,7 @@
               ? `<div style="color:var(--ink-mid);font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
               : '';
 
-            document.getElementById('ppDot').style.background = deGuardia ? '#e53935' : '#00a651';
+            document.getElementById('ppDot').style.background = deGuardia ? 'var(--farmacia-roja)' : 'var(--farmacia-verde)';
             document.getElementById('ppCapa').textContent = 'FARMACIA';
             document.getElementById('ppName').textContent = f.nombre;
             document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);

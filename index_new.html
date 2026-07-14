@@ -720,7 +720,7 @@
       font-size: 0.6rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #8b949e;
+      color: var(--ink-mid);
       display: flex;
       align-items: center;
       gap: 0.4rem;
@@ -731,7 +731,7 @@
       margin-left: auto;
       font-family: var(--mono);
       font-size: 0.62rem;
-      color: #f0883e;
+      color: var(--accent2);
       letter-spacing: 0.08em;
     }
     .lp-name {
@@ -740,7 +740,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      color: #e6edf3;
+      color: var(--ink);
       margin-bottom: 0.5rem;
     }
     .lp-img {
@@ -750,17 +750,17 @@
       object-fit: contain;
       display: block;
       margin-bottom: 0.6rem;
-      border: 1px solid #30363d;
-      background: #0d1117;
+      border: 1px solid var(--border);
+      background: var(--bg);
     }
     .lp-desc {
       font-family: var(--mono);
       font-size: 0.68rem;
-      color: #8b949e;
+      color: var(--ink-mid);
       line-height: 1.8;
       margin-bottom: 0.7rem;
     }
-    .lp-desc span::before { content: '· '; color: #f0883e; }
+    .lp-desc span::before { content: '· '; color: var(--accent2); }
     .lp-maps {
       display: inline-block;
       font-family: var(--mono);
@@ -768,11 +768,11 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       padding: 0.3rem 0.7rem;
-      border: 1px solid #30363d;
-      color: #58a6ff;
+      border: 1px solid var(--border);
+      color: var(--accent);
       text-decoration: none;
     }
-    .lp-maps:hover { border-color: #58a6ff; }
+    .lp-maps:hover { border-color: var(--accent); }
     .lp-footer {
       display: flex;
       align-items: center;
@@ -784,28 +784,28 @@
       justify-content: center;
       width: 2rem;
       height: 2rem;
-      border: 1px solid #30363d;
-      color: #8b949e;
+      border: 1px solid var(--border);
+      color: var(--ink-mid);
       cursor: pointer;
       background: transparent;
       transition: color 0.2s, border-color 0.2s;
       flex-shrink: 0;
     }
-    .lp-share:hover { color: #e6edf3; border-color: #58a6ff; }
-    .lp-share.copied { color: #3fb950; border-color: #3fb950; }
+    .lp-share:hover { color: var(--ink); border-color: var(--accent); }
+    .lp-share.copied { color: var(--accent3); border-color: var(--accent3); }
     .lp-share-tip {
       font-family: var(--mono);
       font-size: 0.62rem;
-      color: #3fb950;
+      color: var(--accent3);
       letter-spacing: 0.06em;
       display: none;
     }
     .lp-share-tip.visible { display: inline; }
     .leaflet-control-layers {
-      background: #161b22 !important;
-      border: 1px solid #30363d !important;
+      background: var(--surface) !important;
+      border: 1px solid var(--border) !important;
       border-radius: 0 !important;
-      color: #e6edf3 !important;
+      color: var(--ink) !important;
     }
     footer {
       background: var(--surface);
@@ -1056,10 +1056,10 @@
     .bandera-icon { background: none !important; border: none !important; box-shadow: none !important; }
 
     .lm-tooltip {
-      background: #161b22 !important;
-      border: 1px solid #30363d !important;
+      background: var(--surface) !important;
+      border: 1px solid var(--border) !important;
       border-radius: 3px !important;
-      color: #e6edf3 !important;
+      color: var(--ink) !important;
       font-family: 'Rajdhani', sans-serif !important;
       font-size: 0.78rem !important;
       font-weight: 600 !important;
@@ -1111,9 +1111,9 @@
       top: 3px;
       left: 10px;
       width: 430px;
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-left: 3px solid #f0883e;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent2);
       z-index: 99000;
       box-shadow: 0 4px 20px rgba(0,0,0,0.7);
     }
@@ -1122,7 +1122,7 @@
     .map-popup-close {
       background: transparent;
       border: none;
-      color: #484f58;
+      color: var(--ink-dim);
       cursor: pointer;
       font-size: 0.85rem;
       line-height: 1;
@@ -1131,7 +1131,7 @@
       margin-left: 0.4rem;
       flex-shrink: 0;
     }
-    .map-popup-close:hover { color: #e6edf3; }
+    .map-popup-close:hover { color: var(--ink); }
 
     /* ── LISTA ── */
     .lista-grupo {
@@ -1173,7 +1173,7 @@
       transition: background 0.15s;
       padding: 0.45rem 0.7rem;
     }
-    .lista-fila:hover { background: #161b22; }
+    .lista-fila:hover { background: var(--surface); }
     .lista-td-km {
       font-family: var(--mono);
       font-size: 0.68rem;
@@ -3551,7 +3551,7 @@
           const estadoUpper = (p.estado || '').toUpperCase() === 'SIN ESTADO' || !(p.estado || '').trim() ? 'Sin datos' : (p.estado || '').toUpperCase();
           const marker = L.marker([lat, lng], { icon: icono, zIndexOffset: -100, nombrePlaya: p.nombre });
           const sinDatos = b !== 'VERDE' && b !== 'AMARILLA' && b !== 'ROJA';
-          const lineaFecha = sinDatos ? '' : `<br><span style="color:#e6edf3;font-size:0.85em"><b>Act.</b> ${p.fecha}</span>`;
+          const lineaFecha = sinDatos ? '' : `<br><span style="color:var(--ink);font-size:0.85em"><b>Act.</b> ${p.fecha}</span>`;
           marker.bindTooltip(
             `<span style="color:${colorTexto};font-weight:bold">${nombreCorto} · ${estadoUpper}</span>${lineaFecha}`,
             { direction: 'top', offset: [6, -8], className: 'lm-tooltip' }
@@ -3563,8 +3563,8 @@
             const banderaHTML = `<div style="margin-bottom:8px;"><img src="${imgUrl}" style="height:40px;width:auto;"></div>`;
             const estadoHTML = `<div style="color:${colorTexto};font-weight:700;font-size:1em;margin-bottom:6px;">ESTADO DE LA MAR: ${estadoUpper}</div>`;
             const fechaHTML = sinDatos ? '' :
-              `<div style="color:#e6edf3;font-size:1em;font-weight:600;margin-top:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4a9eff;box-shadow:0 0 6px #4a9eff;animation:pulse 2s infinite;vertical-align:middle;margin-right:6px;"></span>Act. ${p.fecha}</div>`;
-            const horarioHTML = `<div style="color:#8b949e;font-size:0.9em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
+              `<div style="color:var(--ink);font-size:1em;font-weight:600;margin-top:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);animation:pulse 2s infinite;vertical-align:middle;margin-right:6px;"></span>Act. ${p.fecha}</div>`;
+            const horarioHTML = `<div style="color:var(--ink-mid);font-size:0.9em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
 
             document.getElementById('ppDot').style.background = colorTexto;
             document.getElementById('ppCapa').textContent = 'PUESTO DE SOCORRISTA';
@@ -3654,13 +3654,13 @@
               ? `<div style="color:#e53935;font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA AHORA — servicio 24h</div>`
               : '';
             const horarioHTML = f.horario
-              ? `<div style="color:#8b949e;font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
+              ? `<div style="color:var(--ink-mid);font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
               : '';
             const telHTML = f.telefono
-              ? `<div class="pp-tel" style="color:#e6edf3;font-size:0.95em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:#4a9eff;">${f.telefono}</a></div>`
+              ? `<div class="pp-tel" style="color:var(--ink);font-size:0.95em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:var(--accent);">${f.telefono}</a></div>`
               : '';
             const dirHTML = f.direccion
-              ? `<div style="color:#8b949e;font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
+              ? `<div style="color:var(--ink-mid);font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
               : '';
 
             document.getElementById('ppDot').style.background = deGuardia ? '#e53935' : '#00a651';

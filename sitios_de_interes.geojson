@@ -1655,12 +1655,12 @@
                             37.748929
                         ],
                         [
-                            -0.745128,
-                            37.748127
+                            -0.745033,
+                            37.74829
                         ],
                         [
-                            -0.743573,
-                            37.743535
+                            -0.743606,
+                            37.743422
                         ],
                         [
                             -0.741545,
@@ -2046,11 +2046,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Edificio MULTIUSOS",
-                "img": "img/Multiusos.jpg",
-                "desc": ["Club de Personas Mayores", "Biblioteca","Asociación de Vecinos","Consultorio Cavanna"]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2077,6 +2072,402 @@
                         ]
                     ]
                 ]
+            },
+            "properties": {
+                "name": "Edificio MULTIUSOS",
+                "img": "img/Multiusos.jpg",
+                "desc": [
+                    "Club de Personas Mayores",
+                    "Biblioteca",
+                    "Asociación de Vecinos",
+                    "Consultorio Cavanna"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.744904,
+                            37.746628
+                        ],
+                        [
+                            -0.744876,
+                            37.746526
+                        ],
+                        [
+                            -0.744675,
+                            37.746562
+                        ],
+                        [
+                            -0.744703,
+                            37.746663
+                        ],
+                        [
+                            -0.744904,
+                            37.746628
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "David's Saliling School",
+                "img": "img/DavidSailing.jpg",
+                "desc": "Escuela de Vela"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.734789,
+                            37.679034
+                        ],
+                        [
+                            -0.734757,
+                            37.678957
+                        ],
+                        [
+                            -0.734715,
+                            37.678968
+                        ],
+                        [
+                            -0.734745,
+                            37.679045
+                        ],
+                        [
+                            -0.734789,
+                            37.679034
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Sandrina",
+                "desc": "Escuela de Vela",
+                "img": "img/Sandrina.jpg"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.733008,
+                            37.663368
+                        ],
+                        [
+                            -0.732983,
+                            37.663326
+                        ],
+                        [
+                            -0.732776,
+                            37.663397
+                        ],
+                        [
+                            -0.732796,
+                            37.663442
+                        ],
+                        [
+                            -0.733008,
+                            37.663368
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Actividades Naúticas Dacar",
+                "desc": "Escuela de Vela",
+                "img": "img/Dacar.jpg"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.728609,
+                            37.661506
+                        ],
+                        [
+                            -0.728609,
+                            37.661506
+                        ],
+                        [
+                            -0.728609,
+                            37.661506
+                        ],
+                        [
+                            -0.728609,
+                            37.661506
+                        ]
+                    ]
+                ]
+            },
+            "properties": {}
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.728518,
+                            37.661497
+                        ],
+                        [
+                            -0.728518,
+                            37.661497
+                        ],
+                        [
+                            -0.728518,
+                            37.661497
+                        ],
+                        [
+                            -0.728518,
+                            37.661497
+                        ]
+                    ]
+                ]
+            },
+            "properties": {}
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.728643,
+                            37.66151
+                        ],
+                        [
+                            -0.728654,
+                            37.661468
+                        ],
+                        [
+                            -0.728545,
+                            37.661453
+                        ],
+                        [
+                            -0.728537,
+                            37.661497
+                        ],
+                        [
+                            -0.728643,
+                            37.66151
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Dos Mares Wind",
+                "desc": "Escuela de Vela",
+                "img": "img/DosMaresWind.jpg"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.724785,
+                            37.659896
+                        ],
+                        [
+                            -0.724822,
+                            37.659855
+                        ],
+                        [
+                            -0.724695,
+                            37.659782
+                        ],
+                        [
+                            -0.724658,
+                            37.659821
+                        ],
+                        [
+                            -0.724785,
+                            37.659896
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Mangasurf",
+                "desc": "Escuela de Vela",
+                "img": "img/MangaSurf.jpg"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.723361,
+                            37.655995
+                        ],
+                        [
+                            -0.723313,
+                            37.655909
+                        ],
+                        [
+                            -0.723278,
+                            37.655919
+                        ],
+                        [
+                            -0.723316,
+                            37.656007
+                        ],
+                        [
+                            -0.723361,
+                            37.655995
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Cavanna Wind",
+                "desc": "Escuela de Vela"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.721054,
+                            37.65518
+                        ],
+                        [
+                            -0.721046,
+                            37.655144
+                        ],
+                        [
+                            -0.720963,
+                            37.655153
+                        ],
+                        [
+                            -0.720968,
+                            37.65519
+                        ],
+                        [
+                            -0.721054,
+                            37.65518
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "KiteCenter",
+                "desc": "Escuela de Kite Surf"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.734763,
+                            37.679079
+                        ],
+                        [
+                            -0.734763,
+                            37.679079
+                        ],
+                        [
+                            -0.734763,
+                            37.679079
+                        ],
+                        [
+                            -0.734763,
+                            37.679079
+                        ]
+                    ]
+                ]
+            },
+            "properties": {}
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.734749,
+                            37.679051
+                        ],
+                        [
+                            -0.734749,
+                            37.679051
+                        ],
+                        [
+                            -0.734749,
+                            37.679051
+                        ],
+                        [
+                            -0.734749,
+                            37.679051
+                        ]
+                    ]
+                ]
+            },
+            "properties": {}
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.734804,
+                            37.679072
+                        ],
+                        [
+                            -0.734791,
+                            37.679041
+                        ],
+                        [
+                            -0.734749,
+                            37.679052
+                        ],
+                        [
+                            -0.734762,
+                            37.679083
+                        ],
+                        [
+                            -0.734804,
+                            37.679072
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "TatoWind",
+                "desc": "Escuela de Vela",
+                "img": "img/TatoWind.jpg"
             }
         }
     ]

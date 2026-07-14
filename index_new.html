@@ -730,7 +730,7 @@
       font-size: 0.6rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--ink-mid);
+      color: var(--ink);
       display: flex;
       align-items: center;
       gap: 0.4rem;
@@ -3555,7 +3555,7 @@
           const lng = esMarMenor ? p.lng - 0.0004 - (esLebeche ? 0.00065 : 0) : p.lng;
           const icono = iconoBandera(p.bandera, esMarMenor);
           const b = (p.bandera || '').toUpperCase();
-          const colorTexto = b === 'VERDE' ? 'var(--flag-verde)' : b === 'AMARILLA' ? 'var(--flag-amarilla)' : b === 'ROJA' ? 'var(--flag-roja)' : 'var(--ink-mid)';
+          const colorTexto = b === 'VERDE' ? 'var(--flag-verde)' : b === 'AMARILLA' ? 'var(--flag-amarilla)' : b === 'ROJA' ? 'var(--flag-roja)' : 'var(--ink)';
           const nombreCorto = p.nombre.replace(/^PLAYA\s+/i, '').replace(/\s*\((LIMA\s*\d+|MAR MENOR)\)\s*/gi, '').trim()
             .toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
           const estadoUpper = (p.estado || '').toUpperCase() === 'SIN ESTADO' || !(p.estado || '').trim() ? 'Sin datos' : (p.estado || '').toUpperCase();
@@ -3574,7 +3574,7 @@
             const estadoHTML = `<div style="color:${colorTexto};font-weight:700;font-size:1em;margin-bottom:6px;">ESTADO DE LA MAR: ${estadoUpper}</div>`;
             const fechaHTML = sinDatos ? '' :
               `<div style="color:var(--ink);font-size:1em;font-weight:600;margin-top:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);animation:pulse 2s infinite;vertical-align:middle;margin-right:6px;"></span>Act. ${p.fecha}</div>`;
-            const horarioHTML = `<div style="color:var(--ink-mid);font-size:0.9em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
+            const horarioHTML = `<div style="color:var(--ink);font-size:0.9em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
 
             document.getElementById('ppDot').style.background = colorTexto;
             document.getElementById('ppCapa').textContent = 'PUESTO DE SOCORRISTA';
@@ -3664,13 +3664,13 @@
               ? `<div style="color:var(--farmacia-roja);font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA AHORA — servicio 24h</div>`
               : '';
             const horarioHTML = f.horario
-              ? `<div style="color:var(--ink-mid);font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
+              ? `<div style="color:var(--ink);font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
               : '';
             const telHTML = f.telefono
               ? `<div class="pp-tel" style="color:var(--ink);font-size:0.95em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:var(--accent);">${f.telefono}</a></div>`
               : '';
             const dirHTML = f.direccion
-              ? `<div style="color:var(--ink-mid);font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
+              ? `<div style="color:var(--ink);font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
               : '';
 
             document.getElementById('ppDot').style.background = deGuardia ? 'var(--farmacia-roja)' : 'var(--farmacia-verde)';

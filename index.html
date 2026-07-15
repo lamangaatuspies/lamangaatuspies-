@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <!-- Tema (claro/oscuro): se aplica antes de pintar para evitar parpadeo -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('lm-theme');
+      if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    })();
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-50Z4QGPF3Q"></script>
   <script>
@@ -54,10 +61,34 @@
       --accent2:   #f0883e;
       --accent3:   #3fb950;
       --border:    #30363d;
+      --flag-verde:     #2ecc71;
+      --flag-amarilla:  #f1c40f;
+      --flag-roja:      #e74c3c;
+      --farmacia-verde: #00a651;
+      --farmacia-roja:  #e53935;
       --mono:      'Share Tech Mono', monospace;
       --sans:      'Rajdhani', sans-serif;
       --serif:     'Crimson Pro', serif;
       --hero-h:    92vh;
+    }
+
+    /* ── TEMA CLARO ── */
+    html[data-theme="light"] {
+      --bg:        #f6f7f9;
+      --surface:   #ffffff;
+      --surface2:  #eef1f4;
+      --ink:       #1c2430;
+      --ink-mid:   #4b5563;
+      --ink-dim:   #8a92a0;
+      --accent:    #1f6feb;
+      --accent2:   #d9670b;
+      --accent3:   #1f8a3d;
+      --border:    #d7dce3;
+      --flag-verde:     #15803d;
+      --flag-amarilla:  #b45309;
+      --flag-roja:      #b91c1c;
+      --farmacia-verde: #0d7a3d;
+      --farmacia-roja:  #c0392b;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -252,12 +283,17 @@
       right: 0;
       z-index: 1000;
     }
-    nav ul {
+    nav .nav-inner {
       max-width: 1200px;
       margin: 0 auto;
       display: flex;
-      list-style: none;
+      align-items: center;
+      justify-content: space-between;
       padding: 0 3rem;
+    }
+    nav ul {
+      display: flex;
+      list-style: none;
     }
     nav a {
       display: block;
@@ -274,6 +310,26 @@
     }
     nav a:hover { color: var(--ink); }
     nav a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--ink-mid);
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { color: var(--ink); border-color: var(--ink-mid); }
+    .theme-toggle svg { width: 15px; height: 15px; }
+    .theme-toggle .icon-sun { display: none; }
+    html[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+    html[data-theme="light"] .theme-toggle .icon-sun { display: block; }
 
     /* ── MAIN ── */
     main {
@@ -353,7 +409,7 @@
     #capas { scroll-margin-top: 44px; }
     .layers-wrap {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 1px;
       background: var(--border);
       border: 1px solid var(--border);
@@ -428,7 +484,7 @@
     .about-text p {
       font-family: var(--serif);
       font-size: 1.05rem;
-      color: rgba(230,237,243,0.75);
+      color: var(--ink-mid);
       line-height: 1.85;
       margin-bottom: 1.1rem;
     }
@@ -674,7 +730,7 @@
       font-size: 0.6rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #8b949e;
+      color: var(--ink);
       display: flex;
       align-items: center;
       gap: 0.4rem;
@@ -685,7 +741,7 @@
       margin-left: auto;
       font-family: var(--mono);
       font-size: 0.62rem;
-      color: #f0883e;
+      color: var(--accent2);
       letter-spacing: 0.08em;
     }
     .lp-name {
@@ -694,7 +750,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      color: #e6edf3;
+      color: var(--ink);
       margin-bottom: 0.5rem;
     }
     .lp-img {
@@ -704,17 +760,17 @@
       object-fit: contain;
       display: block;
       margin-bottom: 0.6rem;
-      border: 1px solid #30363d;
-      background: #0d1117;
+      border: 1px solid var(--border);
+      background: var(--bg);
     }
     .lp-desc {
       font-family: var(--mono);
       font-size: 0.68rem;
-      color: #8b949e;
+      color: var(--ink);
       line-height: 1.8;
       margin-bottom: 0.7rem;
     }
-    .lp-desc span::before { content: '· '; color: #f0883e; }
+    .lp-desc span::before { content: '· '; color: var(--accent2); }
     .lp-maps {
       display: inline-block;
       font-family: var(--mono);
@@ -722,11 +778,11 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       padding: 0.3rem 0.7rem;
-      border: 1px solid #30363d;
-      color: #58a6ff;
+      border: 1px solid var(--border);
+      color: var(--accent);
       text-decoration: none;
     }
-    .lp-maps:hover { border-color: #58a6ff; }
+    .lp-maps:hover { border-color: var(--accent); }
     .lp-footer {
       display: flex;
       align-items: center;
@@ -738,28 +794,28 @@
       justify-content: center;
       width: 2rem;
       height: 2rem;
-      border: 1px solid #30363d;
-      color: #8b949e;
+      border: 1px solid var(--border);
+      color: var(--ink-mid);
       cursor: pointer;
       background: transparent;
       transition: color 0.2s, border-color 0.2s;
       flex-shrink: 0;
     }
-    .lp-share:hover { color: #e6edf3; border-color: #58a6ff; }
-    .lp-share.copied { color: #3fb950; border-color: #3fb950; }
+    .lp-share:hover { color: var(--ink); border-color: var(--accent); }
+    .lp-share.copied { color: var(--accent3); border-color: var(--accent3); }
     .lp-share-tip {
       font-family: var(--mono);
       font-size: 0.62rem;
-      color: #3fb950;
+      color: var(--accent3);
       letter-spacing: 0.06em;
       display: none;
     }
     .lp-share-tip.visible { display: inline; }
     .leaflet-control-layers {
-      background: #161b22 !important;
-      border: 1px solid #30363d !important;
+      background: var(--surface) !important;
+      border: 1px solid var(--border) !important;
       border-radius: 0 !important;
-      color: #e6edf3 !important;
+      color: var(--ink) !important;
     }
     footer {
       background: var(--surface);
@@ -780,6 +836,7 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       .layers-wrap { grid-template-columns: 1fr 1fr; }
+      .layers-wrap .lcard:last-child { grid-column: 1 / -1; }
       .about-wrap { grid-template-columns: 1fr; gap: 2rem; }
     }
     @media (max-width: 600px) {
@@ -789,8 +846,16 @@
       .hero-content { padding: 2rem 1.5rem 2.5rem; }
       main { padding: 0 1.5rem 4rem; }
       .statusbar { padding: 0 1.5rem; }
-      nav ul { padding: 0 0.5rem; }
-      nav a { padding: 0.85rem 0.55rem; font-size: 0.62rem; letter-spacing: 0.05em; }
+      nav .nav-inner { padding: 0 0.8rem; gap: 0.4rem; }
+      nav ul {
+        padding: 0 0.2rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      nav ul::-webkit-scrollbar { display: none; }
+      nav a { padding: 0.85rem 0.5rem; font-size: 0.6rem; letter-spacing: 0.04em; white-space: nowrap; }
+      .theme-toggle { width: 27px; height: 27px; }
       footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
       .layers-wrap { grid-template-columns: 1fr; }
       #leaflet-map { height: 65vh !important; min-height: 420px !important; }
@@ -1010,10 +1075,10 @@
     .bandera-icon { background: none !important; border: none !important; box-shadow: none !important; }
 
     .lm-tooltip {
-      background: #161b22 !important;
-      border: 1px solid #30363d !important;
+      background: var(--surface) !important;
+      border: 1px solid var(--border) !important;
       border-radius: 3px !important;
-      color: #e6edf3 !important;
+      color: var(--ink) !important;
       font-family: 'Rajdhani', sans-serif !important;
       font-size: 0.78rem !important;
       font-weight: 600 !important;
@@ -1065,9 +1130,9 @@
       top: 3px;
       left: 10px;
       width: 430px;
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-left: 3px solid #f0883e;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent2);
       z-index: 99000;
       box-shadow: 0 4px 20px rgba(0,0,0,0.7);
     }
@@ -1076,7 +1141,7 @@
     .map-popup-close {
       background: transparent;
       border: none;
-      color: #484f58;
+      color: var(--ink-dim);
       cursor: pointer;
       font-size: 0.85rem;
       line-height: 1;
@@ -1085,7 +1150,7 @@
       margin-left: 0.4rem;
       flex-shrink: 0;
     }
-    .map-popup-close:hover { color: #e6edf3; }
+    .map-popup-close:hover { color: var(--ink); }
 
     /* ── LISTA ── */
     .lista-grupo {
@@ -1125,20 +1190,20 @@
       align-items: center;
       border-bottom: 1px solid #21262d;
       transition: background 0.15s;
-      padding: 0.45rem 0.7rem;
+      padding: 0.55rem 0.7rem;
     }
-    .lista-fila:hover { background: #161b22; }
+    .lista-fila:hover { background: var(--surface); }
     .lista-td-km {
       font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--ink-mid);
+      font-size: 0.76rem;
+      color: var(--ink);
       width: 5.5rem;
       flex-shrink: 0;
     }
     .lista-td-nombre {
       font-family: var(--sans);
       font-weight: 600;
-      font-size: 0.88rem;
+      font-size: 0.94rem;
       letter-spacing: 0.02em;
       color: var(--ink);
       flex: 1;
@@ -1181,11 +1246,11 @@
     }
     .lista-tag {
       font-family: var(--mono);
-      font-size: 0.68rem;
+      font-size: 0.76rem;
       letter-spacing: 0.05em;
       padding: 0.15rem 0.45rem;
       border: 1px solid var(--border);
-      color: var(--ink-mid);
+      color: var(--ink);
       background: transparent;
       white-space: nowrap;
       cursor: pointer;
@@ -1682,14 +1747,37 @@
 
   <!-- NAV -->
   <nav>
-    <ul>
-      <li><a href="#inicio">Inicio</a></li>
-      <li><a href="#mapa" class="active">Mapa</a></li>
-      <li><a href="#lista">Lista</a></li>
-      <li><a href="#proyecto">Proyecto</a></li>
-      <li><a href="#contacto">Contacto</a></li>
-    </ul>
+    <div class="nav-inner">
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#mapa" class="active">Mapa</a></li>
+        <li><a href="#lista">Lista</a></li>
+        <li><a href="#proyecto">Proyecto</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema claro/oscuro">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
   </nav>
+
+  <!-- Toggle de tema claro/oscuro -->
+  <script>
+    (function() {
+      var btn = document.getElementById('theme-toggle');
+      btn.addEventListener('click', function() {
+        var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        if (isLight) {
+          document.documentElement.removeAttribute('data-theme');
+          localStorage.setItem('lm-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('lm-theme', 'light');
+        }
+      });
+    })();
+  </script>
 
   <!-- HERO -->
   <section class="hero" id="inicio">
@@ -3476,13 +3564,13 @@
           const lng = esMarMenor ? p.lng - 0.0004 - (esLebeche ? 0.00065 : 0) : p.lng;
           const icono = iconoBandera(p.bandera, esMarMenor);
           const b = (p.bandera || '').toUpperCase();
-          const colorTexto = b === 'VERDE' ? '#2ecc71' : b === 'AMARILLA' ? '#f1c40f' : b === 'ROJA' ? '#e74c3c' : '#aaaaaa';
+          const colorTexto = b === 'VERDE' ? 'var(--flag-verde)' : b === 'AMARILLA' ? 'var(--flag-amarilla)' : b === 'ROJA' ? 'var(--flag-roja)' : 'var(--ink)';
           const nombreCorto = p.nombre.replace(/^PLAYA\s+/i, '').replace(/\s*\((LIMA\s*\d+|MAR MENOR)\)\s*/gi, '').trim()
             .toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
           const estadoUpper = (p.estado || '').toUpperCase() === 'SIN ESTADO' || !(p.estado || '').trim() ? 'Sin datos' : (p.estado || '').toUpperCase();
           const marker = L.marker([lat, lng], { icon: icono, zIndexOffset: -100, nombrePlaya: p.nombre });
           const sinDatos = b !== 'VERDE' && b !== 'AMARILLA' && b !== 'ROJA';
-          const lineaFecha = sinDatos ? '' : `<br><span style="color:#e6edf3;font-size:0.85em"><b>Act.</b> ${p.fecha}</span>`;
+          const lineaFecha = sinDatos ? '' : `<br><span style="color:var(--ink);font-size:0.85em"><b>Act.</b> ${p.fecha}</span>`;
           marker.bindTooltip(
             `<span style="color:${colorTexto};font-weight:bold">${nombreCorto} · ${estadoUpper}</span>${lineaFecha}`,
             { direction: 'top', offset: [6, -8], className: 'lm-tooltip' }
@@ -3494,8 +3582,8 @@
             const banderaHTML = `<div style="margin-bottom:8px;"><img src="${imgUrl}" style="height:40px;width:auto;"></div>`;
             const estadoHTML = `<div style="color:${colorTexto};font-weight:700;font-size:1em;margin-bottom:6px;">ESTADO DE LA MAR: ${estadoUpper}</div>`;
             const fechaHTML = sinDatos ? '' :
-              `<div style="color:#e6edf3;font-size:1em;font-weight:600;margin-top:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4a9eff;box-shadow:0 0 6px #4a9eff;animation:pulse 2s infinite;vertical-align:middle;margin-right:6px;"></span>Act. ${p.fecha}</div>`;
-            const horarioHTML = `<div style="color:#8b949e;font-size:0.9em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
+              `<div style="color:var(--ink);font-size:1em;font-weight:600;margin-top:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);animation:pulse 2s infinite;vertical-align:middle;margin-right:6px;"></span>Act. ${p.fecha}</div>`;
+            const horarioHTML = `<div style="color:var(--ink);font-size:0.9em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
 
             document.getElementById('ppDot').style.background = colorTexto;
             document.getElementById('ppCapa').textContent = 'PUESTO DE SOCORRISTA';
@@ -3574,27 +3662,27 @@
 
           marker.bindTooltip(
             deGuardia
-              ? `<span style="color:#00a651;font-weight:bold">Farmacia ${f.nombre}</span> · <span style="color:#e53935;font-weight:bold">DE GUARDIA AHORA</span>`
-              : `<span style="color:#00a651;font-weight:bold">Farmacia ${f.nombre}</span>`,
+              ? `<span style="color:var(--farmacia-verde);font-weight:bold">Farmacia ${f.nombre}</span> · <span style="color:var(--farmacia-roja);font-weight:bold">DE GUARDIA AHORA</span>`
+              : `<span style="color:var(--farmacia-verde);font-weight:bold">Farmacia ${f.nombre}</span>`,
             { direction: 'top', offset: [0, -14], className: 'lm-tooltip' }
           );
 
           marker.on('click', () => {
             registrarStats('clic_farmacia', f.nombre + (deGuardia ? ' · DE GUARDIA HOY' : ''));
             const guardiaHTML = deGuardia
-              ? `<div style="color:#e53935;font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA AHORA — servicio 24h</div>`
+              ? `<div style="color:var(--farmacia-roja);font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA AHORA — servicio 24h</div>`
               : '';
             const horarioHTML = f.horario
-              ? `<div style="color:#8b949e;font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
+              ? `<div style="color:var(--ink);font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
               : '';
             const telHTML = f.telefono
-              ? `<div class="pp-tel" style="color:#e6edf3;font-size:0.95em;margin-top:8px;border-top:1px solid #30363d;padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:#4a9eff;">${f.telefono}</a></div>`
+              ? `<div class="pp-tel" style="color:var(--ink);font-size:0.95em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:var(--accent);">${f.telefono}</a></div>`
               : '';
             const dirHTML = f.direccion
-              ? `<div style="color:#8b949e;font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
+              ? `<div style="color:var(--ink);font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
               : '';
 
-            document.getElementById('ppDot').style.background = deGuardia ? '#e53935' : '#00a651';
+            document.getElementById('ppDot').style.background = deGuardia ? 'var(--farmacia-roja)' : 'var(--farmacia-verde)';
             document.getElementById('ppCapa').textContent = 'FARMACIA';
             document.getElementById('ppName').textContent = f.nombre;
             document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);

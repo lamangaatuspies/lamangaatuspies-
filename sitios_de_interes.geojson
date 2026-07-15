@@ -2302,7 +2302,8 @@
         "name": "Escuela de vela Cavanna Wind",
         "desc": [
           "Escuela de Vela"
-        ]
+        ],
+		"img": "img/CavannaWind.jpg"
       }
     },
     {

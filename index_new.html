@@ -2157,11 +2157,21 @@
       'Sitios de Interés':          { color: '#109010', fill: '#109010', label: 'Sitio de interés' },
     };
 
+    // Edificios sin marcador propio en el GeoJSON: heredan la posición de su urbanización.
+    // Se declara aquí (antes de usarse) porque tanto el contador como el listado de marcadores
+    // la necesitan; declararla más abajo causó en el pasado un bug de orden de ejecución.
+    const EDIFICIOS_ALIAS = [{"edificio": "ESTOCOLMO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "OSLO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "BERNA", "urbanizacion": "EUROVOSA 1"}, {"edificio": "MADRID", "urbanizacion": "EUROVOSA 1"}, {"edificio": "LONDRES (Hotel)", "urbanizacion": "EUROVOSA 1"}, {"edificio": "ISLAS VERDES", "urbanizacion": "BORINQUEN 2"}, {"edificio": "LUQUILLO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "EL DORADO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "MAYAGUEZ", "urbanizacion": "BORINQUEN"}, {"edificio": "CONDADO", "urbanizacion": "BORINQUEN"}, {"edificio": "PONCE", "urbanizacion": "BORINQUEN"}, {"edificio": "SAN JUAN", "urbanizacion": "BORINQUEN"}, {"edificio": "AMSTERDAN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BRUSELAS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "LISBOA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "ROMA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "PARIS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BERLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MONACO", "urbanizacion": "EUROVOSA 2"}, {"edificio": "DUBLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MILANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "NAPOLES", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TINTORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "VAPORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "GENOVA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "FLORENCIA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TIZIANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CAPRI", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CANAL", "urbanizacion": "ABITY BEACH"}, {"edificio": "AVENIDA", "urbanizacion": "ABITY BEACH"}, {"edificio": "VARADERO", "urbanizacion": "ABITY BEACH"}, {"edificio": "Club de Personas Mayores", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Biblioteca", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Asociacion de Vecinos", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Consultorio Cavanna", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Torre Varadero", "urbanizacion": "PROGALESA"}, {"edificio": "Bajamar", "urbanizacion": "PROGALESA"}, {"edificio": "Solymar", "urbanizacion": "PROGALESA"}, {"edificio": "Frenmar", "urbanizacion": "PROGALESA"}, {"edificio": "Alamar", "urbanizacion": "PROGALESA"}];
+
     // ── CONTADORES AUTOMÁTICOS DESDE GEODATA ──
     // Todas las cifras de la web se calculan aquí. No hay que tocarlas manualmente.
     (function actualizarContadores() {
+      // Mismo criterio que la Lista: un alias solo cuenta si su urbanización padre existe.
+      const urbBase = GEODATA['Urbanizaciones y Edificios'] || [];
+      const nombresUrb = new Set(urbBase.map(f => f.properties.name));
+      const aliasValidos = EDIFICIOS_ALIAS.filter(a => nombresUrb.has(a.urbanizacion)).length;
+
       const n = {
-        urb: (GEODATA['Urbanizaciones y Edificios'] || []).length,
+        urb: urbBase.length + aliasValidos,
         hot: (GEODATA['Hoteles'] || []).length,
         bar: (GEODATA['Bares y Restaurantes'] || []).length,
         sit: (GEODATA['Sitios de Interés'] || []).length,
@@ -2412,8 +2422,6 @@
     let activeFeature = null;
     const leafletLayers = {};
     const allFeatures = []; // flat list for search
-
-    const EDIFICIOS_ALIAS = [{"edificio": "ESTOCOLMO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "OSLO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "BERNA", "urbanizacion": "EUROVOSA 1"}, {"edificio": "MADRID", "urbanizacion": "EUROVOSA 1"}, {"edificio": "LONDRES (Hotel)", "urbanizacion": "EUROVOSA 1"}, {"edificio": "ISLAS VERDES", "urbanizacion": "BORINQUEN 2"}, {"edificio": "LUQUILLO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "EL DORADO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "MAYAGUEZ", "urbanizacion": "BORINQUEN"}, {"edificio": "CONDADO", "urbanizacion": "BORINQUEN"}, {"edificio": "PONCE", "urbanizacion": "BORINQUEN"}, {"edificio": "SAN JUAN", "urbanizacion": "BORINQUEN"}, {"edificio": "AMSTERDAN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BRUSELAS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "LISBOA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "ROMA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "PARIS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BERLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MONACO", "urbanizacion": "EUROVOSA 2"}, {"edificio": "DUBLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MILANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "NAPOLES", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TINTORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "VAPORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "GENOVA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "FLORENCIA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TIZIANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CAPRI", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CANAL", "urbanizacion": "ABITY BEACH"}, {"edificio": "AVENIDA", "urbanizacion": "ABITY BEACH"}, {"edificio": "VARADERO", "urbanizacion": "ABITY BEACH"}, {"edificio": "Club de Personas Mayores", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Biblioteca", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Asociacion de Vecinos", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Consultorio Cavanna", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Torre Varadero", "urbanizacion": "PROGALESA"}, {"edificio": "Bajamar", "urbanizacion": "PROGALESA"}, {"edificio": "Solymar", "urbanizacion": "PROGALESA"}, {"edificio": "Frenmar", "urbanizacion": "PROGALESA"}, {"edificio": "Alamar", "urbanizacion": "PROGALESA"}];
 
     Object.entries(GEODATA).forEach(([capaName, features]) => {
       const cfg = CAPA_CONFIG[capaName];

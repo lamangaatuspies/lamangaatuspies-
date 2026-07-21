@@ -2192,13 +2192,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "El Ancla",
-                "img": "img/El-ancla.jpg",
-                "desc": [
-                    "Restaurante"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2222,6 +2215,50 @@
                         [
                             -0.743192,
                             37.772447
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "El Ancla",
+                "img": "img/El-ancla.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "El Club del Bucanero",
+                "img": "img/El-bucanero.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.712755,
+                            37.642005
+                        ],
+                        [
+                            -0.712812,
+                            37.642091
+                        ],
+                        [
+                            -0.712916,
+                            37.642057
+                        ],
+                        [
+                            -0.712862,
+                            37.641964
+                        ],
+                        [
+                            -0.712755,
+                            37.642005
                         ]
                     ]
                 ]

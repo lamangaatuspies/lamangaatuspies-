@@ -2167,8 +2167,12 @@
     (function actualizarContadores() {
       // Mismo criterio que la Lista: un alias solo cuenta si su urbanización padre existe.
       const urbBase = GEODATA['Urbanizaciones y Edificios'] || [];
-      const nombresUrb = new Set(urbBase.map(f => f.properties.name));
-      const aliasValidos = EDIFICIOS_ALIAS.filter(a => nombresUrb.has(a.urbanizacion)).length;
+      // El padre de un alias puede vivir en cualquier capa (p.ej. "Edificio MULTIUSOS"
+      // está en Sitios de Interés), así que se busca en todo GEODATA, no solo aquí.
+      const nombresTodasLasCapas = new Set(
+        Object.values(GEODATA).flat().map(f => f.properties.name)
+      );
+      const aliasValidos = EDIFICIOS_ALIAS.filter(a => nombresTodasLasCapas.has(a.urbanizacion)).length;
 
       const n = {
         urb: urbBase.length + aliasValidos,
@@ -3187,18 +3191,21 @@
             };
           });
 
-        // ── Edificios sin marcador propio: heredan posición/Km de su urbanización ──
+        // ── Edificios sin marcador propio: heredan posición/Km de su urbanización,
+        //    esté esta en la capa que esté (p.ej. "Edificio MULTIUSOS" vive en
+        //    Sitios de Interés, no en Urbanizaciones y Edificios) ──
         if (capa.key === 'Urbanizaciones y Edificios') {
           EDIFICIOS_ALIAS.forEach(a => {
-            const padre = items.find(i => i.name === a.urbanizacion);
-            if (!padre) return; // urbanización no encontrada, se omite
+            const padre = allFeatures.find(f => f.name === a.urbanizacion);
+            if (!padre) return; // urbanización no encontrada en ninguna capa, se omite
+            const km = kmMasCercano(padre.lat, padre.lng);
             items.push({
               name:    a.edificio,
               lat:     padre.lat,
               lng:     padre.lng,
               desc:    [],
-              km:      padre.km,
-              kmNum:   padre.kmNum,
+              km,
+              kmNum:   parseFloat(km.replace('Km ','').replace(',','.')) || 0,
               alias:   true,
               target:  padre.name,
             });

@@ -729,8 +729,37 @@
       z-index: 1000;
     }
     /* Leaflet popup custom style */
-    .leaflet-tile-pane {
-      filter: saturate(1.3) contrast(1.15) brightness(1.05) hue-rotate(15deg);
+    /* Corrección de color por capa base (cada una en su propio contenedor via className) */
+    .basemap-sat  { filter: saturate(1.3) contrast(1.15) brightness(1.05) hue-rotate(15deg); }
+    .basemap-mapa { filter: saturate(1.65) contrast(1.2) brightness(0.97); }
+
+    /* Etiquetas de playa: doradas con halo oscuro sobre satélite (fondo oscuro) */
+    .playa-label {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-style: italic;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: #d1a124;
+      text-shadow: 0 0 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7);
+    }
+    /* Sobre el mapa claro (Voyager): dorado más oscuro con halo blanco, para que no se lave */
+    html[data-basemap="mapa"] .playa-label {
+      color: #8a5a00;
+      text-shadow: 0 0 3px rgba(255,255,255,0.95), 0 0 6px rgba(255,255,255,0.9), 0 1px 1px rgba(255,255,255,0.9);
+    }
+
+    /* Etiquetas de km: blancas con halo oscuro sobre satélite */
+    .km-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.9);
+    }
+    /* Sobre el mapa claro: tinta oscura con halo blanco */
+    html[data-basemap="mapa"] .km-label {
+      color: #1c2430;
+      text-shadow: 0 0 3px rgba(255,255,255,0.95), 0 0 6px rgba(255,255,255,0.9);
     }
       background: #161b22 !important;
       color: #e6edf3 !important;
@@ -2366,12 +2395,14 @@
       maxZoom: 20,
       tms: true,
       keepBuffer: 4,
+      className: 'basemap-sat',
     });
     const mapaLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       maxZoom: 20,
       subdomains: 'abcd',
       keepBuffer: 4,
+      className: 'basemap-mapa',
     });
     // Restaura la capa elegida en la sesión anterior (por defecto, satélite)
     (localStorage.getItem('lm-basemap') === 'mapa' ? mapaLayer : satLayer).addTo(map);
@@ -2484,13 +2515,9 @@
             background: #e53935;
             flex-shrink: 0;
           "></div>
-          <span style="
-            font-family: 'Rajdhani', sans-serif;
+          <span class="km-label" style="
             font-size: 12px;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.9);
-            letter-spacing: 0.05em;
+            white-space: nowrap;
           ">${name}</span>
         </div>`,
         iconAnchor: [0, 6],
@@ -2584,17 +2611,11 @@
 
       return L.divIcon({
         className: '',
-        html: `<span style="
+        html: `<span class="playa-label" style="
           display: inline-block;
-          font-family: 'Crimson Pro', Georgia, serif;
-          font-style: italic;
           font-size: ${FONT_SIZE}px;
-          font-weight: 600;
-          color: #d1a124;
-          text-shadow: 0 0 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7);
           white-space: nowrap;
           pointer-events: none;
-          letter-spacing: 0.02em;
         ">${name}</span>`,
         iconAnchor: [anclaX, 8],
         iconSize:   [anchoEst, FONT_SIZE + 4],

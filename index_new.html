@@ -8,6 +8,13 @@
       if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
     })();
   </script>
+  <!-- Mapa base (mapa/satélite): se aplica antes de pintar para evitar parpadeo del icono -->
+  <script>
+    (function() {
+      var b = localStorage.getItem('lm-basemap');
+      if (b === 'mapa') document.documentElement.setAttribute('data-basemap', 'mapa');
+    })();
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-50Z4QGPF3Q"></script>
   <script>
@@ -311,7 +318,13 @@
     nav a:hover { color: var(--ink); }
     nav a.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-    .theme-toggle {
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    .theme-toggle, .basemap-toggle {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--ink-mid);
@@ -325,11 +338,14 @@
       transition: color 0.2s, border-color 0.2s;
       flex-shrink: 0;
     }
-    .theme-toggle:hover { color: var(--ink); border-color: var(--ink-mid); }
-    .theme-toggle svg { width: 15px; height: 15px; }
+    .theme-toggle:hover, .basemap-toggle:hover { color: var(--ink); border-color: var(--ink-mid); }
+    .theme-toggle svg, .basemap-toggle svg { width: 15px; height: 15px; }
     .theme-toggle .icon-sun { display: none; }
     html[data-theme="light"] .theme-toggle .icon-moon { display: none; }
     html[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+    .basemap-toggle .icon-tosat { display: none; }
+    html[data-basemap="mapa"] .basemap-toggle .icon-tomap { display: none; }
+    html[data-basemap="mapa"] .basemap-toggle .icon-tosat { display: block; }
 
     /* ── MAIN ── */
     main {
@@ -855,7 +871,7 @@
       }
       nav ul::-webkit-scrollbar { display: none; }
       nav a { padding: 0.85rem 0.5rem; font-size: 0.6rem; letter-spacing: 0.04em; white-space: nowrap; }
-      .theme-toggle { width: 27px; height: 27px; }
+      .theme-toggle, .basemap-toggle { width: 27px; height: 27px; }
       footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
       .layers-wrap { grid-template-columns: 1fr; }
       #leaflet-map { height: 65vh !important; min-height: 420px !important; }
@@ -1755,10 +1771,16 @@
         <li><a href="#proyecto">Proyecto</a></li>
         <li><a href="#contacto">Contacto</a></li>
       </ul>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema claro/oscuro">
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      </button>
+      <div class="nav-controls">
+        <button class="basemap-toggle" id="basemap-toggle" type="button" aria-label="Cambiar entre mapa y satélite" title="Cambiar entre mapa y satélite">
+          <svg class="icon-tomap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15.472"/><path d="M9 3.236v15.472"/></svg>
+          <svg class="icon-tosat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        </button>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema claro/oscuro">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+      </div>
     </div>
   </nav>
 
@@ -2338,13 +2360,21 @@
       if (e.key === 'Escape' && mapaExpandido) toggleExpandMap();
     });
 
-    // IGN España PNOA — Ortofoto oficial, sin costuras, uso libre
-    L.tileLayer('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{y}.jpeg', {
+    // ── CAPAS BASE: satélite (IGN PNOA) y mapa de calles (CartoDB Voyager) ──
+    const satLayer = L.tileLayer('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{y}.jpeg', {
       attribution: 'Tiles © IGN España (PNOA) · Elaboración propia',
       maxZoom: 20,
       tms: true,
       keepBuffer: 4,
-    }).addTo(map);
+    });
+    const mapaLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 20,
+      subdomains: 'abcd',
+      keepBuffer: 4,
+    });
+    // Restaura la capa elegida en la sesión anterior (por defecto, satélite)
+    (localStorage.getItem('lm-basemap') === 'mapa' ? mapaLayer : satLayer).addTo(map);
 
     // ── LAYERS ──
     let activeLayer = null;
@@ -2352,7 +2382,7 @@
     const leafletLayers = {};
     const allFeatures = []; // flat list for search
 
-    const EDIFICIOS_ALIAS = [{"edificio": "ESTOCOLMO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "OSLO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "BERNA", "urbanizacion": "EUROVOSA 1"}, {"edificio": "MADRID", "urbanizacion": "EUROVOSA 1"}, {"edificio": "LONDRES (Hotel)", "urbanizacion": "EUROVOSA 1"}, {"edificio": "ISLAS VERDES", "urbanizacion": "BORINQUEN 2"}, {"edificio": "LUQUILLO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "EL DORADO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "MAYAGUEZ", "urbanizacion": "BORINQUEN"}, {"edificio": "CONDADO", "urbanizacion": "BORINQUEN"}, {"edificio": "PONCE", "urbanizacion": "BORINQUEN"}, {"edificio": "SAN JUAN", "urbanizacion": "BORINQUEN"}, {"edificio": "AMSTERDAN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BRUSELAS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "LISBOA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "ROMA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "PARIS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BERLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MONACO", "urbanizacion": "EUROVOSA 2"}, {"edificio": "DUBLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MILANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "NAPOLES", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TINTORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "VAPORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "GENOVA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "FLORENCIA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TIZIANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CAPRI", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CANAL", "urbanizacion": "ABITY BEACH"}, {"edificio": "AVENIDA", "urbanizacion": "ABITY BEACH"}, {"edificio": "VARADERO", "urbanizacion": "ABITY BEACH"}, {"edificio": "Club de Personas Mayores", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Biblioteca", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Asociacion de Vecinos", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Consultorio Cavanna", "urbanizacion": "Edificio MULTIUSOS"}];
+    const EDIFICIOS_ALIAS = [{"edificio": "ESTOCOLMO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "OSLO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "BERNA", "urbanizacion": "EUROVOSA 1"}, {"edificio": "MADRID", "urbanizacion": "EUROVOSA 1"}, {"edificio": "LONDRES (Hotel)", "urbanizacion": "EUROVOSA 1"}, {"edificio": "ISLAS VERDES", "urbanizacion": "BORINQUEN 2"}, {"edificio": "LUQUILLO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "EL DORADO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "MAYAGUEZ", "urbanizacion": "BORINQUEN"}, {"edificio": "CONDADO", "urbanizacion": "BORINQUEN"}, {"edificio": "PONCE", "urbanizacion": "BORINQUEN"}, {"edificio": "SAN JUAN", "urbanizacion": "BORINQUEN"}, {"edificio": "AMSTERDAN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BRUSELAS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "LISBOA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "ROMA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "PARIS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BERLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MONACO", "urbanizacion": "EUROVOSA 2"}, {"edificio": "DUBLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MILANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "NAPOLES", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TINTORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "VAPORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "GENOVA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "FLORENCIA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TIZIANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CAPRI", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CANAL", "urbanizacion": "ABITY BEACH"}, {"edificio": "AVENIDA", "urbanizacion": "ABITY BEACH"}, {"edificio": "VARADERO", "urbanizacion": "ABITY BEACH"}, {"edificio": "Club de Personas Mayores", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Biblioteca", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Asociacion de Vecinos", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Consultorio Cavanna", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Torre Varadero", "urbanizacion": "PROGALESA"}, {"edificio": "Bajamar", "urbanizacion": "PROGALESA"}, {"edificio": "Solymar", "urbanizacion": "PROGALESA"}, {"edificio": "Frenmar", "urbanizacion": "PROGALESA"}, {"edificio": "Alamar", "urbanizacion": "PROGALESA"}];
 
     Object.entries(GEODATA).forEach(([capaName, features]) => {
       const cfg = CAPA_CONFIG[capaName];
@@ -2762,18 +2792,45 @@
     }
     setTimeout(colorearControlCapas, 100);
 
-    // Esri imagery date — se consultan los metadatos del servicio para obtener el año real
+    // Nota de atribución — cambia según la capa base activa (satélite o mapa)
     const dateNote = L.control({ position: 'bottomleft' });
+    let dateNoteSpan;
     dateNote.onAdd = () => {
       const div = L.DomUtil.create('div');
-      const span = document.createElement('span');
-      span.style.cssText = 'background:rgba(13,17,23,0.75);color:#8b949e;font-family:monospace;font-size:10px;padding:3px 7px;letter-spacing:0.05em;display:inline-block;';
-      span.textContent = 'IMAGEN SATELITAL © IGN ESPAÑA (PNOA)';
-      div.appendChild(span);
-      span.textContent = 'IMAGEN SATELITAL © IGN ESPAÑA (PNOA) · ' + new Date().getFullYear();
+      dateNoteSpan = document.createElement('span');
+      dateNoteSpan.style.cssText = 'background:rgba(13,17,23,0.75);color:#8b949e;font-family:monospace;font-size:10px;padding:3px 7px;letter-spacing:0.05em;display:inline-block;';
+      div.appendChild(dateNoteSpan);
+      actualizarNotaBasemap();
       return div;
     };
     dateNote.addTo(map);
+
+    function actualizarNotaBasemap() {
+      if (!dateNoteSpan) return;
+      dateNoteSpan.textContent = map.hasLayer(mapaLayer)
+        ? 'MAPA © OPENSTREETMAP · CARTO'
+        : 'IMAGEN SATELITAL © IGN ESPAÑA (PNOA) · ' + new Date().getFullYear();
+    }
+
+    // ── BOTÓN DE CAMBIO DE MAPA (en el nav, junto al de tema) ──
+    const basemapToggleBtn = document.getElementById('basemap-toggle');
+    if (basemapToggleBtn) {
+      basemapToggleBtn.addEventListener('click', function() {
+        const enMapa = map.hasLayer(mapaLayer);
+        if (enMapa) {
+          map.removeLayer(mapaLayer);
+          satLayer.addTo(map);
+          document.documentElement.removeAttribute('data-basemap');
+          localStorage.setItem('lm-basemap', 'sat');
+        } else {
+          map.removeLayer(satLayer);
+          mapaLayer.addTo(map);
+          document.documentElement.setAttribute('data-basemap', 'mapa');
+          localStorage.setItem('lm-basemap', 'mapa');
+        }
+        actualizarNotaBasemap();
+      });
+    }
 
     // ── EDIFICIOS ALIAS PARA BÚSQUEDA: reutilizan el marcador real de su urbanización ──
     const aliasSearchEntries = EDIFICIOS_ALIAS.map(a => {

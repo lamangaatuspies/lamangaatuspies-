@@ -1488,6 +1488,7 @@
 
     /* ── SALIDAS GRAN VÍA ── */
     .salida-icon { background: none !important; border: none !important; box-shadow: none !important; }
+    .temp-icon { background: none !important; border: none !important; box-shadow: none !important; }
   </style>
 
   <script type="application/ld+json">
@@ -3860,7 +3861,7 @@
     map.on('zoomend', actualizarVisibilidadTempAgua);
     actualizarVisibilidadTempAgua(); // estado inicial
 
-    function construirGraficoTemperatura(dias) {
+    function construirGraficoTemperatura(dias, color) {
       const W = 380, H = 110, PAD = 24;
       const valores = dias.map(d => d.valor);
       const min = Math.min(...valores), max = Math.max(...valores);
@@ -3876,13 +3877,13 @@
 
       const linea = puntos.map(p => `${p.x},${p.y}`).join(' ');
       const detalle = puntos.map(p => `
-        <circle cx="${p.x}" cy="${p.y}" r="3" fill="#1f8fd6" />
+        <circle cx="${p.x}" cy="${p.y}" r="3" fill="${color}" />
         <text x="${p.x}" y="${p.y - 8}" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">${p.valor.toFixed(1)}°</text>
         <text x="${p.x}" y="${H - 6}" font-size="8" text-anchor="middle" fill="var(--ink)">${p.fecha.slice(5).replace('-', '/')}</text>
       `).join('');
 
       return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="display:block;">
-        <polyline points="${linea}" fill="none" stroke="#1f8fd6" stroke-width="2" />
+        <polyline points="${linea}" fill="none" stroke="${color}" stroke-width="2" />
         ${detalle}
       </svg>`;
     }
@@ -3928,12 +3929,28 @@
         if (!dias.length) return;
         const ultimo = dias[dias.length - 1];
 
+        // Color del termómetro según temperatura: >30 rojo, 24–30 naranja, <24 azul.
+        function colorPorTemperatura(valor) {
+          if (valor > 30) return '#e53935';
+          if (valor >= 24) return '#f0883e';
+          return '#2f8fd6';
+        }
+        const colorTemp = colorPorTemperatura(ultimo.valor);
+
         const icono = L.divIcon({
-          className: '',
-          html: `<div style="width:30px;height:30px;border-radius:50%;background:#1f8fd6;
-            box-shadow:0 1px 4px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;
-            color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;">${Math.round(ultimo.valor)}°</div>`,
-          iconAnchor: [15, 15],
+          className: 'temp-icon',
+          html: `<div style="display:flex;flex-direction:column;align-items:center;">
+            <svg width="26" height="40" viewBox="0 0 26 40" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 1px 3px rgba(0,0,0,0.6));">
+              <rect x="9" y="3" width="8" height="21" rx="4" fill="${colorTemp}" stroke="#ffffff" stroke-width="2"/>
+              <circle cx="13" cy="29" r="9" fill="${colorTemp}" stroke="#ffffff" stroke-width="2"/>
+              <line x1="19" y1="7"  x2="22" y2="7"  stroke="#ffffff" stroke-width="1.5"/>
+              <line x1="19" y1="12" x2="22" y2="12" stroke="#ffffff" stroke-width="1.5"/>
+              <line x1="19" y1="17" x2="22" y2="17" stroke="#ffffff" stroke-width="1.5"/>
+            </svg>
+            <span class="km-label" style="font-size:11px;margin-top:1px;">${ultimo.valor.toFixed(1)}°</span>
+          </div>`,
+          iconAnchor: [13, 33],
+          iconSize: [26, 54],
         });
 
         const marker = L.marker([MARCADOR_TEMP_AGUA.lat, MARCADOR_TEMP_AGUA.lng], { icon: icono });
@@ -3945,7 +3962,7 @@
 
         marker.on('click', () => {
           registrarStats('clic_marcador', 'Temperatura del agua');
-          document.getElementById('ppDot').style.background = '#1f8fd6';
+          document.getElementById('ppDot').style.background = colorTemp;
           document.getElementById('ppCapa').textContent = 'TEMPERATURA DEL AGUA';
           document.getElementById('ppName').textContent = ultimo.valor.toFixed(1) + '°C';
           document.getElementById('ppKm').textContent = '';
@@ -3954,7 +3971,7 @@
           const [anioUlt, mesUlt, diaUlt] = ultimo.fecha.split('-').map(Number);
           const fechaLegible = `${diaUlt} de ${MESES_CORTO[mesUlt - 1]}`;
           document.getElementById('ppDesc').innerHTML =
-            construirGraficoTemperatura(dias) +
+            construirGraficoTemperatura(dias, colorTemp) +
             `<div style="margin-top:8px;color:var(--ink);font-size:0.85em;">Temperatura en boya de Cabo de Palos (Puertos del Estado) · Última lectura a las 12:00 del ${fechaLegible}</div>`;
           document.getElementById('ppMaps').href = `https://www.google.com/maps?q=${BOYA_CABO_DE_PALOS.lat},${BOYA_CABO_DE_PALOS.lng}`;
           popupPanel.dataset.tipo = 'temperatura';

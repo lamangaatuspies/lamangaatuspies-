@@ -3877,8 +3877,8 @@
       const linea = puntos.map(p => `${p.x},${p.y}`).join(' ');
       const detalle = puntos.map(p => `
         <circle cx="${p.x}" cy="${p.y}" r="3" fill="#1f8fd6" />
-        <text x="${p.x}" y="${p.y - 8}" font-size="10" text-anchor="middle" fill="var(--ink)">${p.valor.toFixed(1)}°</text>
-        <text x="${p.x}" y="${H - 6}" font-size="8" text-anchor="middle" fill="var(--ink-mid)">${p.fecha.slice(5).replace('-', '/')}</text>
+        <text x="${p.x}" y="${p.y - 8}" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">${p.valor.toFixed(1)}°</text>
+        <text x="${p.x}" y="${H - 6}" font-size="8" text-anchor="middle" fill="var(--ink)">${p.fecha.slice(5).replace('-', '/')}</text>
       `).join('');
 
       return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="display:block;">
@@ -3934,9 +3934,11 @@
           document.getElementById('ppName').textContent = ultimo.valor.toFixed(1) + '°C';
           document.getElementById('ppKm').textContent = '';
           document.getElementById('ppImg').style.display = 'none';
+          const hoyMadrid = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' });
+          const relativoUltimo = ultimo.fecha === hoyMadrid ? 'hoy' : 'ayer';
           document.getElementById('ppDesc').innerHTML =
             construirGraficoTemperatura(dias) +
-            `<div style="margin-top:8px;color:var(--ink-mid);font-size:0.85em;">Temperatura en boya de Cabo de Palos (Puertos del Estado) · Lectura de referencia: 12:00h</div>`;
+            `<div style="margin-top:8px;color:var(--ink);font-size:0.85em;">Temperatura en boya de Cabo de Palos (Puertos del Estado) · Última lectura a las 12:00 de ${relativoUltimo}</div>`;
           document.getElementById('ppMaps').href = `https://www.google.com/maps?q=${BOYA_CABO_DE_PALOS.lat},${BOYA_CABO_DE_PALOS.lng}`;
           popupPanel.dataset.tipo = 'temperatura';
           popupPanel.classList.add('visible');

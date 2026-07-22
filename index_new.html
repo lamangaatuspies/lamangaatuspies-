@@ -3896,13 +3896,18 @@
         const serie = (data && data[1]) ? data[1] : [];
         const validas = serie.filter(([ts, med]) => med && med[1] === 1); // solo flag de calidad OK
 
-        // Agrupar por día local (Madrid) y quedarnos con la lectura más cercana a las 12:00
+        // Agrupar por día local (Madrid) y quedarnos con la lectura más cercana a las 12:00.
+        // MAX_DIST_MEDIODIA_MIN evita que, si un día aún no tiene ninguna lectura cerca del
+        // mediodía (p.ej. es muy temprano y la boya solo ha reportado datos de madrugada),
+        // se seleccione esa lectura lejana y se etiquete incorrectamente como si fuera la de las 12:00.
+        const MAX_DIST_MEDIODIA_MIN = 90;
         const porDia = {};
         validas.forEach(([ts, med]) => {
           const valor = med[0];
           const fechaLocal = new Date(ts * 1000).toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' }); // yyyy-mm-dd
           const [h, m] = new Date(ts * 1000).toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour12: false }).split(':').map(Number);
           const distanciaAMediodia = Math.abs((h * 60 + m) - 720);
+          if (distanciaAMediodia > MAX_DIST_MEDIODIA_MIN) return;
           if (!porDia[fechaLocal] || distanciaAMediodia < porDia[fechaLocal].dist) {
             porDia[fechaLocal] = { valor, dist: distanciaAMediodia, fecha: fechaLocal };
           }
@@ -3934,11 +3939,12 @@
           document.getElementById('ppName').textContent = ultimo.valor.toFixed(1) + '°C';
           document.getElementById('ppKm').textContent = '';
           document.getElementById('ppImg').style.display = 'none';
-          const hoyMadrid = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' });
-          const relativoUltimo = ultimo.fecha === hoyMadrid ? 'hoy' : 'ayer';
+          const MESES_CORTO = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+          const [anioUlt, mesUlt, diaUlt] = ultimo.fecha.split('-').map(Number);
+          const fechaLegible = `${diaUlt} de ${MESES_CORTO[mesUlt - 1]}`;
           document.getElementById('ppDesc').innerHTML =
             construirGraficoTemperatura(dias) +
-            `<div style="margin-top:8px;color:var(--ink);font-size:0.85em;">Temperatura en boya de Cabo de Palos (Puertos del Estado) · Última lectura a las 12:00 de ${relativoUltimo}</div>`;
+            `<div style="margin-top:8px;color:var(--ink);font-size:0.85em;">Temperatura en boya de Cabo de Palos (Puertos del Estado) · Última lectura a las 12:00 del ${fechaLegible}</div>`;
           document.getElementById('ppMaps').href = `https://www.google.com/maps?q=${BOYA_CABO_DE_PALOS.lat},${BOYA_CABO_DE_PALOS.lng}`;
           popupPanel.dataset.tipo = 'temperatura';
           popupPanel.classList.add('visible');

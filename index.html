@@ -899,7 +899,7 @@
         scrollbar-width: none;
       }
       nav ul::-webkit-scrollbar { display: none; }
-      nav a { padding: 0.85rem 0.32rem; font-size: 0.7rem; letter-spacing: 0.02em; white-space: nowrap; }
+      nav a { padding: 0.85rem 0.32rem; font-size: 0.55rem; letter-spacing: 0.02em; white-space: nowrap; }
       .nav-controls { gap: 0.3rem; }
       .theme-toggle, .basemap-toggle { width: 26px; height: 26px; }
       footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
@@ -3586,7 +3586,18 @@
     };
 
     const FLAGS_COPLA = { 100: '', 200: 'VERDE', 300: 'AMARILLA', 400: 'ROJA' };
-    const ESTADOS_MAR_COPLA = { 0: '', 1: 'Llana', 2: 'Rizada' };
+    const ESTADOS_MAR_COPLA = {
+      0: '',
+      1: 'Llana',
+      2: 'Rizada',
+      3: 'Marejadilla',
+      4: 'Marejada',
+      5: 'Fuerte marejada',
+      6: 'Gruesa',
+      7: 'Muy gruesa',
+      8: 'Arbolada',
+      9: 'Montañosa'
+    };
 
     const banderasLayerGroup = L.featureGroup();
 

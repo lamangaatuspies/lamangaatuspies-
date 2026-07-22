@@ -1824,9 +1824,11 @@
         if (isLight) {
           document.documentElement.removeAttribute('data-theme');
           localStorage.setItem('lm-theme', 'dark');
+          if (typeof registrarStats === 'function') registrarStats('clic_theme', 'A oscuro');
         } else {
           document.documentElement.setAttribute('data-theme', 'light');
           localStorage.setItem('lm-theme', 'light');
+          if (typeof registrarStats === 'function') registrarStats('clic_theme', 'A claro');
         }
       });
     })();
@@ -2857,11 +2859,13 @@
           satLayer.addTo(map);
           document.documentElement.removeAttribute('data-basemap');
           localStorage.setItem('lm-basemap', 'sat');
+          registrarStats('clic_basemap', 'A satélite');
         } else {
           map.removeLayer(satLayer);
           mapaLayer.addTo(map);
           document.documentElement.setAttribute('data-basemap', 'mapa');
           localStorage.setItem('lm-basemap', 'mapa');
+          registrarStats('clic_basemap', 'A mapa');
         }
         actualizarNotaBasemap();
       });

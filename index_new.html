@@ -3901,10 +3901,21 @@
         // mediodía (p.ej. es muy temprano y la boya solo ha reportado datos de madrugada),
         // se seleccione esa lectura lejana y se etiquete incorrectamente como si fuera la de las 12:00.
         const MAX_DIST_MEDIODIA_MIN = 90;
+
+        // Mientras no hayan pasado las 12:00 en Madrid, el día de HOY no entra en el cálculo
+        // en absoluto (ni siquiera con el margen de arriba) — si no, una lectura de las 11:17
+        // ya se coge como "representante" de hoy antes de que exista el dato real de las 12:00,
+        // dando la sensación de ir por delante del reloj. Antes del mediodía, el último punto
+        // del gráfico debe ser siempre el de ayer.
+        const [hAhora, mAhora] = new Date().toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour12: false }).split(':').map(Number);
+        const yaPasoMediodiaHoy = (hAhora * 60 + mAhora) >= 720;
+        const hoyMadridStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' });
+
         const porDia = {};
         validas.forEach(([ts, med]) => {
           const valor = med[0];
           const fechaLocal = new Date(ts * 1000).toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' }); // yyyy-mm-dd
+          if (fechaLocal === hoyMadridStr && !yaPasoMediodiaHoy) return;
           const [h, m] = new Date(ts * 1000).toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour12: false }).split(':').map(Number);
           const distanciaAMediodia = Math.abs((h * 60 + m) - 720);
           if (distanciaAMediodia > MAX_DIST_MEDIODIA_MIN) return;

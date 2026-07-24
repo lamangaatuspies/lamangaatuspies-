@@ -148,6 +148,16 @@
   .fila-farmacia:hover { background: var(--link-hover); }
   .fila-info { flex: 1; min-width: 0; }
   .fila-nombre { font-weight: 500; }
+  .fila-dir {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .fila-horario {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
   .fila-tel {
     font-size: 12px;
     color: var(--text-secondary);
@@ -238,6 +248,12 @@
 
     var html = '<div class="grupo-titulo">Resto de farmacias de la zona</div>';
     resto.forEach(function (f) {
+      var dirHTML = f.direccion
+        ? '<div class="fila-dir">' + f.direccion + '</div>'
+        : '';
+      var horarioHTML = f.horario
+        ? '<div class="fila-horario">🕑 ' + f.horario + '</div>'
+        : '';
       var telHTML = f.telefono
         ? '<div class="fila-tel">📞 <a href="tel:' + f.telefono + '">' + f.telefono + '</a></div>'
         : '';
@@ -245,6 +261,8 @@
         '<a class="fila-farmacia" href="' + urlMapa(f.nombre) + '" target="_blank" rel="noopener" title="Pincha para ver su ubicación exacta">' +
           '<div class="fila-info">' +
             '<div class="fila-nombre">Farmacia ' + f.nombre + '</div>' +
+            dirHTML +
+            horarioHTML +
             telHTML +
           '</div>' +
         '</a>';

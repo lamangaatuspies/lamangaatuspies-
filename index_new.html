@@ -3757,6 +3757,40 @@
     // abrir su popup) sin duplicar la lógica de apertura.
     const farmaciaMarkersById = {};
 
+    // Abre el panel de popup para una farmacia concreta. Extraída como función
+    // con nombre (antes vivía inline en el 'click' del marcador) para poder
+    // reutilizarla también desde el deep-link ?q= (ver abrirFarmaciaDesdeURL más abajo).
+    function abrirPopupFarmacia(f, deGuardia) {
+      registrarStats('clic_farmacia', f.nombre + (deGuardia ? ' · DE GUARDIA HOY' : ''));
+      const guardiaHTML = deGuardia
+        ? `<div style="color:var(--farmacia-roja);font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA AHORA — servicio 24h</div>`
+        : '';
+      const horarioHTML = f.horario
+        ? `<div style="color:var(--ink);font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
+        : '';
+      const telHTML = f.telefono
+        ? `<div class="pp-tel" style="color:var(--ink);font-size:0.95em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:var(--accent);">${f.telefono}</a></div>`
+        : '';
+      const dirHTML = f.direccion
+        ? `<div style="color:var(--ink);font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
+        : '';
+
+      document.getElementById('ppDot').style.background = deGuardia ? 'var(--farmacia-roja)' : 'var(--farmacia-verde)';
+      document.getElementById('ppCapa').textContent = 'FARMACIA';
+      document.getElementById('ppName').textContent = f.nombre;
+      document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);
+      const imgEl = document.getElementById('ppImg');
+      imgEl.onerror = function() { imgEl.style.display = 'none'; imgEl.onerror = null; };
+      imgEl.src = 'img/' + f.id + '.jpg';
+      imgEl.style.display = 'block';
+      if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
+      else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
+      document.getElementById('ppDesc').innerHTML = guardiaHTML + dirHTML + horarioHTML + telHTML;
+      document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + f.lat + ',' + f.lng;
+      popupPanel.dataset.tipo = 'farmacia';
+      popupPanel.classList.add('visible');
+    }
+
     fetch(PROXY_FARMACIAS)
       .then(r => r.json())
       .then(data => {
@@ -3777,36 +3811,7 @@
             { direction: 'top', offset: [0, -14], className: 'lm-tooltip' }
           );
 
-          marker.on('click', () => {
-            registrarStats('clic_farmacia', f.nombre + (deGuardia ? ' · DE GUARDIA HOY' : ''));
-            const guardiaHTML = deGuardia
-              ? `<div style="color:var(--farmacia-roja);font-weight:700;font-size:1em;margin-bottom:6px;">🔴 DE GUARDIA AHORA — servicio 24h</div>`
-              : '';
-            const horarioHTML = f.horario
-              ? `<div style="color:var(--ink);font-size:0.9em;margin-top:4px;">🕑 Horario habitual: ${f.horario}</div>`
-              : '';
-            const telHTML = f.telefono
-              ? `<div class="pp-tel" style="color:var(--ink);font-size:0.95em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📞 <a href="tel:${f.telefono}" style="color:var(--accent);">${f.telefono}</a></div>`
-              : '';
-            const dirHTML = f.direccion
-              ? `<div style="color:var(--ink);font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
-              : '';
-
-            document.getElementById('ppDot').style.background = deGuardia ? 'var(--farmacia-roja)' : 'var(--farmacia-verde)';
-            document.getElementById('ppCapa').textContent = 'FARMACIA';
-            document.getElementById('ppName').textContent = f.nombre;
-            document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);
-            const imgEl = document.getElementById('ppImg');
-            imgEl.onerror = function() { imgEl.style.display = 'none'; imgEl.onerror = null; };
-            imgEl.src = 'img/' + f.id + '.jpg';
-            imgEl.style.display = 'block';
-            if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
-            else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
-            document.getElementById('ppDesc').innerHTML = guardiaHTML + dirHTML + horarioHTML + telHTML;
-            document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + f.lat + ',' + f.lng;
-            popupPanel.dataset.tipo = 'farmacia';
-            popupPanel.classList.add('visible');
-          });
+          marker.on('click', () => abrirPopupFarmacia(f, deGuardia));
 
           marker.addTo(farmaciasLayerGroup);
           farmaciaMarkersById[f.id] = { marker, f, deGuardia };
@@ -3816,6 +3821,39 @@
         // sincronizar la visibilidad del pane con el zoom actual, ahora que
         // ya tiene marcadores dentro
         actualizarVisibilidadFarmacias();
+
+        // ── ABRIR FARMACIA DESDE URL (?q=NombreFarmacia) ──
+        // abrirDesdeURL() (más arriba) ya se ejecutó al cargar la página y busca
+        // en allFeatures, que solo contiene las capas síncronas de GEODATA. Las
+        // farmacias llegan aquí, async, y nunca se añaden a allFeatures — así que
+        // ese mecanismo nunca las encuentra. Se resuelve aparte, una vez han
+        // llegado los datos, con el mismo criterio de coincidencia (exacta → parcial).
+        (function abrirFarmaciaDesdeURL() {
+          const params = new URLSearchParams(window.location.search);
+          const q = params.get('q');
+          if (!q) return;
+          const nombre = q.toLowerCase();
+          const farmacia = data.farmacias.find(f => f.nombre.toLowerCase() === nombre)
+                        || data.farmacias.find(f => f.nombre.toLowerCase().includes(nombre));
+          if (!farmacia) return;
+          const entry = farmaciaMarkersById[farmacia.id];
+          if (!entry) return;
+
+          setTimeout(() => {
+            map.setView([farmacia.lat, farmacia.lng], 17, { animate: false });
+            abrirPopupFarmacia(entry.f, entry.deGuardia);
+            // Mismo centrado del bloque mapa+buscador que usa abrirDesdeURL(),
+            // para que la experiencia sea igual venga de una capa de GEODATA o de una farmacia.
+            const searchWrap = document.querySelector('.search-wrap');
+            const mapFrame   = document.querySelector('.map-frame');
+            const navH       = document.querySelector('nav').offsetHeight;
+            const blockTop    = window.scrollY + searchWrap.getBoundingClientRect().top;
+            const blockBottom = window.scrollY + mapFrame.getBoundingClientRect().bottom;
+            const blockCenter = (blockTop + blockBottom) / 2;
+            const visibleH    = window.innerHeight - navH;
+            window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'auto' });
+          }, 100);
+        })();
 
         // Actualizar contador y tarjeta (no pasan por actualizarContadores() porque
         // los datos no viven en GEODATA, sino que llegan async del proxy).

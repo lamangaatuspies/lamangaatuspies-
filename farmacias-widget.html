@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farmacia de guardia - La Manga a tus pies</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --card-bg: #ffffff;
+    --header-bg: #eaf2fc;
+    --header-text: #185fa5;
+    --grupo-bg: #f4f7fa;
+    --grupo-text: #4a5568;
+    --text: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --border: #e2e2e2;
+    --link-hover: #f5f8fc;
+    --farmacia-verde: #00a651;
+    --farmacia-roja:  #e53935;
+    --destacada-bg: #fdeceb;
+  }
+  html[data-tema="oscuro"] {
+    --bg: #0d1117;
+    --card-bg: #0d1117;
+    --header-bg: #132030;
+    --header-text: #7fb2e8;
+    --grupo-bg: #131b24;
+    --grupo-text: #b0bac5;
+    --text: #e6edf3;
+    --text-secondary: #9aa5b1;
+    --border: #24303d;
+    --link-hover: #16202b;
+    --farmacia-verde: #4fd47c;
+    --farmacia-roja:  #ff6b5e;
+    --destacada-bg: rgba(231,76,60,0.10);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .widget {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .widget-header {
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .widget-credito {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--header-text);
+    opacity: 0.8;
+    white-space: nowrap;
+  }
+  .widget-credito a { color: inherit; }
+
+  /* Bloque destacado: farmacia de guardia ahora */
+  .destacada {
+    margin: 14px;
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--destacada-bg);
+    border: 1px solid var(--farmacia-roja);
+  }
+  .destacada-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--farmacia-roja);
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+  }
+  .destacada-nombre {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .destacada-dir {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .destacada-tel {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--farmacia-verde);
+    text-decoration: none;
+  }
+  .destacada-nota {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+  }
+  .destacada-aviso {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 6px 0;
+  }
+
+  .grupo-titulo {
+    padding: 8px 16px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--grupo-text);
+    font-weight: 700;
+    background: var(--grupo-bg);
+    border-top: 1px solid var(--border);
+  }
+  .fila-farmacia {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    font-size: 14px;
+    transition: background 0.15s;
+  }
+  .fila-farmacia:hover { background: var(--link-hover); }
+  .fila-info { flex: 1; min-width: 0; }
+  .fila-nombre { font-weight: 500; }
+  .fila-tel {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .fila-tel a { color: inherit; text-decoration: none; }
+
+  .estado-carga, .estado-error {
+    padding: 24px 16px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+</style>
+</head>
+<body>
+  <div class="widget">
+    <div class="widget-header">
+      <span>Farmacia de guardia</span>
+      <span class="widget-credito">Datos: <a href="https://lamangaatuspies.com" target="_blank" rel="noopener">lamangaatuspies.com</a></span>
+    </div>
+    <div id="contenido">
+      <div class="estado-carga">Cargando farmacia de guardia…</div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  // Tema: ?tema=oscuro en la URL del iframe activa el tema oscuro. Por defecto, claro.
+  // Mismo mecanismo que banderas-widget.html, para que combinen si se embeben juntos.
+  var params = new URLSearchParams(window.location.search);
+  var tema = params.get('tema') === 'oscuro' ? 'oscuro' : 'claro';
+  document.documentElement.setAttribute('data-tema', tema);
+
+  var PROXY_FARMACIAS = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=farmacias";
+
+  // El turno de guardia cambia a las 9:30 (no a medianoche), confirmado con el
+  // Colegio Oficial de Farmacéuticos: la guardia de "hoy" empieza a las 9:30 de hoy
+  // y acaba a las 9:30 de mañana. Por eso, antes de las 9:30 la farmacia que sigue
+  // realmente de guardia es la de "ayer". Misma lógica que index_new.html.
+  var CORTE_GUARDIA_MIN = 9 * 60 + 30;
+
+  function minutosAhoraMadrid() {
+    var ahora = new Date().toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour12: false });
+    var partes = ahora.split(':').map(Number);
+    return partes[0] * 60 + partes[1];
+  }
+
+  function farmaciaDeGuardiaAhora(f, minAhora) {
+    return minAhora < CORTE_GUARDIA_MIN ? !!f.deGuardiaAyer : !!f.deGuardiaHoy;
+  }
+
+  var contenido = document.getElementById('contenido');
+
+  function urlMapa(nombre) {
+    return 'https://lamangaatuspies.com/?q=' + encodeURIComponent(nombre);
+  }
+
+  function renderDestacada(farmacia) {
+    if (!farmacia) {
+      return '<div class="destacada"><div class="destacada-aviso">No se ha podido determinar la guardia de hoy.</div></div>';
+    }
+    var telHTML = farmacia.telefono
+      ? '<a class="destacada-tel" href="tel:' + farmacia.telefono + '">📞 ' + farmacia.telefono + '</a>'
+      : '';
+    var dirHTML = farmacia.direccion
+      ? '<div class="destacada-dir">' + farmacia.direccion + '</div>'
+      : '';
+    return (
+      '<div class="destacada">' +
+        '<div class="destacada-badge">De guardia ahora · 24h</div>' +
+        '<a href="' + urlMapa(farmacia.nombre) + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">' +
+          '<div class="destacada-nombre">Farmacia ' + farmacia.nombre + '</div>' +
+        '</a>' +
+        dirHTML +
+        telHTML +
+        '<div class="destacada-nota">Guardia hasta las 09:30</div>' +
+      '</div>'
+    );
+  }
+
+  function renderResto(farmacias, idGuardia) {
+    var resto = farmacias
+      .filter(function (f) { return f.id !== idGuardia; })
+      .sort(function (a, b) { return (a.nombre || '').localeCompare(b.nombre || '', 'es'); });
+
+    if (!resto.length) return '';
+
+    var html = '<div class="grupo-titulo">Resto de farmacias de la zona</div>';
+    resto.forEach(function (f) {
+      var telHTML = f.telefono
+        ? '<div class="fila-tel">📞 <a href="tel:' + f.telefono + '">' + f.telefono + '</a></div>'
+        : '';
+      html +=
+        '<a class="fila-farmacia" href="' + urlMapa(f.nombre) + '" target="_blank" rel="noopener" title="Pincha para ver su ubicación exacta">' +
+          '<div class="fila-info">' +
+            '<div class="fila-nombre">Farmacia ' + f.nombre + '</div>' +
+            telHTML +
+          '</div>' +
+        '</a>';
+    });
+    return html;
+  }
+
+  fetch(PROXY_FARMACIAS)
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (!data.ok || !Array.isArray(data.farmacias) || !data.farmacias.length) {
+        contenido.innerHTML = '<div class="estado-error">No se ha podido cargar la información de farmacias.</div>';
+        return;
+      }
+
+      var minAhora = minutosAhoraMadrid();
+      var farmacias = data.farmacias.filter(function (f) { return f.lat && f.lng; });
+
+      var deGuardia = farmacias.filter(function (f) { return farmaciaDeGuardiaAhora(f, minAhora); });
+      // Normalmente solo debería haber una farmacia de guardia; si el dato viniera
+      // duplicado o inconsistente, nos quedamos con la primera y el resto cae en la lista general.
+      var guardia = deGuardia.length ? deGuardia[0] : null;
+
+      var html = renderDestacada(guardia);
+      html += renderResto(farmacias, guardia ? guardia.id : null);
+      contenido.innerHTML = html;
+    })
+    .catch(function () {
+      contenido.innerHTML = '<div class="estado-error">No se ha podido cargar la información de farmacias.</div>';
+    });
+})();
+</script>
+</body>
+</html>

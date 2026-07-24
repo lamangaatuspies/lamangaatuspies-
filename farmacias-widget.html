@@ -192,7 +192,7 @@
   var tema = params.get('tema') === 'oscuro' ? 'oscuro' : 'claro';
   document.documentElement.setAttribute('data-tema', tema);
 
-  var PROXY_FARMACIAS = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=farmacias";
+  var PROXY_FARMACIAS = "https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec?action=farmacias&origen=widget";
 
   // El turno de guardia cambia a las 9:30 (no a medianoche), confirmado con el
   // Colegio Oficial de Farmacéuticos: la guardia de "hoy" empieza a las 9:30 de hoy
@@ -212,6 +212,20 @@
 
   var contenido = document.getElementById('contenido');
 
+  // IDs de farmacias que el proxy excluye del mapa principal (están en Cabo de
+  // Palos, no en La Manga) pero que este widget sí muestra a petición de un medio.
+  // Como no existen en lamangaatuspies.com, no podemos enlazarlas a nuestra web:
+  // enlazan directamente a Google Maps con sus coordenadas, igual que hace el
+  // botón "Cómo llegar" del popup en el mapa principal.
+  var IDS_SOLO_WIDGET = [495, 559, 464, 478];
+
+  function urlFarmacia(f) {
+    if (IDS_SOLO_WIDGET.indexOf(f.id) !== -1) {
+      return 'https://www.google.com/maps?q=' + f.lat + ',' + f.lng;
+    }
+    return urlMapa(f.nombre);
+  }
+
   function urlMapa(nombre) {
     return 'https://lamangaatuspies.com/?q=' + encodeURIComponent(nombre) + '#mapa';
   }
@@ -230,7 +244,7 @@
       return (
         '<div class="destacada">' +
           '<div class="destacada-badge">De guardia ahora · 24h</div>' +
-          '<a href="' + urlMapa(farmacia.nombre) + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">' +
+          '<a href="' + urlFarmacia(farmacia) + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">' +
             '<div class="destacada-nombre">Farmacia ' + farmacia.nombre + '</div>' +
           '</a>' +
           dirHTML +
@@ -260,7 +274,7 @@
         ? '<div class="fila-tel">📞 <a href="tel:' + f.telefono + '">' + f.telefono + '</a></div>'
         : '';
       html +=
-        '<a class="fila-farmacia" href="' + urlMapa(f.nombre) + '" target="_blank" rel="noopener" title="Pincha para ver su ubicación exacta">' +
+        '<a class="fila-farmacia" href="' + urlFarmacia(f) + '" target="_blank" rel="noopener" title="Pincha para ver su ubicación exacta">' +
           '<div class="fila-info">' +
             '<div class="fila-nombre">Farmacia ' + f.nombre + '</div>' +
             dirHTML +

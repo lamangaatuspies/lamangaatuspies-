@@ -213,35 +213,37 @@
   var contenido = document.getElementById('contenido');
 
   function urlMapa(nombre) {
-    return 'https://lamangaatuspies.com/?q=' + encodeURIComponent(nombre);
+    return 'https://lamangaatuspies.com/?q=' + encodeURIComponent(nombre) + '#mapa';
   }
 
-  function renderDestacada(farmacia) {
-    if (!farmacia) {
+  function renderDestacada(farmaciasGuardia) {
+    if (!farmaciasGuardia.length) {
       return '<div class="destacada"><div class="destacada-aviso">No se ha podido determinar la guardia de hoy.</div></div>';
     }
-    var telHTML = farmacia.telefono
-      ? '<a class="destacada-tel" href="tel:' + farmacia.telefono + '">📞 ' + farmacia.telefono + '</a>'
-      : '';
-    var dirHTML = farmacia.direccion
-      ? '<div class="destacada-dir">' + farmacia.direccion + '</div>'
-      : '';
-    return (
-      '<div class="destacada">' +
-        '<div class="destacada-badge">De guardia ahora · 24h</div>' +
-        '<a href="' + urlMapa(farmacia.nombre) + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">' +
-          '<div class="destacada-nombre">Farmacia ' + farmacia.nombre + '</div>' +
-        '</a>' +
-        dirHTML +
-        telHTML +
-        '<div class="destacada-nota">Guardia hasta las 09:30</div>' +
-      '</div>'
-    );
+    return farmaciasGuardia.map(function (farmacia) {
+      var telHTML = farmacia.telefono
+        ? '<a class="destacada-tel" href="tel:' + farmacia.telefono + '">📞 ' + farmacia.telefono + '</a>'
+        : '';
+      var dirHTML = farmacia.direccion
+        ? '<div class="destacada-dir">' + farmacia.direccion + '</div>'
+        : '';
+      return (
+        '<div class="destacada">' +
+          '<div class="destacada-badge">De guardia ahora · 24h</div>' +
+          '<a href="' + urlMapa(farmacia.nombre) + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">' +
+            '<div class="destacada-nombre">Farmacia ' + farmacia.nombre + '</div>' +
+          '</a>' +
+          dirHTML +
+          telHTML +
+          '<div class="destacada-nota">Guardia hasta las 09:30</div>' +
+        '</div>'
+      );
+    }).join('');
   }
 
-  function renderResto(farmacias, idGuardia) {
+  function renderResto(farmacias, idsGuardia) {
     var resto = farmacias
-      .filter(function (f) { return f.id !== idGuardia; })
+      .filter(function (f) { return idsGuardia.indexOf(f.id) === -1; })
       .sort(function (a, b) { return (a.nombre || '').localeCompare(b.nombre || '', 'es'); });
 
     if (!resto.length) return '';
@@ -281,13 +283,11 @@
       var minAhora = minutosAhoraMadrid();
       var farmacias = data.farmacias.filter(function (f) { return f.lat && f.lng; });
 
-      var deGuardia = farmacias.filter(function (f) { return farmaciaDeGuardiaAhora(f, minAhora); });
-      // Normalmente solo debería haber una farmacia de guardia; si el dato viniera
-      // duplicado o inconsistente, nos quedamos con la primera y el resto cae en la lista general.
-      var guardia = deGuardia.length ? deGuardia[0] : null;
+      var farmaciasGuardia = farmacias.filter(function (f) { return farmaciaDeGuardiaAhora(f, minAhora); });
+      var idsGuardia = farmaciasGuardia.map(function (f) { return f.id; });
 
-      var html = renderDestacada(guardia);
-      html += renderResto(farmacias, guardia ? guardia.id : null);
+      var html = renderDestacada(farmaciasGuardia);
+      html += renderResto(farmacias, idsGuardia);
       contenido.innerHTML = html;
     })
     .catch(function () {

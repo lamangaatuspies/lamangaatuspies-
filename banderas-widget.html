@@ -131,6 +131,20 @@
     font-size: 13px;
     color: var(--text-secondary);
   }
+  .temp-strip {
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    background: var(--grupo-bg);
+  }
+  .temp-strip .temp-valor { font-weight: 700; }
+  .temp-strip .temp-nota {
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-size: 11px;
+  }
 </style>
 </head>
 <body>
@@ -139,6 +153,7 @@
       <span>Estado de las banderas de playa</span>
       <span class="widget-credito">Datos: <a href="https://lamangaatuspies.com" target="_blank" rel="noopener">lamangaatuspies.com</a></span>
     </div>
+    <div id="temp-agua" class="temp-strip" style="display:none;"></div>
     <div id="contenido">
       <div class="estado-carga">Cargando estado de las playas…</div>
     </div>
@@ -250,6 +265,49 @@
     if (b === 'ROJA') return 'Banderitas/Ban_Roja.png';
     return 'Banderitas/Ban_Blanca.png';
   }
+
+  // ── TEMPERATURA DEL AGUA (Boya de Cabo de Palos, Puertos del Estado) ──
+  // Mismo endpoint y misma boya (código 2610) que usa index.html. Aquí solo nos
+  // interesa la última lectura válida, no el histórico de varios días.
+  // Va en su propio fetch, totalmente aparte del de banderas: si falla, la tira
+  // de temperatura simplemente no aparece, sin afectar al resto del widget.
+  (function cargarTemperaturaAgua() {
+    var STATION_TEMP_AGUA = 2610;
+    var tempEl = document.getElementById('temp-agua');
+
+    function formatoFechaPuertos(date) {
+      function pad(n) { return String(n).padStart(2, '0'); }
+      return date.getUTCFullYear() + pad(date.getUTCMonth() + 1) + pad(date.getUTCDate()) + '@' + pad(date.getUTCHours()) + pad(date.getUTCMinutes());
+    }
+
+    function colorPorTemperatura(valor) {
+      if (valor > 30) return '#e53935';
+      if (valor >= 24) return '#f0883e';
+      return '#2f8fd6';
+    }
+
+    // 2 días de margen bastan para encontrar la última lectura con flag de calidad OK.
+    var desde = formatoFechaPuertos(new Date(Date.now() - 2 * 24 * 3600 * 1000));
+    var hasta = formatoFechaPuertos(new Date());
+
+    fetch('https://poem.puertos.es/portus/StationData?code=' + STATION_TEMP_AGUA + '&params=WaterTemp&from=' + desde + '&to=' + hasta)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var serie = (data && data[1]) ? data[1] : [];
+        var validas = serie.filter(function (item) { return item[1] && item[1][1] === 1; }); // solo flag de calidad OK
+        if (!validas.length) return;
+
+        var ultimo = validas[validas.length - 1];
+        var valor = ultimo[1][0];
+        var color = colorPorTemperatura(valor);
+
+        tempEl.innerHTML =
+          '🌡️ Temperatura del agua: <span class="temp-valor" style="color:' + color + ';">' + valor.toFixed(1) + '°C</span>' +
+          ' <span class="temp-nota">(boya de Cabo de Palos)</span>';
+        tempEl.style.display = 'flex';
+      })
+      .catch(function () { /* silencioso: sin tira de temperatura, el resto del widget sigue igual */ });
+  })();
 
   Promise.all([
     fetch("https://web-app.112rmurcia.com/copla-service/copla/BeachFlag?idmun=30035").then(function (r) { return r.json(); }).catch(function () { return []; }),

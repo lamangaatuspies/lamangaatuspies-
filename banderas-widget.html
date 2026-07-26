@@ -138,7 +138,12 @@
     font-size: 13px;
     border-top: 1px solid var(--border);
     background: var(--grupo-bg);
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s;
   }
+  .temp-strip:hover { background: var(--link-hover); }
   .temp-strip .temp-valor { font-weight: 700; }
   .temp-strip .temp-nota {
     font-weight: 400;
@@ -153,7 +158,7 @@
       <span>Estado de las banderas de playa</span>
       <span class="widget-credito">Datos: <a href="https://lamangaatuspies.com" target="_blank" rel="noopener">lamangaatuspies.com</a></span>
     </div>
-    <div id="temp-agua" class="temp-strip" style="display:none;"></div>
+    <a id="temp-agua" class="temp-strip" style="display:none;" href="https://lamangaatuspies.com/?temp=1" target="_blank" rel="noopener" title="Ver en el mapa de lamangaatuspies.com"></a>
     <div id="contenido">
       <div class="estado-carga">Cargando estado de las playas…</div>
     </div>

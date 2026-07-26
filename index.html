@@ -2211,10 +2211,15 @@
     document.getElementById('ppShare').addEventListener('click', function() {
       const nombre = document.getElementById('ppName').textContent;
       if (!nombre) return;
-      const esPlaya = document.getElementById('mapPopupPanel').dataset.tipo === 'playa';
-      const param = esPlaya
-        ? '?playa=' + encodeURIComponent(document.getElementById('mapPopupPanel').dataset.nombrePlaya)
-        : '?q=' + encodeURIComponent(nombre);
+      const tipoPopup = document.getElementById('mapPopupPanel').dataset.tipo;
+      let param;
+      if (tipoPopup === 'playa') {
+        param = '?playa=' + encodeURIComponent(document.getElementById('mapPopupPanel').dataset.nombrePlaya);
+      } else if (tipoPopup === 'temperatura') {
+        param = '?temp=1';
+      } else {
+        param = '?q=' + encodeURIComponent(nombre);
+      }
       const url = window.location.origin + window.location.pathname + param + '#mapa';
       navigator.clipboard.writeText(url).then(() => {
         const btn = this;
@@ -4046,6 +4051,35 @@
         const markers = [];
         banderasLayerGroup.eachLayer(m => markers.push(m));
         const marker = markers.find(m => m.options.nombrePlaya && m.options.nombrePlaya.toUpperCase().trim() === nombre);
+        if (marker) {
+          map.setView(marker.getLatLng(), 17, { animate: true });
+          marker.fire('click');
+          const searchWrap = document.querySelector('.search-wrap');
+          const mapFrame   = document.querySelector('.map-frame');
+          const navH       = document.querySelector('nav').offsetHeight;
+          const blockTop    = window.scrollY + searchWrap.getBoundingClientRect().top;
+          const blockBottom = window.scrollY + mapFrame.getBoundingClientRect().bottom;
+          const blockCenter = (blockTop + blockBottom) / 2;
+          const visibleH    = window.innerHeight - navH;
+          window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'auto' });
+        } else if (intentos > 0) {
+          setTimeout(() => intentar(intentos - 1), 500);
+        }
+      };
+      setTimeout(() => intentar(10), 600);
+    })();
+
+    // ── ABRIR TEMPERATURA DEL AGUA DESDE URL (?temp=1) ──
+    // Mismo patrón de reintentos que abrirPlayaDesdeURL: el marcador de temperatura
+    // se crea de forma asíncrona (tras el fetch a Puertos del Estado), así que puede
+    // que aún no exista en tempAguaLayerGroup cuando arranca este bloque.
+    (function abrirTemperaturaDesdeURL() {
+      const params = new URLSearchParams(window.location.search);
+      if (!params.get('temp')) return;
+      const intentar = (intentos) => {
+        const markers = [];
+        tempAguaLayerGroup.eachLayer(m => markers.push(m));
+        const marker = markers[0];
         if (marker) {
           map.setView(marker.getLatLng(), 17, { animate: true });
           marker.fire('click');

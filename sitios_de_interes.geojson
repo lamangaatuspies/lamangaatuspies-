@@ -422,7 +422,7 @@
                 ]
             },
             "properties": {
-                "name": "Club Nautico Dos Mares",
+                "name": "Club náutico Dos Mares",
                 "img": "img/CN-Dos-Mares.jpg",
                 "desc": [
                     "Puerto Deportiva",
@@ -1546,8 +1546,7 @@
                 "name": "Puerto Bello",
                 "img": "img/Puerto-dep-Puerto-Bello.jpg",
                 "desc": [
-                    "Puerto Deportivo",
-                    "Club nautico La Isleta"
+                    "Puerto Deportivo"
                 ]
             }
         },

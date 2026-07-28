@@ -3623,12 +3623,23 @@
       }
     });
 
-    // ── NAV MAPA: centrado perfecto al hacer clic ──
+    // ── NAV MAPA: centrado perfecto al hacer clic (alineado arriba en móvil) ──
     document.querySelector('nav a[href="#mapa"]').addEventListener('click', function(e) {
       e.preventDefault();
       const searchWrap = document.querySelector('.search-wrap');
       const mapFrame   = document.querySelector('.map-frame');
       const navH       = document.querySelector('nav').offsetHeight;
+
+      // En móvil el bloque buscador+mapa ocupa casi toda la pantalla, así que
+      // centrarlo deja asomando un trozo de la cabecera arriba y de la
+      // siguiente sección abajo. Mejor alinear el buscador justo debajo del
+      // nav, para que el mapa aproveche el máximo de pantalla posible.
+      if (window.innerWidth <= 600) {
+        const top = window.scrollY + searchWrap.getBoundingClientRect().top - navH;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+        return;
+      }
+
       // Bloque completo: desde el top del buscador hasta el bottom del mapa
       const blockTop    = window.scrollY + searchWrap.getBoundingClientRect().top;
       const blockBottom = window.scrollY + mapFrame.getBoundingClientRect().bottom;

@@ -907,7 +907,41 @@
       .hero { min-height: 320px; }
       .hero-content { padding: 2rem 1.5rem 2.5rem; }
       main { padding: 0 1.5rem 4rem; }
-      .statusbar { padding: 0 1.5rem; }
+
+      /* Coordenadas: en fila no cabían y cada frase se partía en varias
+         líneas apiladas — mucho más legible una frase por línea. */
+      .hero-coords {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.35rem;
+        font-size: 0.6rem;
+        letter-spacing: 0.08em;
+        margin-bottom: 1rem;
+      }
+      .hero-coords span[style*="opacity"] { display: none; }
+
+      /* Barra de estado: en vez de scroll horizontal larguísimo,
+         rejilla de 2 columnas (mismo patrón que .layers-wrap). */
+      .statusbar {
+        padding: 0 1.2rem;
+        overflow-x: visible;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .statusbar .status-item {
+        margin-right: 0;
+        padding: 0.65rem 0.6rem;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.6rem;
+      }
+      .statusbar .status-item:nth-child(odd) { border-right: 1px solid var(--border); }
+      .statusbar .status-item:last-child {
+        margin-left: 0 !important;
+        border-left: none !important;
+        padding-left: 0.6rem !important;
+      }
+      .statusbar .status-val { font-size: 0.85rem; }
       nav .nav-inner { padding: 0 1rem; position: relative; }
       .nav-hamburger { display: flex; width: 38px; height: 38px; }
       .nav-hamburger svg { width: 19px; height: 19px; }

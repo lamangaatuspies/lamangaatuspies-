@@ -35,6 +35,7 @@
   <link rel="canonical" href="https://lamangaatuspies.com/"/>
 
   <!-- Favicon -->
+  <link rel="icon" href="favicon.ico"/>
   <link rel="icon" type="image/png" href="favicon.png"/>
   <link rel="apple-touch-icon" href="favicon.png"/>
 
@@ -906,69 +907,59 @@
       .layers-wrap { grid-template-columns: 1fr; }
       #leaflet-map { height: 65vh !important; min-height: 420px !important; }
 
-      /* Popup más pequeño y accesible en móvil */
+      /* Popup a pantalla completa en móvil (ocupa todo el .map-frame).
+         Sin scroll: la información es la misma que en escritorio, pero
+         la imagen (flex 1) se encoge lo que haga falta para que el resto
+         del contenido (nombre, descripción, botones) quepa siempre entero.
+         Se cierra únicamente con el botón ✕; la página sigue haciendo
+         scroll con normalidad por fuera, ya que el panel es absolute
+         dentro de .map-frame, no fixed sobre toda la ventana. */
       .map-popup-panel {
-        width: 60% !important;
-        left: 10px !important;
-        top: 10px !important;
-        max-height: 44vh;
-        overflow-y: hidden;
+        width: 100% !important;
+        height: 100% !important;
+        left: 0 !important;
+        top: 0 !important;
+        max-height: none;
+        overflow: hidden;
       }
-      .map-popup-panel .lp-wrap { padding: 0.6rem 0.8rem; }
-      .lp-name { font-size: 0.85rem; }
-      .lp-desc { display: none; }
-      .map-popup-panel[data-tipo="playa"] {
-        max-height: 70vh;
-        overflow: visible;
+      .map-popup-panel .lp-wrap {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 0.9rem 1rem;
+        box-sizing: border-box;
+        overflow: hidden;
       }
-      .map-popup-panel[data-tipo="playa"] .lp-capa {
-        padding-right: 1.6rem;
-        flex-wrap: wrap;
-        white-space: normal;
-      }
-      .map-popup-panel[data-tipo="playa"] .lp-capa span {
-        white-space: normal;
-      }
-      .map-popup-panel[data-tipo="playa"] .map-popup-close {
-        position: absolute;
-        top: 0.3rem;
-        right: 0.3rem;
-      }
-      .map-popup-panel[data-tipo="playa"] .lp-desc {
-        display: block;
+      .lp-capa {
+        flex: 0 0 auto;
         font-size: 0.62rem;
-        line-height: 1.5;
+        flex-wrap: wrap;
+      }
+      .lp-name { flex: 0 0 auto; font-size: 1rem; }
+      .lp-img {
+        display: block;
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        max-height: none;
+        object-fit: contain;
+        margin-bottom: 0.5rem;
+      }
+      .lp-desc {
+        flex: 0 0 auto;
+        display: block !important;
+        font-size: 0.72rem;
+        line-height: 1.6;
         overflow-wrap: break-word;
         word-break: break-word;
-        max-height: 26vh;
-        overflow-y: auto;
-        overflow-x: hidden;
       }
-      .map-popup-panel[data-tipo="playa"] .lp-desc div {
-        max-width: 100%;
-      }
-      .lp-km { font-size: 0.38rem; white-space: nowrap; }
-      .lp-capa { font-size: 0.48rem; white-space: nowrap; }
-
-      /* Farmacias: en móvil ocultamos aviso de guardia, dirección y horario,
-         pero mostramos el teléfono — es lo más útil para llamar desde el móvil. */
-      .map-popup-panel[data-tipo="farmacia"] .lp-desc {
-        display: block;
-        font-size: 0.7rem;
-      }
-      .map-popup-panel[data-tipo="farmacia"] .lp-desc > div:not(.pp-tel) {
-        display: none;
-      }
-      .map-popup-panel[data-tipo="farmacia"] .lp-desc .pp-tel {
-        margin-top: 0 !important;
-        border-top: none !important;
-        padding-top: 0 !important;
-      }
-      .lp-maps { font-size: 0.46rem; white-space: nowrap; padding: 0.25rem 0.5rem; }
-      .lp-share { width: 1.4rem; height: 1.4rem; flex-shrink: 0; }
+      .lp-km { font-size: 0.42rem; white-space: nowrap; }
+      .lp-footer { flex: 0 0 auto; }
+      .lp-maps { font-size: 0.55rem; white-space: nowrap; padding: 0.3rem 0.6rem; }
+      .lp-share { width: 1.6rem; height: 1.6rem; flex-shrink: 0; }
       .map-popup-close {
-        font-size: 1.1rem;
-        padding: 0.4rem 0.6rem;
+        font-size: 1.3rem;
+        padding: 0.3rem 0.5rem;
         color: var(--ink-mid);
       }
       .map-frame.map-expanded .expand-control {
@@ -1342,8 +1333,8 @@
     .lista-intro {
       font-size: 0.95rem;
       line-height: 1.6;
-      color: var(--ink-dim);
-      max-width: 65ch;
+      color: var(--ink-mid);
+      max-width: 100%;
       margin: 0 0 1.4rem;
     }
     .lista-intro strong { color: var(--ink); }
@@ -1953,7 +1944,8 @@
       <p class="lista-intro">
         Explora el listado completo de <strong>urbanizaciones de La Manga del Mar Menor</strong>,
         junto a hoteles, restaurantes y sitios de interés. Filtra por categoría o busca directamente
-        el nombre de la urbanización que buscas.
+        el nombre de la urbanización que buscas. Puedes ordenar cada listado alfabéticamente (A-Z) o
+        por kilómetro (KM) con los botones situados junto a cada categoría.
       </p>
       <div class="lista-filtro" id="lista-filtro"></div>
       <div id="lista-wrap"></div>
@@ -2103,6 +2095,12 @@
   <script>
   document.addEventListener('DOMContentLoaded', async function() {
     // ******************* CARGA DE DATOS DESDE GEOJSON *************************************
+    // Utilidad: quita acentos/diacríticos para comparaciones de búsqueda "sin tildes".
+    // Los nombres siguen mostrándose con su acento correcto en pantalla; esta función
+    // solo se usa para comparar, nunca para mostrar texto al usuario.
+    function normalizar(str) {
+      return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
     // Utilidad: oscurece un color hex. Solo hay 4 colores de capa en todo el mapa,
     // así que esta función se define una vez y su resultado se cachea por capa (ver más abajo).
     function darkenColor(c) {
@@ -2211,10 +2209,15 @@
     document.getElementById('ppShare').addEventListener('click', function() {
       const nombre = document.getElementById('ppName').textContent;
       if (!nombre) return;
-      const esPlaya = document.getElementById('mapPopupPanel').dataset.tipo === 'playa';
-      const param = esPlaya
-        ? '?playa=' + encodeURIComponent(document.getElementById('mapPopupPanel').dataset.nombrePlaya)
-        : '?q=' + encodeURIComponent(nombre);
+      const tipoPopup = document.getElementById('mapPopupPanel').dataset.tipo;
+      let param;
+      if (tipoPopup === 'playa') {
+        param = '?playa=' + encodeURIComponent(document.getElementById('mapPopupPanel').dataset.nombrePlaya);
+      } else if (tipoPopup === 'temperatura') {
+        param = '?temp=1';
+      } else {
+        param = '?q=' + encodeURIComponent(nombre);
+      }
       const url = window.location.origin + window.location.pathname + param + '#mapa';
       navigator.clipboard.writeText(url).then(() => {
         const btn = this;
@@ -2268,11 +2271,11 @@
       const params = new URLSearchParams(window.location.search);
       const q = params.get('q');
       if (!q) return;
-      const nombre = q.toLowerCase();
+      const nombre = normalizar(q).toLowerCase();
       let encontrado = null;
       for (const features of Object.values(GEODATA)) {
-        encontrado = features.find(ft => ft.properties.name && ft.properties.name.toLowerCase() === nombre)
-                  || features.find(ft => ft.properties.name && ft.properties.name.toLowerCase().includes(nombre));
+        encontrado = features.find(ft => ft.properties.name && normalizar(ft.properties.name).toLowerCase() === nombre)
+                  || features.find(ft => ft.properties.name && normalizar(ft.properties.name).toLowerCase().includes(nombre));
         if (encontrado) break;
       }
       if (!encontrado) return;
@@ -2566,8 +2569,7 @@
         if (km.img) {
           imgEl.src = km.img; imgEl.alt = km.name;
           imgEl.style.display = 'block';
-          if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
-          else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
+          imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = '';
         } else { imgEl.style.display = 'none'; }
         document.getElementById('ppDesc').innerHTML = '';
         document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + km.lat + ',' + km.lng;
@@ -2887,8 +2889,19 @@
 
     function highlight(text, query) {
       if (!query) return text;
-      const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-      return text.replace(re, '<mark>$1</mark>');
+      const textNorm  = normalizar(text).toLowerCase();
+      const queryNorm = normalizar(query).toLowerCase();
+      if (!queryNorm) return text;
+      let result = '';
+      let pos = 0;
+      let idx = textNorm.indexOf(queryNorm, pos);
+      while (idx !== -1) {
+        result += text.slice(pos, idx) + '<mark>' + text.slice(idx, idx + queryNorm.length) + '</mark>';
+        pos = idx + queryNorm.length;
+        idx = textNorm.indexOf(queryNorm, pos);
+      }
+      result += text.slice(pos);
+      return result;
     }
 
     // Custom popup panel
@@ -2905,8 +2918,7 @@
       if (item.img) {
         imgEl.src = item.img;
         imgEl.style.display = 'block';
-        if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
-        else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
+        imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = '';
       } else { imgEl.style.display = 'none'; }
       const descEl = document.getElementById('ppDesc');
       descEl.innerHTML = item.desc && item.desc.length
@@ -2977,13 +2989,20 @@
         map.setView([item.lat, item.lng], 17);
       }
 
-      showMapPopup(item);
+      // En móvil, la búsqueda solo resalta el marcador en el mapa: el popup
+      // ocuparía toda la pantalla, así que solo se abre con un clic explícito
+      // sobre el marcador ya resaltado (ver layer.on('click') más arriba).
+      if (window.innerWidth <= 600) {
+        popupPanel.classList.remove('visible');
+      } else {
+        showMapPopup(item);
+      }
     }
 
     function showResults(query) {
       if (!query || query.length < 2) { dropdown.classList.remove('open'); return; }
-      const q = query.toLowerCase();
-      const matches = searchIndex.filter(f => f.name.toLowerCase().includes(q)).slice(0, 12);
+      const q = normalizar(query).toLowerCase();
+      const matches = searchIndex.filter(f => normalizar(f.name).toLowerCase().includes(q)).slice(0, 12);
       if (matches.length === 0) {
         dropdown.innerHTML = '<div class="search-empty">Sin resultados para «' + query + '»</div>';
         dropdown.classList.add('open');
@@ -3045,9 +3064,9 @@
       const params = new URLSearchParams(window.location.search);
       const q = params.get('q');
       if (!q) return;
-      const nombre = q.toLowerCase();
-      const item = allFeatures.find(f => f.name.toLowerCase() === nombre)
-                || allFeatures.find(f => f.name.toLowerCase().includes(nombre));
+      const nombre = normalizar(q).toLowerCase();
+      const item = allFeatures.find(f => normalizar(f.name).toLowerCase() === nombre)
+                || allFeatures.find(f => normalizar(f.name).toLowerCase().includes(nombre));
       if (!item) return;
       // Nota: el mapa ya fue pre-posicionado cerca de este punto por saltoRapidoDesdeURL()
       // nada más cargar los datos, así que aquí solo hace falta un pequeño margen para que
@@ -3783,8 +3802,7 @@
       imgEl.onerror = function() { imgEl.style.display = 'none'; imgEl.onerror = null; };
       imgEl.src = 'img/' + f.id + '.jpg';
       imgEl.style.display = 'block';
-      if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
-      else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
+      imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = '';
       document.getElementById('ppDesc').innerHTML = guardiaHTML + dirHTML + horarioHTML + telHTML;
       document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + f.lat + ',' + f.lng;
       popupPanel.dataset.tipo = 'farmacia';
@@ -3832,9 +3850,9 @@
           const params = new URLSearchParams(window.location.search);
           const q = params.get('q');
           if (!q) return;
-          const nombre = q.toLowerCase();
-          const farmacia = data.farmacias.find(f => f.nombre.toLowerCase() === nombre)
-                        || data.farmacias.find(f => f.nombre.toLowerCase().includes(nombre));
+          const nombre = normalizar(q).toLowerCase();
+          const farmacia = data.farmacias.find(f => normalizar(f.nombre).toLowerCase() === nombre)
+                        || data.farmacias.find(f => normalizar(f.nombre).toLowerCase().includes(nombre));
           if (!farmacia) return;
           const entry = farmaciaMarkersById[farmacia.id];
           if (!entry) return;
@@ -4046,6 +4064,35 @@
         const markers = [];
         banderasLayerGroup.eachLayer(m => markers.push(m));
         const marker = markers.find(m => m.options.nombrePlaya && m.options.nombrePlaya.toUpperCase().trim() === nombre);
+        if (marker) {
+          map.setView(marker.getLatLng(), 17, { animate: true });
+          marker.fire('click');
+          const searchWrap = document.querySelector('.search-wrap');
+          const mapFrame   = document.querySelector('.map-frame');
+          const navH       = document.querySelector('nav').offsetHeight;
+          const blockTop    = window.scrollY + searchWrap.getBoundingClientRect().top;
+          const blockBottom = window.scrollY + mapFrame.getBoundingClientRect().bottom;
+          const blockCenter = (blockTop + blockBottom) / 2;
+          const visibleH    = window.innerHeight - navH;
+          window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'auto' });
+        } else if (intentos > 0) {
+          setTimeout(() => intentar(intentos - 1), 500);
+        }
+      };
+      setTimeout(() => intentar(10), 600);
+    })();
+
+    // ── ABRIR TEMPERATURA DEL AGUA DESDE URL (?temp=1) ──
+    // Mismo patrón de reintentos que abrirPlayaDesdeURL: el marcador de temperatura
+    // se crea de forma asíncrona (tras el fetch a Puertos del Estado), así que puede
+    // que aún no exista en tempAguaLayerGroup cuando arranca este bloque.
+    (function abrirTemperaturaDesdeURL() {
+      const params = new URLSearchParams(window.location.search);
+      if (!params.get('temp')) return;
+      const intentar = (intentos) => {
+        const markers = [];
+        tempAguaLayerGroup.eachLayer(m => markers.push(m));
+        const marker = markers[0];
         if (marker) {
           map.setView(marker.getLatLng(), 17, { animate: true });
           marker.fire('click');

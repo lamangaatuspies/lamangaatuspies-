@@ -191,7 +191,7 @@
       align-items: center;
       gap: 1rem;
     }
-    .hero-coords::before {
+    .hero-coords::before, .hero-coords-mobile::before {
       content: '';
       display: inline-block;
       width: 6px; height: 6px;
@@ -199,10 +199,21 @@
       background: var(--accent3);
       box-shadow: 0 0 8px var(--accent3);
       animation: pulse 2s infinite;
+      flex-shrink: 0;
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
+    }
+
+    /* Versión compacta de una sola línea: oculta en escritorio,
+       se activa en el media query móvil. */
+    .hero-coords-mobile {
+      display: none;
+      font-family: var(--mono);
+      color: var(--accent);
+      align-items: center;
+      gap: 0.4rem;
     }
 
     .hero h1 {
@@ -905,20 +916,19 @@
       html, body { overflow-x: hidden; }
       :root { --hero-h: 55vh; }
       .hero { min-height: 320px; }
-      .hero-content { padding: 2rem 1.5rem 2.5rem; }
+      .hero-content { padding: 1.5rem 1.5rem 2rem; }
       main { padding: 0 1.5rem 4rem; }
 
-      /* Coordenadas: en fila no cabían y cada frase se partía en varias
-         líneas apiladas — mucho más legible una frase por línea. */
-      .hero-coords {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.35rem;
-        font-size: 0.6rem;
-        letter-spacing: 0.08em;
-        margin-bottom: 1rem;
+      /* En móvil ocultamos la versión larga (3 frases) y mostramos una
+         única línea compacta, más corta, para no ocupar tanto espacio. */
+      .hero-coords { display: none; }
+      .hero-coords-mobile {
+        display: flex;
+        font-size: 0.56rem;
+        letter-spacing: 0.03em;
+        margin-bottom: 0.9rem;
+        white-space: nowrap;
       }
-      .hero-coords span[style*="opacity"] { display: none; }
 
       /* Barra de estado: en vez de scroll horizontal larguísimo,
          rejilla de 2 columnas (mismo patrón que .layers-wrap). */
@@ -934,6 +944,13 @@
         border-right: none;
         border-bottom: 1px solid var(--border);
         font-size: 0.6rem;
+        /* Columna en vez de fila: si la etiqueta es larga ("Edificios y
+           urbanizaciones") se parte en 2 líneas en vez de empujar y
+           cortar el número fuera de la tarjeta. */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+        white-space: normal;
       }
       .statusbar .status-item:nth-child(odd) { border-right: 1px solid var(--border); }
       .statusbar .status-item:last-child {
@@ -1951,6 +1968,7 @@
         <span style="opacity:0.4">|</span>
         <span>21 KM DE LITORAL</span>
       </div>
+      <div class="hero-coords-mobile">37°46′N · 0°44′O · MURCIA, ESPAÑA · 21 KM</div>
       <h1>
 		La Manga <span style="color:rgba(255,255,255,0.45)">a tus pies</span>
         <span class="sub">Directorio cartográfico de La Manga del Mar Menor</span>

@@ -907,6 +907,11 @@
       .layers-wrap { grid-template-columns: 1fr; }
       #leaflet-map { height: 65vh !important; min-height: 420px !important; }
 
+      /* En móvil todo el mundo usa el gesto de pellizcar para hacer zoom,
+         así que los botones +/- solo restan espacio de mapa y lo tapan.
+         Se mantiene el botón de expandir (⤢), que no tiene gesto equivalente. */
+      .leaflet-control-zoom { display: none !important; }
+
       /* Popup a pantalla completa en móvil (ocupa todo el .map-frame).
          Sin scroll: la información es la misma que en escritorio, pero
          la imagen (flex 1) se encoge lo que haga falta para que el resto
@@ -954,9 +959,22 @@
         word-break: break-word;
       }
       .lp-km { font-size: 0.42rem; white-space: nowrap; }
-      .lp-footer { flex: 0 0 auto; }
-      .lp-maps { font-size: 0.55rem; white-space: nowrap; padding: 0.3rem 0.6rem; }
-      .lp-share { width: 1.6rem; height: 1.6rem; flex-shrink: 0; }
+      .lp-footer { flex: 0 0 auto; gap: 0.7rem; }
+      .lp-maps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1 1 auto;
+        font-size: 0.7rem;
+        min-height: 2.75rem;
+        padding: 0.5rem 0.8rem;
+      }
+      .lp-share {
+        width: 2.75rem;
+        height: 2.75rem;
+        flex-shrink: 0;
+      }
+      .lp-share svg { width: 18px; height: 18px; }
       .map-popup-close {
         font-size: 1.3rem;
         padding: 0.3rem 0.5rem;

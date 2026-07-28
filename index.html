@@ -2337,6 +2337,41 @@
     });
     new ExpandControl().addTo(map);
 
+    // ── ALTURA DEL MAPA EN MÓVIL: ajuste dinámico ──
+    // En escritorio la altura es fija por CSS. En móvil, para que el mapa
+    // llegue exactamente al borde inferior de la pantalla (sin dejar
+    // asomar la sección siguiente), se calcula: alto de pantalla - alto
+    // del nav - alto del buscador. Con !important porque el CSS del
+    // media query también usa !important.
+    let ajusteAlturaMapaTimeout = null;
+    function ajustarAlturaMapaMovil() {
+      const leafletMapEl = document.getElementById('leaflet-map');
+      const mapFrameEl   = document.querySelector('.map-frame');
+      // Si el mapa está expandido a pantalla completa, ese modo ya gestiona
+      // su propia altura (100%) — no interferir.
+      if (mapFrameEl.classList.contains('map-expanded')) return;
+      if (window.innerWidth > 600) {
+        leafletMapEl.style.removeProperty('height');
+        leafletMapEl.style.removeProperty('min-height');
+        return;
+      }
+      const navEl       = document.querySelector('nav');
+      const searchWrapEl = document.querySelector('.search-wrap');
+      if (!navEl || !searchWrapEl) return;
+      const navH    = navEl.offsetHeight;
+      const searchH = searchWrapEl.offsetHeight;
+      const h = Math.max(320, window.innerHeight - navH - searchH);
+      leafletMapEl.style.setProperty('min-height', '0', 'important');
+      leafletMapEl.style.setProperty('height', h + 'px', 'important');
+      map.invalidateSize();
+    }
+    ajustarAlturaMapaMovil();
+    window.addEventListener('resize', () => {
+      clearTimeout(ajusteAlturaMapaTimeout);
+      ajusteAlturaMapaTimeout = setTimeout(ajustarAlturaMapaMovil, 150);
+    });
+    window.addEventListener('orientationchange', ajustarAlturaMapaMovil);
+
     // ── SALTO RÁPIDO A UBICACIÓN DESDE URL (?q=NombreEdificio) ──
     // Optimización: en vez de esperar a que se construyan los 350 marcadores de Leaflet
     // (más abajo) para recién entonces mover el mapa, buscamos el elemento directamente
@@ -2446,6 +2481,10 @@
           // El mapa arranca justo debajo del buscador
           const swBottom = navBottom + sw.offsetHeight;
           mapFrame.style.top = swBottom + 'px';
+          // Quitamos la altura fija que le pusimos en móvil (ajustarAlturaMapaMovil),
+          // para que mande la regla CSS .map-expanded #leaflet-map { height:100% }.
+          document.getElementById('leaflet-map').style.removeProperty('height');
+          document.getElementById('leaflet-map').style.removeProperty('min-height');
           mapFrame.classList.add('map-expanded');
           document.body.style.overflow = 'hidden';
           btn.innerHTML = iconCollapse;
@@ -2474,6 +2513,7 @@
         btn.innerHTML = iconExpand;
         btn.title = 'Expandir mapa';
         mapaExpandido = false;
+        ajustarAlturaMapaMovil();
         setTimeout(() => map.invalidateSize(), 50);
       }
     }

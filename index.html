@@ -907,69 +907,59 @@
       .layers-wrap { grid-template-columns: 1fr; }
       #leaflet-map { height: 65vh !important; min-height: 420px !important; }
 
-      /* Popup más pequeño y accesible en móvil */
+      /* Popup a pantalla completa en móvil (ocupa todo el .map-frame).
+         Sin scroll: la información es la misma que en escritorio, pero
+         la imagen (flex 1) se encoge lo que haga falta para que el resto
+         del contenido (nombre, descripción, botones) quepa siempre entero.
+         Se cierra únicamente con el botón ✕; la página sigue haciendo
+         scroll con normalidad por fuera, ya que el panel es absolute
+         dentro de .map-frame, no fixed sobre toda la ventana. */
       .map-popup-panel {
-        width: 60% !important;
-        left: 10px !important;
-        top: 10px !important;
-        max-height: 44vh;
-        overflow-y: hidden;
+        width: 100% !important;
+        height: 100% !important;
+        left: 0 !important;
+        top: 0 !important;
+        max-height: none;
+        overflow: hidden;
       }
-      .map-popup-panel .lp-wrap { padding: 0.6rem 0.8rem; }
-      .lp-name { font-size: 0.85rem; }
-      .lp-desc { display: none; }
-      .map-popup-panel[data-tipo="playa"] {
-        max-height: 70vh;
-        overflow: visible;
+      .map-popup-panel .lp-wrap {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 0.9rem 1rem;
+        box-sizing: border-box;
+        overflow: hidden;
       }
-      .map-popup-panel[data-tipo="playa"] .lp-capa {
-        padding-right: 1.6rem;
-        flex-wrap: wrap;
-        white-space: normal;
-      }
-      .map-popup-panel[data-tipo="playa"] .lp-capa span {
-        white-space: normal;
-      }
-      .map-popup-panel[data-tipo="playa"] .map-popup-close {
-        position: absolute;
-        top: 0.3rem;
-        right: 0.3rem;
-      }
-      .map-popup-panel[data-tipo="playa"] .lp-desc {
-        display: block;
+      .lp-capa {
+        flex: 0 0 auto;
         font-size: 0.62rem;
-        line-height: 1.5;
+        flex-wrap: wrap;
+      }
+      .lp-name { flex: 0 0 auto; font-size: 1rem; }
+      .lp-img {
+        display: block;
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        max-height: none;
+        object-fit: contain;
+        margin-bottom: 0.5rem;
+      }
+      .lp-desc {
+        flex: 0 0 auto;
+        display: block !important;
+        font-size: 0.72rem;
+        line-height: 1.6;
         overflow-wrap: break-word;
         word-break: break-word;
-        max-height: 26vh;
-        overflow-y: auto;
-        overflow-x: hidden;
       }
-      .map-popup-panel[data-tipo="playa"] .lp-desc div {
-        max-width: 100%;
-      }
-      .lp-km { font-size: 0.38rem; white-space: nowrap; }
-      .lp-capa { font-size: 0.48rem; white-space: nowrap; }
-
-      /* Farmacias: en móvil ocultamos aviso de guardia, dirección y horario,
-         pero mostramos el teléfono — es lo más útil para llamar desde el móvil. */
-      .map-popup-panel[data-tipo="farmacia"] .lp-desc {
-        display: block;
-        font-size: 0.7rem;
-      }
-      .map-popup-panel[data-tipo="farmacia"] .lp-desc > div:not(.pp-tel) {
-        display: none;
-      }
-      .map-popup-panel[data-tipo="farmacia"] .lp-desc .pp-tel {
-        margin-top: 0 !important;
-        border-top: none !important;
-        padding-top: 0 !important;
-      }
-      .lp-maps { font-size: 0.46rem; white-space: nowrap; padding: 0.25rem 0.5rem; }
-      .lp-share { width: 1.4rem; height: 1.4rem; flex-shrink: 0; }
+      .lp-km { font-size: 0.42rem; white-space: nowrap; }
+      .lp-footer { flex: 0 0 auto; }
+      .lp-maps { font-size: 0.55rem; white-space: nowrap; padding: 0.3rem 0.6rem; }
+      .lp-share { width: 1.6rem; height: 1.6rem; flex-shrink: 0; }
       .map-popup-close {
-        font-size: 1.1rem;
-        padding: 0.4rem 0.6rem;
+        font-size: 1.3rem;
+        padding: 0.3rem 0.5rem;
         color: var(--ink-mid);
       }
       .map-frame.map-expanded .expand-control {
@@ -2579,8 +2569,7 @@
         if (km.img) {
           imgEl.src = km.img; imgEl.alt = km.name;
           imgEl.style.display = 'block';
-          if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
-          else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
+          imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = '';
         } else { imgEl.style.display = 'none'; }
         document.getElementById('ppDesc').innerHTML = '';
         document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + km.lat + ',' + km.lng;
@@ -2929,8 +2918,7 @@
       if (item.img) {
         imgEl.src = item.img;
         imgEl.style.display = 'block';
-        if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
-        else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
+        imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = '';
       } else { imgEl.style.display = 'none'; }
       const descEl = document.getElementById('ppDesc');
       descEl.innerHTML = item.desc && item.desc.length
@@ -3001,7 +2989,14 @@
         map.setView([item.lat, item.lng], 17);
       }
 
-      showMapPopup(item);
+      // En móvil, la búsqueda solo resalta el marcador en el mapa: el popup
+      // ocuparía toda la pantalla, así que solo se abre con un clic explícito
+      // sobre el marcador ya resaltado (ver layer.on('click') más arriba).
+      if (window.innerWidth <= 600) {
+        popupPanel.classList.remove('visible');
+      } else {
+        showMapPopup(item);
+      }
     }
 
     function showResults(query) {
@@ -3807,8 +3802,7 @@
       imgEl.onerror = function() { imgEl.style.display = 'none'; imgEl.onerror = null; };
       imgEl.src = 'img/' + f.id + '.jpg';
       imgEl.style.display = 'block';
-      if (window.innerWidth <= 600) { imgEl.style.height = '80px'; imgEl.style.maxHeight = '80px'; imgEl.style.objectFit = 'cover'; }
-      else { imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = ''; }
+      imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = '';
       document.getElementById('ppDesc').innerHTML = guardiaHTML + dirHTML + horarioHTML + telHTML;
       document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + f.lat + ',' + f.lng;
       popupPanel.dataset.tipo = 'farmacia';

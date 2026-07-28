@@ -4131,7 +4131,7 @@
       const linea = puntos.map(p => `${p.x},${p.y}`).join(' ');
       const detalle = puntos.map(p => `
         <circle cx="${p.x}" cy="${p.y}" r="3" fill="${color}" />
-        <text x="${p.x}" y="${p.y - 10}" font-size="18" font-weight="700" text-anchor="middle" fill="var(--ink)">${p.valor.toFixed(1)}°</text>
+        <text x="${p.x}" y="${p.y - 10}" font-size="15" font-weight="700" text-anchor="middle" fill="var(--ink)">${p.valor.toFixed(1)}°</text>
         <text x="${p.x}" y="${H - 6}" font-size="14" text-anchor="middle" fill="var(--ink)">${p.fecha.slice(5).replace('-', '/')}</text>
       `).join('');
 

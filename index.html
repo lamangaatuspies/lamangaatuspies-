@@ -843,6 +843,25 @@
       line-height: 1.8;
       margin-bottom: 0.7rem;
     }
+    /* Foto de la boya de temperatura, incrustada dentro de .lp-desc.
+       En móvil recortada (cover) para que sea compacta; en escritorio,
+       donde hay más margen vertical, se ve entera (contain) aunque
+       queden huecos a los lados. */
+    .lp-boya-img {
+      display: block;
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    @media (min-width: 601px) {
+      .lp-boya-img {
+        height: 200px;
+        object-fit: contain;
+        background: var(--surface2);
+      }
+    }
     .lp-desc span::before { content: '· '; color: var(--accent2); }
     .lp-maps {
       display: inline-block;
@@ -4225,7 +4244,7 @@
           const fechaLegible = `${diaUlt} de ${MESES_CORTO[mesUlt - 1]}`;
           document.getElementById('ppDesc').innerHTML =
             construirGraficoTemperatura(dias, colorTemp) +
-            `<img src="img/Boya.jpg" alt="Boya de Cabo de Palos" style="display:block;width:100%;height:130px;object-fit:cover;border-radius:4px;margin-top:10px;" />` +
+            `<img src="img/Boya.jpg" alt="Boya de Cabo de Palos" class="lp-boya-img" />` +
             `<div style="margin-top:8px;color:var(--ink);font-size:0.85em;">Temperatura en boya de Cabo de Palos (Puertos del Estado) · Última lectura a las 12:00 del ${fechaLegible}</div>`;
           document.getElementById('ppMaps').href = `https://www.google.com/maps?q=${BOYA_CABO_DE_PALOS.lat},${BOYA_CABO_DE_PALOS.lng}`;
           popupPanel.dataset.tipo = 'temperatura';

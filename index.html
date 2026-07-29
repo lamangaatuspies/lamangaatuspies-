@@ -4225,6 +4225,7 @@
           const fechaLegible = `${diaUlt} de ${MESES_CORTO[mesUlt - 1]}`;
           document.getElementById('ppDesc').innerHTML =
             construirGraficoTemperatura(dias, colorTemp) +
+            `<img src="img/Boya.jpg" alt="Boya de Cabo de Palos" style="display:block;width:100%;height:130px;object-fit:cover;border-radius:4px;margin-top:10px;" />` +
             `<div style="margin-top:8px;color:var(--ink);font-size:0.85em;">Temperatura en boya de Cabo de Palos (Puertos del Estado) · Última lectura a las 12:00 del ${fechaLegible}</div>`;
           document.getElementById('ppMaps').href = `https://www.google.com/maps?q=${BOYA_CABO_DE_PALOS.lat},${BOYA_CABO_DE_PALOS.lng}`;
           popupPanel.dataset.tipo = 'temperatura';

@@ -826,6 +826,16 @@
       color: var(--ink);
       margin-bottom: 0.5rem;
     }
+    /* Popup de temperatura del agua: el valor ("27.6°C") se muestra junto
+       a "TEMPERATURA DEL AGUA" (reutilizando el hueco del km, que este
+       marcador no usa) en vez de como título aparte. */
+    .map-popup-panel[data-tipo="temperatura"] .lp-name { display: none; }
+    .map-popup-panel[data-tipo="temperatura"] .lp-km {
+      font-family: var(--sans);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
     .lp-img {
       width: 100%;
       height: auto;
@@ -2753,6 +2763,7 @@
         document.getElementById('ppDot').style.background = '#ef5d69';
         document.getElementById('ppCapa').textContent = 'PUNTO KILOMÉTRICO';
         document.getElementById('ppKm').textContent = '';
+        document.getElementById('ppKm').style.removeProperty('color');
         document.getElementById('ppName').textContent = km.name;
         const imgEl = document.getElementById('ppImg');
         if (km.img) {
@@ -3103,6 +3114,7 @@
       document.getElementById('ppCapa').textContent = cfg.label;
       document.getElementById('ppName').textContent = item.name;
       document.getElementById('ppKm').textContent = kmMasCercano(item.lat, item.lng);
+      document.getElementById('ppKm').style.removeProperty('color');
       const imgEl = document.getElementById('ppImg');
       if (item.img) {
         imgEl.src = item.img;
@@ -3918,6 +3930,7 @@
             document.getElementById('ppCapa').textContent = 'PUESTO DE SOCORRISTA';
             document.getElementById('ppName').textContent = 'Playa ' + nombreCorto;
             document.getElementById('ppKm').textContent = kmMasCercano(lat, lng);
+            document.getElementById('ppKm').style.removeProperty('color');
             document.getElementById('ppImg').style.display = 'none';
             document.getElementById('ppDesc').innerHTML = banderaHTML + estadoHTML + fechaHTML + horarioHTML;
             document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + lat + ',' + lng;
@@ -3998,6 +4011,7 @@
       document.getElementById('ppCapa').textContent = 'FARMACIA';
       document.getElementById('ppName').textContent = f.nombre;
       document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);
+      document.getElementById('ppKm').style.removeProperty('color');
       const imgEl = document.getElementById('ppImg');
       imgEl.onerror = function() { imgEl.style.display = 'none'; imgEl.onerror = null; };
       imgEl.src = 'img/' + f.id + '.jpg';
@@ -4236,8 +4250,9 @@
           registrarStats('clic_marcador', 'Temperatura del agua');
           document.getElementById('ppDot').style.background = colorTemp;
           document.getElementById('ppCapa').textContent = 'TEMPERATURA DEL AGUA';
-          document.getElementById('ppName').textContent = ultimo.valor.toFixed(1) + '°C';
-          document.getElementById('ppKm').textContent = '';
+          document.getElementById('ppName').textContent = '';
+          document.getElementById('ppKm').textContent = ultimo.valor.toFixed(1) + '°C';
+          document.getElementById('ppKm').style.color = colorTemp;
           document.getElementById('ppImg').style.display = 'none';
           const MESES_CORTO = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
           const [anioUlt, mesUlt, diaUlt] = ultimo.fecha.split('-').map(Number);

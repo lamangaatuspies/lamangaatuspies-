@@ -3031,26 +3031,6 @@
     }
     setTimeout(colorearControlCapas, 100);
 
-    // Nota de atribución — cambia según la capa base activa (satélite o mapa)
-    const dateNote = L.control({ position: 'bottomleft' });
-    let dateNoteSpan;
-    dateNote.onAdd = () => {
-      const div = L.DomUtil.create('div');
-      dateNoteSpan = document.createElement('span');
-      dateNoteSpan.style.cssText = 'background:rgba(13,17,23,0.75);color:#8b949e;font-family:monospace;font-size:10px;padding:3px 7px;letter-spacing:0.05em;display:inline-block;';
-      div.appendChild(dateNoteSpan);
-      actualizarNotaBasemap();
-      return div;
-    };
-    dateNote.addTo(map);
-
-    function actualizarNotaBasemap() {
-      if (!dateNoteSpan) return;
-      dateNoteSpan.textContent = map.hasLayer(mapaLayer)
-        ? 'MAPA © ESRI'
-        : 'IMAGEN SATELITAL © IGN ESPAÑA (PNOA) · ' + new Date().getFullYear();
-    }
-
     // ── BOTÓN DE CAMBIO DE MAPA (en el nav, junto al de tema) ──
     const basemapToggleBtn = document.getElementById('basemap-toggle');
     if (basemapToggleBtn) {
@@ -3069,7 +3049,6 @@
           localStorage.setItem('lm-basemap', 'mapa');
           registrarStats('clic_basemap', 'A mapa');
         }
-        actualizarNotaBasemap();
       });
     }
 

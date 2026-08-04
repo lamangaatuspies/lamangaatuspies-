@@ -1691,28 +1691,8 @@
                             37.672158
                         ],
                         [
-                            -0.730977,
-                            37.672714
-                        ],
-                        [
-                            -0.730811,
-                            37.673325
-                        ],
-                        [
-                            -0.731031,
-                            37.673291
-                        ],
-                        [
-                            -0.731154,
-                            37.672752
-                        ],
-                        [
-                            -0.731288,
-                            37.672081
-                        ],
-                        [
-                            -0.731363,
-                            37.671883
+                            -0.73136,
+                            37.671996
                         ],
                         [
                             -0.731095,
@@ -2336,13 +2316,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Club náutico La Isleta",
-                "img": "img/Club-nautico-la-isleta.jpg",
-                "desc": [
-                    "Club náutico"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2380,6 +2353,13 @@
                             37.651461
                         ]
                     ]
+                ]
+            },
+            "properties": {
+                "name": "Club náutico La Isleta",
+                "img": "img/Club-nautico-la-isleta.jpg",
+                "desc": [
+                    "Club náutico"
                 ]
             }
         }

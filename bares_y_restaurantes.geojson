@@ -360,8 +360,8 @@
                 ]
             },
             "properties": {
-                "name": "Umai Beach",
-                "img": "img/Umai-beach.jpg",
+                "name": "Bongo",
+                "img": "img/Bongo.jpg",
                 "desc": [
                     "Pub"
                 ]
@@ -397,8 +397,8 @@
                 ]
             },
             "properties": {
-                "name": "Bongo Beach",
-                "img": "img/bongo-beach.jpg",
+                "name": "Umai Beach",
+                "img": "img/Umai-beach.jpg",
                 "desc": [
                     "Chiringuito"
                 ]

@@ -7654,8 +7654,16 @@
                             37.747896
                         ],
                         [
-                            -0.740359,
-                            37.750269
+                            -0.740213,
+                            37.749917
+                        ],
+                        [
+                            -0.740767,
+                            37.749756
+                        ],
+                        [
+                            -0.741016,
+                            37.750064
                         ],
                         [
                             -0.741363,
@@ -12165,13 +12173,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "ZAMBRA",
-                "img": "img/Zambra.jpg",
-                "desc": [
-                    "Edificio"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -12205,6 +12206,13 @@
                             37.673317
                         ]
                     ]
+                ]
+            },
+            "properties": {
+                "name": "ZAMBRA",
+                "img": "img/Zambra.jpg",
+                "desc": [
+                    "Edificio"
                 ]
             }
         }

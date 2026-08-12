@@ -2229,13 +2229,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "El Club del Bucanero",
-                "img": "img/El-bucanero.jpg",
-                "desc": [
-                    "Restaurante"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2259,6 +2252,124 @@
                         [
                             -0.712755,
                             37.642005
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "El Club del Bucanero",
+                "img": "img/El-bucanero.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Boba Veneziola",
+                "img": "img/Boba-veneziola",
+                "desc": [
+                    "Chiringuito"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.750459,
+                            37.771853
+                        ],
+                        [
+                            -0.750399,
+                            37.771681
+                        ],
+                        [
+                            -0.750259,
+                            37.771714
+                        ],
+                        [
+                            -0.750332,
+                            37.771887
+                        ],
+                        [
+                            -0.750459,
+                            37.771853
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "El Entorno de Emely",
+                "img": "img/El-entorno-de-emely",
+                "desc": [
+                    "Chiringuito"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.732038,
+                            37.666434
+                        ],
+                        [
+                            -0.732093,
+                            37.666341
+                        ],
+                        [
+                            -0.731956,
+                            37.666283
+                        ],
+                        [
+                            -0.73189,
+                            37.666382
+                        ],
+                        [
+                            -0.732038,
+                            37.666434
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Binomio Chiringo",
+                "img": "img/Binomio-chiringo",
+                "desc": [
+                    "Chringuito"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.738772,
+                            37.734341
+                        ],
+                        [
+                            -0.738792,
+                            37.73418
+                        ],
+                        [
+                            -0.73866,
+                            37.734173
+                        ],
+                        [
+                            -0.738642,
+                            37.734341
+                        ],
+                        [
+                            -0.738772,
+                            37.734341
                         ]
                     ]
                 ]

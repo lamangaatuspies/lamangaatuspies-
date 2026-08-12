@@ -2268,7 +2268,7 @@
             "type": "Feature",
             "properties": {
                 "name": "Boba Veneziola",
-                "img": "img/Boba-veneziola",
+                "img": "img/Boba-veneziola.jpg",
                 "desc": [
                     "Chiringuito"
                 ]
@@ -2305,7 +2305,7 @@
             "type": "Feature",
             "properties": {
                 "name": "El Entorno de Emely",
-                "img": "img/El-entorno-de-emely",
+                "img": "img/El-entorno-de-emely.jpg",
                 "desc": [
                     "Chiringuito"
                 ]
@@ -2342,7 +2342,7 @@
             "type": "Feature",
             "properties": {
                 "name": "Binomio Chiringo",
-                "img": "img/Binomio-chiringo",
+                "img": "img/Binomio-chiringo.jpg",
                 "desc": [
                     "Chringuito"
                 ]

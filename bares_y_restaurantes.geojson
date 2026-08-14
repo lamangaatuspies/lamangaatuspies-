@@ -2266,13 +2266,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Boba Veneziola",
-                "img": "img/Boba-veneziola.jpg",
-                "desc": [
-                    "Chiringuito"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2299,17 +2292,17 @@
                         ]
                     ]
                 ]
+            },
+            "properties": {
+                "name": "Boba Veneziola",
+                "img": "img/Boba-veneziola.jpg",
+                "desc": [
+                    "Chiringuito"
+                ]
             }
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "El Entorno de Emely",
-                "img": "img/El-entorno-de-emely.jpg",
-                "desc": [
-                    "Chiringuito"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2336,17 +2329,17 @@
                         ]
                     ]
                 ]
+            },
+            "properties": {
+                "name": "El Entorno de Emely",
+                "img": "img/El-entorno-de-emely.jpg",
+                "desc": [
+                    "Chiringuito"
+                ]
             }
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Binomio Chiringo",
-                "img": "img/Binomio-chiringo.jpg",
-                "desc": [
-                    "Chringuito"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2370,6 +2363,91 @@
                         [
                             -0.738772,
                             37.734341
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Binomio Chiringo",
+                "img": "img/Binomio-chiringo.jpg",
+                "desc": [
+                    "Chringuito"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Calypso",
+                "img": "img/Calypso.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.735597,
+                            37.68839
+                        ],
+                        [
+                            -0.735797,
+                            37.688349
+                        ],
+                        [
+                            -0.735738,
+                            37.688243
+                        ],
+                        [
+                            -0.735591,
+                            37.68815
+                        ],
+                        [
+                            -0.735506,
+                            37.688178
+                        ],
+                        [
+                            -0.735597,
+                            37.68839
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Trastevere",
+                "img": "img/Trastevere.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.736583,
+                            37.687387
+                        ],
+                        [
+                            -0.736495,
+                            37.687168
+                        ],
+                        [
+                            -0.73641,
+                            37.687201
+                        ],
+                        [
+                            -0.736489,
+                            37.6874
+                        ],
+                        [
+                            -0.736583,
+                            37.687387
                         ]
                     ]
                 ]

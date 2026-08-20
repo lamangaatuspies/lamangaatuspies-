@@ -2377,13 +2377,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Calypso",
-                "img": "img/Calypso.jpg",
-                "desc": [
-                    "Restaurante"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2414,17 +2407,17 @@
                         ]
                     ]
                 ]
+            },
+            "properties": {
+                "name": "Calypso",
+                "img": "img/Calypso.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
             }
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Trastevere",
-                "img": "img/Trastevere.jpg",
-                "desc": [
-                    "Restaurante"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2448,6 +2441,58 @@
                         [
                             -0.736583,
                             37.687387
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Trastevere",
+                "img": "img/Trastevere.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Dos Mares Beach",
+                "img": "ing/Dos-mares-beach.jpg",
+                "desc": [
+                    "Chiringuito"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.728607,
+                            37.661518
+                        ],
+                        [
+                            -0.728688,
+                            37.66149
+                        ],
+                        [
+                            -0.728653,
+                            37.661447
+                        ],
+                        [
+                            -0.728653,
+                            37.661379
+                        ],
+                        [
+                            -0.728453,
+                            37.66137
+                        ],
+                        [
+                            -0.72844,
+                            37.661417
+                        ],
+                        [
+                            -0.728607,
+                            37.661518
                         ]
                     ]
                 ]

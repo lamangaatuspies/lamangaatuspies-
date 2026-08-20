@@ -2362,6 +2362,80 @@
                     "Club náutico"
                 ]
             }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Correos",
+                "img": "img/Correos.jpg",
+                "desc": [
+                    "Oficina de correos"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.722684,
+                            37.659257
+                        ],
+                        [
+                            -0.722823,
+                            37.659164
+                        ],
+                        [
+                            -0.722741,
+                            37.65902
+                        ],
+                        [
+                            -0.72257,
+                            37.659068
+                        ],
+                        [
+                            -0.722684,
+                            37.659257
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "La Caracola",
+                "img": "img/La-caracola.jpg",
+                "desc": [
+                    "Pescaderia"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.722709,
+                            37.658942
+                        ],
+                        [
+                            -0.722648,
+                            37.658826
+                        ],
+                        [
+                            -0.722488,
+                            37.658877
+                        ],
+                        [
+                            -0.722538,
+                            37.658989
+                        ],
+                        [
+                            -0.722709,
+                            37.658942
+                        ]
+                    ]
+                ]
+            }
         }
     ]
 }

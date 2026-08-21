@@ -12268,7 +12268,8 @@
                 "name": "LA LAGUNA",
                 "img": "img/La-laguna.jpg",
                 "desc": [
-                    "Edificio"
+                    "Edificio",
+					"Piscina"
                 ]
             }
         },

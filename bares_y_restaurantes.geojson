@@ -2496,6 +2496,43 @@
                     "Chiringuito"
                 ]
             }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "El Mesonico",
+                "img": "img/El-mesonico.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.719862,
+                            37.652708
+                        ],
+                        [
+                            -0.720069,
+                            37.652565
+                        ],
+                        [
+                            -0.719964,
+                            37.652417
+                        ],
+                        [
+                            -0.719717,
+                            37.652534
+                        ],
+                        [
+                            -0.719862,
+                            37.652708
+                        ]
+                    ]
+                ]
+            }
         }
     ]
 }

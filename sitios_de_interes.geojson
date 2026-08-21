@@ -2365,13 +2365,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Correos",
-                "img": "img/Correos.jpg",
-                "desc": [
-                    "Oficina de correos"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2398,42 +2391,49 @@
                         ]
                     ]
                 ]
+            },
+            "properties": {
+                "name": "Correos",
+                "img": "img/Correos.jpg",
+                "desc": [
+                    "Oficina de correos"
+                ]
             }
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "La Caracola",
-                "img": "img/la-caracola.jpg",
-                "desc": [
-                    "Pescaderia"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
                     [
                         [
-                            -0.722709,
-                            37.658942
+                            -0.72214,
+                            37.658077
                         ],
                         [
-                            -0.722648,
-                            37.658826
+                            -0.722113,
+                            37.658014
                         ],
                         [
-                            -0.722488,
-                            37.658877
+                            -0.721899,
+                            37.658072
                         ],
                         [
-                            -0.722538,
-                            37.658989
+                            -0.721933,
+                            37.658147
                         ],
                         [
-                            -0.722709,
-                            37.658942
+                            -0.72214,
+                            37.658077
                         ]
                     ]
+                ]
+            },
+            "properties": {
+                "name": "La Caracola",
+                "img": "img/la-caracola.jpg",
+                "desc": [
+                    "Pescaderia"
                 ]
             }
         }

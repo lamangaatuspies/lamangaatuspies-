@@ -9544,12 +9544,16 @@
                             37.652321
                         ],
                         [
-                            -0.71968,
-                            37.652508
+                            -0.719683,
+                            37.652541
                         ],
                         [
-                            -0.719835,
-                            37.652627
+                            -0.719932,
+                            37.652371
+                        ],
+                        [
+                            -0.720096,
+                            37.652564
                         ],
                         [
                             -0.719867,
@@ -12225,13 +12229,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "LA LAGUNA",
-                "img": "img/La-laguna.jpg",
-                "desc": [
-                    "Edificio"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -12266,17 +12263,17 @@
                         ]
                     ]
                 ]
+            },
+            "properties": {
+                "name": "LA LAGUNA",
+                "img": "img/La-laguna.jpg",
+                "desc": [
+                    "Edificio"
+                ]
             }
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "BOTTER",
-                "img": "img/Botter.jpg",
-                "desc": [
-                    "Edificio"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -12302,6 +12299,13 @@
                             37.665376
                         ]
                     ]
+                ]
+            },
+            "properties": {
+                "name": "BOTTER",
+                "img": "img/Botter.jpg",
+                "desc": [
+                    "Edificio"
                 ]
             }
         }

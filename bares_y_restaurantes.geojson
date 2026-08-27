@@ -859,12 +859,12 @@
                             37.640661
                         ],
                         [
-                            -0.723016,
-                            37.641073
+                            -0.723138,
+                            37.641005
                         ],
                         [
-                            -0.72336,
-                            37.641468
+                            -0.723558,
+                            37.641336
                         ],
                         [
                             -0.724019,
@@ -2495,13 +2495,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "El Mesonico",
-                "img": "img/El-mesonico.jpg",
-                "desc": [
-                    "Restaurante"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2528,17 +2521,17 @@
                         ]
                     ]
                 ]
+            },
+            "properties": {
+                "name": "El Mesonico",
+                "img": "img/El-mesonico.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
             }
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "La Mirage",
-                "img": "img/La-mirage-chiringuito.jpg",
-                "desc": [
-                    "Chiringuito"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2565,17 +2558,17 @@
                         ]
                     ]
                 ]
+            },
+            "properties": {
+                "name": "La Mirage",
+                "img": "img/La-mirage-chiringuito.jpg",
+                "desc": [
+                    "Chiringuito"
+                ]
             }
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "La Cangreja de Carlos",
-                "img": "img/La-cangreja-carlos.jpg",
-                "desc": [
-                    "Chiringuito"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2599,6 +2592,50 @@
                         [
                             -0.721516,
                             37.660811
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "La Cangreja de Carlos",
+                "img": "img/La-cangreja-carlos.jpg",
+                "desc": [
+                    "Chiringuito"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Vivero 55",
+                "img": "img/Vivero-55.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.723353,
+                            37.641498
+                        ],
+                        [
+                            -0.723532,
+                            37.641351
+                        ],
+                        [
+                            -0.723138,
+                            37.641024
+                        ],
+                        [
+                            -0.723032,
+                            37.64111
+                        ],
+                        [
+                            -0.723353,
+                            37.641498
                         ]
                     ]
                 ]

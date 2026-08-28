@@ -11612,12 +11612,16 @@
                             37.740814
                         ],
                         [
-                            -0.741191,
-                            37.740453
+                            -0.740043,
+                            37.739331
                         ],
                         [
-                            -0.740365,
-                            37.740958
+                            -0.73934,
+                            37.740273
+                        ],
+                        [
+                            -0.740217,
+                            37.740855
                         ],
                         [
                             -0.740585,
@@ -11631,46 +11635,8 @@
                 ]
             },
             "properties": {
-                "name": "VILLAS DE FRENTE MARINO (AREA 7-8)",
-                "img": "img/villas-frente-marino-7-8.jpg",
-                "desc": [
-                    "Apartamentos",
-                    "Piscina"
-                ]
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -0.741089,
-                            37.740337
-                        ],
-                        [
-                            -0.740078,
-                            37.739305
-                        ],
-                        [
-                            -0.739386,
-                            37.740269
-                        ],
-                        [
-                            -0.740207,
-                            37.74085
-                        ],
-                        [
-                            -0.741089,
-                            37.740337
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "name": "VILLAS DE FRENTE MARINO (AREA 9-13)",
-                "img": "img/villas-frente-marino-9-13.jpg",
+                "name": "VILLAS DE FRENTE MARINO",
+                "img": "img/villas-frente-marino.jpg",
                 "desc": [
                     "Apartamentos",
                     "Piscina"
@@ -12329,13 +12295,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "VILLA FORTUNA",
-                "img": "img/Villa-fortuna.jpg",
-                "desc": [
-                    "Villa"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -12362,17 +12321,17 @@
                         ]
                     ]
                 ]
+            },
+            "properties": {
+                "name": "VILLA FORTUNA",
+                "img": "img/Villa-fortuna.jpg",
+                "desc": [
+                    "Villa"
+                ]
             }
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "CASA MACIÁN",
-                "img": "img/Casa-macian.jpg",
-                "desc": [
-                    "Villa"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -12410,6 +12369,13 @@
                             37.63906
                         ]
                     ]
+                ]
+            },
+            "properties": {
+                "name": "CASA MACIÁN",
+                "img": "img/Casa-macian.jpg",
+                "desc": [
+                    "Villa"
                 ]
             }
         }

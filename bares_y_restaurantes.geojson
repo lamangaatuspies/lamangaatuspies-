@@ -2606,13 +2606,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Vivero 55",
-                "img": "img/Vivero-55.jpg",
-                "desc": [
-                    "Restaurante"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2636,6 +2629,55 @@
                         [
                             -0.723353,
                             37.641498
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Vivero 55",
+                "img": "img/Vivero-55.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Mar & mar",
+                "img": "img/Mar-y-mar.jpg",
+                "desc": [
+                    "Cafeteria",
+                    "Heladeria"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.735377,
+                            37.747885
+                        ],
+                        [
+                            -0.735411,
+                            37.7478
+                        ],
+                        [
+                            -0.735146,
+                            37.747733
+                        ],
+                        [
+                            -0.735081,
+                            37.747911
+                        ],
+                        [
+                            -0.73523,
+                            37.747873
+                        ],
+                        [
+                            -0.735377,
+                            37.747885
                         ]
                     ]
                 ]

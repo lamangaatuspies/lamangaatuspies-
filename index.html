@@ -3129,6 +3129,30 @@
       registrarStats('ver_en_maps', nombre);
     });
 
+    // ── DESPLAZAMIENTO PARA EVITAR QUE EL POPUP TAPE EL MARCADOR (ESCRITORIO) ──
+    // El panel de popup (.map-popup-panel) mide 430px y se posiciona a la izquierda
+    // del mapa. Al centrar el mapa en un marcador, si este cae en esa franja queda
+    // tapado por el propio panel que se abre a continuación. En vez de centrar el
+    // mapa exactamente en el punto, lo centramos ligeramente desplazado hacia la
+    // izquierda, de forma que el marcador termine renderizado ~200px a la derecha
+    // del centro visual, fuera del área que cubre el panel. En móvil el popup se
+    // comporta de otra forma (no se solapa igual), así que ahí no se aplica ningún
+    // desplazamiento y se mantiene el centrado exacto de siempre.
+    const OFFSET_POPUP_X = 200; // px
+
+    function puntoConOffsetX(latlng, zoom, offsetX) {
+      const punto = map.project(L.latLng(latlng), zoom).subtract([offsetX, 0]);
+      return map.unproject(punto, zoom);
+    }
+
+    function setViewEvitandoPopup(latlng, zoom, options) {
+      if (window.innerWidth <= 600) {
+        map.setView(latlng, zoom, options);
+        return;
+      }
+      map.setView(puntoConOffsetX(latlng, zoom, OFFSET_POPUP_X), zoom, options);
+    }
+
     function selectFeature(item) {
       // Reset previous (solo el elemento que estaba activo, no todos)
       if (activeFeature && activeFeature !== item.layer) {
@@ -3161,12 +3185,18 @@
           bounds = item.layer.getLayers()[0].getBounds();
         }
         if (bounds && bounds.isValid()) {
-          map.fitBounds(bounds, { padding: [60, 60], maxZoom: 19, animate: true });
+          const extraIzq = window.innerWidth <= 600 ? 0 : OFFSET_POPUP_X;
+          map.fitBounds(bounds, {
+            paddingTopLeft: [60 + extraIzq, 60],
+            paddingBottomRight: [60, 60],
+            maxZoom: 19,
+            animate: true
+          });
         } else {
-          map.setView([item.lat, item.lng], 17);
+          setViewEvitandoPopup([item.lat, item.lng], 17);
         }
       } catch(e) {
-        map.setView([item.lat, item.lng], 17);
+        setViewEvitandoPopup([item.lat, item.lng], 17);
       }
 
       // En móvil, la búsqueda solo resalta el marcador en el mapa: el popup

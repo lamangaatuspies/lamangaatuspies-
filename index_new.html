@@ -3310,12 +3310,28 @@
       }, 100);
     })();
 
-    // ── ETIQUETAS PERMANENTES A PARTIR DE ZOOM 16 ──
+    // ── ETIQUETAS PERMANENTES A PARTIR DE ZOOM 17, SOLO DENTRO DEL VIEWPORT ──
     const ZOOM_LABELS = 17;
 
-    function actualizarTooltipItem({ name, capa, layer }, zoom) {
-      const permanente = zoom >= ZOOM_LABELS;
+    // Margen alrededor del área visible del mapa (proporción del tamaño de los
+    // bounds actuales en cada lado), para que las etiquetas no aparezcan/
+    // desaparezcan justo al borde de la pantalla al desplazar el mapa.
+    const VIEWPORT_PAD = 0.25;
+
+    function actualizarTooltipItem(f, zoom, bounds) {
+      const { name, capa, layer, lat, lng } = f;
       const esActivo = layer === activeFeature;
+      const enViewport = bounds.contains([lat, lng]);
+      const permanente = zoom >= ZOOM_LABELS && enViewport;
+      const estado = esActivo ? 'activo' : (permanente ? 'permanente' : 'normal');
+
+      // Si el tooltip ya está en el mismo "modo" que le corresponde, no lo
+      // tocamos: desvincular y volver a vincular cuesta lo mismo aunque no
+      // cambie nada, y es justo lo que queremos evitar — es la causa del
+      // retardo al hacer zoom o mover el mapa con muchas etiquetas a la vez.
+      if (layer._lmTooltipEstado === estado) return;
+      layer._lmTooltipEstado = estado;
+
       layer.unbindTooltip();
       if (esActivo) {
         layer.bindTooltip(name, {
@@ -3347,23 +3363,19 @@
     }
 
     function actualizarTooltips(zoom) {
-      allFeatures.forEach(f => actualizarTooltipItem(f, zoom));
-      regimenTooltipsActual = zoom >= ZOOM_LABELS;
+      const bounds = map.getBounds().pad(VIEWPORT_PAD);
+      allFeatures.forEach(f => actualizarTooltipItem(f, zoom, bounds));
     }
-
-    // Guarda si el último recálculo se hizo en régimen "etiquetas permanentes"
-    // (zoom >= ZOOM_LABELS) o no. Se usa en el listener de zoomend para evitar
-    // rehacer las 300+ etiquetas en cada paso de zoom cuando el régimen no ha
-    // cambiado realmente (p.ej. pasar de zoom 14 a 15): el resultado sería
-    // idéntico, así que no merece la pena repetir el trabajo.
-    let regimenTooltipsActual = null;
 
     // Aplicar al cargar
     actualizarTooltips(map.getZoom());
 
-    // Mantener tooltip activo al mover el mapa
+    // Mantener tooltip activo y refrescar qué etiquetas permanentes entran o
+    // salen del área visible al desplazar el mapa. Gracias al cacheo de
+    // estado por marcador (arriba), esta llamada es barata cuando no hay
+    // cambios reales que aplicar.
     map.on('moveend', () => {
-      if (activeFeature) actualizarTooltips(map.getZoom());
+      actualizarTooltips(map.getZoom());
     });
 
     // ── UPDATE KM ICONS ON ZOOM ──
@@ -3373,13 +3385,7 @@
         const name = marker.options.icon.options.html.match(/>([^<]+)<\/span>/)?.[1]?.trim() || '';
         if (name) marker.setIcon(kmIcon(name, zoom));
       });
-      // Solo tocamos las 300+ etiquetas si el zoom realmente cruza el umbral
-      // ZOOM_LABELS (pasa a mostrar/ocultar etiquetas permanentes). Si nos
-      // movemos dentro del mismo régimen, el resultado sería el mismo y nos
-      // ahorramos el retardo de recrear todos los tooltips.
-      if ((zoom >= ZOOM_LABELS) !== regimenTooltipsActual) {
-        actualizarTooltips(zoom);
-      }
+      actualizarTooltips(zoom);
     });
 
     // ── LISTA DE MARCADORES ──

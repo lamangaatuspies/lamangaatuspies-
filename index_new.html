@@ -191,7 +191,7 @@
       align-items: center;
       gap: 1rem;
     }
-    .hero-coords::before {
+    .hero-coords::before, .hero-coords-mobile::before {
       content: '';
       display: inline-block;
       width: 6px; height: 6px;
@@ -199,10 +199,21 @@
       background: var(--accent3);
       box-shadow: 0 0 8px var(--accent3);
       animation: pulse 2s infinite;
+      flex-shrink: 0;
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
+    }
+
+    /* Versión compacta de una sola línea: oculta en escritorio,
+       se activa en el media query móvil. */
+    .hero-coords-mobile {
+      display: none;
+      font-family: var(--mono);
+      color: var(--accent);
+      align-items: center;
+      gap: 0.4rem;
     }
 
     .hero h1 {
@@ -318,6 +329,22 @@
     }
     nav a:hover { color: var(--ink); }
     nav a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* Botón ☰: oculto en escritorio, solo se activa en el media query móvil */
+    .nav-hamburger {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--ink-mid);
+      border-radius: 4px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-hamburger .icon-close { display: none; }
+    nav.menu-open .nav-hamburger .icon-menu { display: none; }
+    nav.menu-open .nav-hamburger .icon-close { display: block; }
 
     .nav-controls {
       display: flex;
@@ -799,6 +826,16 @@
       color: var(--ink);
       margin-bottom: 0.5rem;
     }
+    /* Popup de temperatura del agua: el valor ("27.6°C") se muestra junto
+       a "TEMPERATURA DEL AGUA" (reutilizando el hueco del km, que este
+       marcador no usa) en vez de como título aparte. */
+    .map-popup-panel[data-tipo="temperatura"] .lp-name { display: none; }
+    .map-popup-panel[data-tipo="temperatura"] .lp-km {
+      font-family: var(--sans);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
     .lp-img {
       width: 100%;
       height: auto;
@@ -815,6 +852,25 @@
       color: var(--ink);
       line-height: 1.8;
       margin-bottom: 0.7rem;
+    }
+    /* Foto de la boya de temperatura, incrustada dentro de .lp-desc.
+       En móvil recortada (cover) para que sea compacta; en escritorio,
+       donde hay más margen vertical, se ve entera (contain) aunque
+       queden huecos a los lados. */
+    .lp-boya-img {
+      display: block;
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    @media (min-width: 601px) {
+      .lp-boya-img {
+        height: 200px;
+        object-fit: contain;
+        background: var(--surface2);
+      }
     }
     .lp-desc span::before { content: '· '; color: var(--accent2); }
     .lp-maps {
@@ -889,23 +945,97 @@
       html, body { overflow-x: hidden; }
       :root { --hero-h: 55vh; }
       .hero { min-height: 320px; }
-      .hero-content { padding: 2rem 1.5rem 2.5rem; }
+      .hero-content { padding: 1.5rem 1.5rem 2rem; }
       main { padding: 0 1.5rem 4rem; }
-      .statusbar { padding: 0 1.5rem; }
-      nav .nav-inner { padding: 0 0.6rem; gap: 0.25rem; }
-      nav ul {
-        padding: 0 0.2rem;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+
+      /* En móvil ocultamos la versión larga (3 frases) y mostramos una
+         única línea compacta, más corta, para no ocupar tanto espacio. */
+      .hero-coords { display: none; }
+      .hero-coords-mobile {
+        display: flex;
+        font-size: 0.56rem;
+        letter-spacing: 0.03em;
+        margin-bottom: 0.9rem;
+        white-space: nowrap;
       }
-      nav ul::-webkit-scrollbar { display: none; }
-      nav a { padding: 0.85rem 0.32rem; font-size: 0.55rem; letter-spacing: 0.02em; white-space: nowrap; }
-      .nav-controls { gap: 0.3rem; }
-      .theme-toggle, .basemap-toggle { width: 26px; height: 26px; }
+
+      /* Barra de estado: en vez de scroll horizontal larguísimo,
+         rejilla de 2 columnas (mismo patrón que .layers-wrap). */
+      .statusbar {
+        padding: 0 1.2rem;
+        overflow-x: visible;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .statusbar .status-item {
+        margin-right: 0;
+        padding: 0.65rem 0.6rem;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.6rem;
+        /* Columna en vez de fila: si la etiqueta es larga ("Edificios y
+           urbanizaciones") se parte en 2 líneas en vez de empujar y
+           cortar el número fuera de la tarjeta. */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+        white-space: normal;
+      }
+      .statusbar .status-item:nth-child(odd) { border-right: 1px solid var(--border); }
+
+      /* Con zoom alto puede haber 300+ etiquetas permanentes a la vez en
+         pantalla; el box-shadow con difuminado (blur) obliga al navegador a
+         componer cada una por separado y en móvil eso ralentiza mucho el
+         repintado al cambiar de nivel de zoom. Lo quitamos solo en móvil;
+         en escritorio se mantiene el aspecto original. */
+      .lm-tooltip,
+      .lm-tooltip-permanent,
+      .lm-tooltip-active {
+        box-shadow: none !important;
+      }
+      .statusbar .status-item:last-child {
+        margin-left: 0 !important;
+        border-left: none !important;
+        padding-left: 0.6rem !important;
+      }
+      .statusbar .status-val { font-size: 0.85rem; }
+      nav .nav-inner { padding: 0 1rem; position: relative; }
+      .nav-hamburger { display: flex; width: 38px; height: 38px; }
+      .nav-hamburger svg { width: 19px; height: 19px; }
+      nav ul {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        padding: 0.4rem 0;
+        background: var(--surface2);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+      }
+      nav.menu-open ul { display: flex; }
+      nav a {
+        padding: 0.9rem 1.2rem;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        white-space: normal;
+        border-bottom: none;
+        border-left: 3px solid transparent;
+        margin-bottom: 0;
+      }
+      nav a.active { border-bottom-color: transparent; border-left-color: var(--accent); }
+      .nav-controls { gap: 0.5rem; }
+      .theme-toggle, .basemap-toggle { width: 38px; height: 38px; }
+      .theme-toggle svg, .basemap-toggle svg { width: 19px; height: 19px; }
       footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
       .layers-wrap { grid-template-columns: 1fr; }
       #leaflet-map { height: 65vh !important; min-height: 420px !important; }
+
+      /* En móvil todo el mundo usa el gesto de pellizcar para hacer zoom,
+         así que los botones +/- solo restan espacio de mapa y lo tapan.
+         Se mantiene el botón de expandir (⤢), que no tiene gesto equivalente. */
+      .leaflet-control-zoom { display: none !important; }
 
       /* Popup a pantalla completa en móvil (ocupa todo el .map-frame).
          Sin scroll: la información es la misma que en escritorio, pero
@@ -953,14 +1083,27 @@
         overflow-wrap: break-word;
         word-break: break-word;
       }
-      .lp-km { font-size: 0.42rem; white-space: nowrap; }
-      .lp-footer { flex: 0 0 auto; }
-      .lp-maps { font-size: 0.55rem; white-space: nowrap; padding: 0.3rem 0.6rem; }
-      .lp-share { width: 1.6rem; height: 1.6rem; flex-shrink: 0; }
+      .lp-km { font-size: 0.75rem; white-space: nowrap; }
+      .lp-footer { flex: 0 0 auto; gap: 0.7rem; }
+      .lp-maps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1 1 auto;
+        font-size: 0.7rem;
+        min-height: 2.75rem;
+        padding: 0.5rem 0.8rem;
+      }
+      .lp-share {
+        width: 2.75rem;
+        height: 2.75rem;
+        flex-shrink: 0;
+      }
+      .lp-share svg { width: 18px; height: 18px; }
       .map-popup-close {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         padding: 0.3rem 0.5rem;
-        color: var(--ink-mid);
+        color: var(--ink);
       }
       .map-frame.map-expanded .expand-control {
         z-index: 960;
@@ -1786,7 +1929,11 @@
   <!-- NAV -->
   <nav>
     <div class="nav-inner">
-      <ul>
+      <button class="nav-hamburger" id="navHamburger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="navList">
+        <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <ul id="navList">
         <li><a href="#inicio">Inicio</a></li>
         <li><a href="#mapa" class="active">Mapa</a></li>
         <li><a href="#lista">Lista</a></li>
@@ -1805,6 +1952,28 @@
       </div>
     </div>
   </nav>
+
+  <!-- Menú ☰ móvil: despliega/oculta la lista de secciones -->
+  <script>
+    (function() {
+      var nav = document.querySelector('nav');
+      var hamburger = document.getElementById('navHamburger');
+      var closeMenu = function() {
+        nav.classList.remove('menu-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      };
+      hamburger.addEventListener('click', function() {
+        var isOpen = nav.classList.toggle('menu-open');
+        hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      document.getElementById('navList').querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', closeMenu);
+      });
+      document.addEventListener('click', function(e) {
+        if (nav.classList.contains('menu-open') && !e.target.closest('nav')) closeMenu();
+      });
+    })();
+  </script>
 
   <!-- Toggle de tema claro/oscuro -->
   <script>
@@ -1839,6 +2008,7 @@
         <span style="opacity:0.4">|</span>
         <span>21 KM DE LITORAL</span>
       </div>
+      <div class="hero-coords-mobile">37°46′N · 0°44′O · MURCIA, ESPAÑA · 21 KM</div>
       <h1>
 		La Manga <span style="color:rgba(255,255,255,0.45)">a tus pies</span>
         <span class="sub">Directorio cartográfico de La Manga del Mar Menor</span>
@@ -2162,7 +2332,7 @@
     // Edificios sin marcador propio en el GeoJSON: heredan la posición de su urbanización.
     // Se declara aquí (antes de usarse) porque tanto el contador como el listado de marcadores
     // la necesitan; declararla más abajo causó en el pasado un bug de orden de ejecución.
-    const EDIFICIOS_ALIAS = [{"edificio": "ESTOCOLMO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "OSLO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "BERNA", "urbanizacion": "EUROVOSA 1"}, {"edificio": "MADRID", "urbanizacion": "EUROVOSA 1"}, {"edificio": "LONDRES (Hotel)", "urbanizacion": "EUROVOSA 1"}, {"edificio": "ISLAS VERDES", "urbanizacion": "BORINQUEN 2"}, {"edificio": "LUQUILLO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "EL DORADO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "MAYAGUEZ", "urbanizacion": "BORINQUEN"}, {"edificio": "CONDADO", "urbanizacion": "BORINQUEN"}, {"edificio": "PONCE", "urbanizacion": "BORINQUEN"}, {"edificio": "SAN JUAN", "urbanizacion": "BORINQUEN"}, {"edificio": "AMSTERDAN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BRUSELAS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "LISBOA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "ROMA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "PARIS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BERLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MONACO", "urbanizacion": "EUROVOSA 2"}, {"edificio": "DUBLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MILANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "NAPOLES", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TINTORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "VAPORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "GENOVA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "FLORENCIA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TIZIANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CAPRI", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CANAL", "urbanizacion": "ABITY BEACH"}, {"edificio": "AVENIDA", "urbanizacion": "ABITY BEACH"}, {"edificio": "VARADERO", "urbanizacion": "ABITY BEACH"}, {"edificio": "Club de Personas Mayores", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Biblioteca", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Asociacion de Vecinos", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Consultorio Cavanna", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "TORRE VARADERO", "urbanizacion": "PROGALESA"}, {"edificio": "BAJAMAR", "urbanizacion": "PROGALESA"}, {"edificio": "SOLYMAR", "urbanizacion": "PROGALESA"}, {"edificio": "FRENMAR", "urbanizacion": "PROGALESA"}, {"edificio": "ALAMAR", "urbanizacion": "PROGALESA"}];
+    const EDIFICIOS_ALIAS = [{"edificio": "ESTOCOLMO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "OSLO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "BERNA", "urbanizacion": "EUROVOSA 1"}, {"edificio": "MADRID", "urbanizacion": "EUROVOSA 1"}, {"edificio": "LONDRES (Hotel)", "urbanizacion": "EUROVOSA 1"}, {"edificio": "ISLAS VERDES", "urbanizacion": "BORINQUEN 2"}, {"edificio": "LUQUILLO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "EL DORADO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "MAYAGUEZ", "urbanizacion": "BORINQUEN"}, {"edificio": "CONDADO", "urbanizacion": "BORINQUEN"}, {"edificio": "PONCE", "urbanizacion": "BORINQUEN"}, {"edificio": "SAN JUAN", "urbanizacion": "BORINQUEN"}, {"edificio": "AMSTERDAN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BRUSELAS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "LISBOA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "ROMA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "PARIS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BERLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MONACO", "urbanizacion": "EUROVOSA 2"}, {"edificio": "DUBLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MILANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "NAPOLES", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TINTORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "VAPORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "GENOVA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "FLORENCIA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TIZIANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CAPRI", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CANAL", "urbanizacion": "ABITY BEACH"}, {"edificio": "AVENIDA", "urbanizacion": "ABITY BEACH"}, {"edificio": "VARADERO", "urbanizacion": "ABITY BEACH"}, {"edificio": "Club de Personas Mayores", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Biblioteca", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Asociacion de Vecinos", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Consultorio Cavanna", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "TORRE VARADERO", "urbanizacion": "PROGALESA"}, {"edificio": "BAJAMAR", "urbanizacion": "PROGALESA"}, {"edificio": "SOLYMAR", "urbanizacion": "PROGALESA"}, {"edificio": "FRENMAR", "urbanizacion": "PROGALESA"}, {"edificio": "ALAMAR", "urbanizacion": "PROGALESA"}, {"edificio": "DARBAIDA", "urbanizacion": "POLIGONO J8"}, {"edificio": "OMEGA MAR", "urbanizacion": "POLIGONO J8"}, {"edificio": "PUNTA MANGA", "urbanizacion": "POLIGONO J8"}];
 
     // ── CONTADORES AUTOMÁTICOS DESDE GEODATA ──
     // Todas las cifras de la web se calculan aquí. No hay que tocarlas manualmente.
@@ -2258,6 +2428,41 @@
       }
     });
     new ExpandControl().addTo(map);
+
+    // ── ALTURA DEL MAPA EN MÓVIL: ajuste dinámico ──
+    // En escritorio la altura es fija por CSS. En móvil, para que el mapa
+    // llegue exactamente al borde inferior de la pantalla (sin dejar
+    // asomar la sección siguiente), se calcula: alto de pantalla - alto
+    // del nav - alto del buscador. Con !important porque el CSS del
+    // media query también usa !important.
+    let ajusteAlturaMapaTimeout = null;
+    function ajustarAlturaMapaMovil() {
+      const leafletMapEl = document.getElementById('leaflet-map');
+      const mapFrameEl   = document.querySelector('.map-frame');
+      // Si el mapa está expandido a pantalla completa, ese modo ya gestiona
+      // su propia altura (100%) — no interferir.
+      if (mapFrameEl.classList.contains('map-expanded')) return;
+      if (window.innerWidth > 600) {
+        leafletMapEl.style.removeProperty('height');
+        leafletMapEl.style.removeProperty('min-height');
+        return;
+      }
+      const navEl       = document.querySelector('nav');
+      const searchWrapEl = document.querySelector('.search-wrap');
+      if (!navEl || !searchWrapEl) return;
+      const navH    = navEl.offsetHeight;
+      const searchH = searchWrapEl.offsetHeight;
+      const h = Math.max(320, window.innerHeight - navH - searchH);
+      leafletMapEl.style.setProperty('min-height', '0', 'important');
+      leafletMapEl.style.setProperty('height', h + 'px', 'important');
+      map.invalidateSize();
+    }
+    ajustarAlturaMapaMovil();
+    window.addEventListener('resize', () => {
+      clearTimeout(ajusteAlturaMapaTimeout);
+      ajusteAlturaMapaTimeout = setTimeout(ajustarAlturaMapaMovil, 150);
+    });
+    window.addEventListener('orientationchange', ajustarAlturaMapaMovil);
 
     // ── SALTO RÁPIDO A UBICACIÓN DESDE URL (?q=NombreEdificio) ──
     // Optimización: en vez de esperar a que se construyan los 350 marcadores de Leaflet
@@ -2368,6 +2573,10 @@
           // El mapa arranca justo debajo del buscador
           const swBottom = navBottom + sw.offsetHeight;
           mapFrame.style.top = swBottom + 'px';
+          // Quitamos la altura fija que le pusimos en móvil (ajustarAlturaMapaMovil),
+          // para que mande la regla CSS .map-expanded #leaflet-map { height:100% }.
+          document.getElementById('leaflet-map').style.removeProperty('height');
+          document.getElementById('leaflet-map').style.removeProperty('min-height');
           mapFrame.classList.add('map-expanded');
           document.body.style.overflow = 'hidden';
           btn.innerHTML = iconCollapse;
@@ -2396,6 +2605,7 @@
         btn.innerHTML = iconExpand;
         btn.title = 'Expandir mapa';
         mapaExpandido = false;
+        ajustarAlturaMapaMovil();
         setTimeout(() => map.invalidateSize(), 50);
       }
     }
@@ -2564,6 +2774,7 @@
         document.getElementById('ppDot').style.background = '#ef5d69';
         document.getElementById('ppCapa').textContent = 'PUNTO KILOMÉTRICO';
         document.getElementById('ppKm').textContent = '';
+        document.getElementById('ppKm').style.removeProperty('color');
         document.getElementById('ppName').textContent = km.name;
         const imgEl = document.getElementById('ppImg');
         if (km.img) {
@@ -2831,26 +3042,6 @@
     }
     setTimeout(colorearControlCapas, 100);
 
-    // Nota de atribución — cambia según la capa base activa (satélite o mapa)
-    const dateNote = L.control({ position: 'bottomleft' });
-    let dateNoteSpan;
-    dateNote.onAdd = () => {
-      const div = L.DomUtil.create('div');
-      dateNoteSpan = document.createElement('span');
-      dateNoteSpan.style.cssText = 'background:rgba(13,17,23,0.75);color:#8b949e;font-family:monospace;font-size:10px;padding:3px 7px;letter-spacing:0.05em;display:inline-block;';
-      div.appendChild(dateNoteSpan);
-      actualizarNotaBasemap();
-      return div;
-    };
-    dateNote.addTo(map);
-
-    function actualizarNotaBasemap() {
-      if (!dateNoteSpan) return;
-      dateNoteSpan.textContent = map.hasLayer(mapaLayer)
-        ? 'MAPA © ESRI'
-        : 'IMAGEN SATELITAL © IGN ESPAÑA (PNOA) · ' + new Date().getFullYear();
-    }
-
     // ── BOTÓN DE CAMBIO DE MAPA (en el nav, junto al de tema) ──
     const basemapToggleBtn = document.getElementById('basemap-toggle');
     if (basemapToggleBtn) {
@@ -2869,7 +3060,6 @@
           localStorage.setItem('lm-basemap', 'mapa');
           registrarStats('clic_basemap', 'A mapa');
         }
-        actualizarNotaBasemap();
       });
     }
 
@@ -2914,6 +3104,7 @@
       document.getElementById('ppCapa').textContent = cfg.label;
       document.getElementById('ppName').textContent = item.name;
       document.getElementById('ppKm').textContent = kmMasCercano(item.lat, item.lng);
+      document.getElementById('ppKm').style.removeProperty('color');
       const imgEl = document.getElementById('ppImg');
       if (item.img) {
         imgEl.src = item.img;
@@ -2949,6 +3140,30 @@
       registrarStats('ver_en_maps', nombre);
     });
 
+    // ── DESPLAZAMIENTO PARA EVITAR QUE EL POPUP TAPE EL MARCADOR (ESCRITORIO) ──
+    // El panel de popup (.map-popup-panel) mide 430px y se posiciona a la izquierda
+    // del mapa. Al centrar el mapa en un marcador, si este cae en esa franja queda
+    // tapado por el propio panel que se abre a continuación. En vez de centrar el
+    // mapa exactamente en el punto, lo centramos ligeramente desplazado hacia la
+    // izquierda, de forma que el marcador termine renderizado ~200px a la derecha
+    // del centro visual, fuera del área que cubre el panel. En móvil el popup se
+    // comporta de otra forma (no se solapa igual), así que ahí no se aplica ningún
+    // desplazamiento y se mantiene el centrado exacto de siempre.
+    const OFFSET_POPUP_X = 200; // px
+
+    function puntoConOffsetX(latlng, zoom, offsetX) {
+      const punto = map.project(L.latLng(latlng), zoom).subtract([offsetX, 0]);
+      return map.unproject(punto, zoom);
+    }
+
+    function setViewEvitandoPopup(latlng, zoom, options) {
+      if (window.innerWidth <= 600) {
+        map.setView(latlng, zoom, options);
+        return;
+      }
+      map.setView(puntoConOffsetX(latlng, zoom, OFFSET_POPUP_X), zoom, options);
+    }
+
     function selectFeature(item) {
       // Reset previous (solo el elemento que estaba activo, no todos)
       if (activeFeature && activeFeature !== item.layer) {
@@ -2981,12 +3196,18 @@
           bounds = item.layer.getLayers()[0].getBounds();
         }
         if (bounds && bounds.isValid()) {
-          map.fitBounds(bounds, { padding: [60, 60], maxZoom: 19, animate: true });
+          const extraIzq = window.innerWidth <= 600 ? 0 : OFFSET_POPUP_X;
+          map.fitBounds(bounds, {
+            paddingTopLeft: [60 + extraIzq, 60],
+            paddingBottomRight: [60, 60],
+            maxZoom: 19,
+            animate: true
+          });
         } else {
-          map.setView([item.lat, item.lng], 17);
+          setViewEvitandoPopup([item.lat, item.lng], 17);
         }
       } catch(e) {
-        map.setView([item.lat, item.lng], 17);
+        setViewEvitandoPopup([item.lat, item.lng], 17);
       }
 
       // En móvil, la búsqueda solo resalta el marcador en el mapa: el popup
@@ -3127,7 +3348,15 @@
 
     function actualizarTooltips(zoom) {
       allFeatures.forEach(f => actualizarTooltipItem(f, zoom));
+      regimenTooltipsActual = zoom >= ZOOM_LABELS;
     }
+
+    // Guarda si el último recálculo se hizo en régimen "etiquetas permanentes"
+    // (zoom >= ZOOM_LABELS) o no. Se usa en el listener de zoomend para evitar
+    // rehacer las 300+ etiquetas en cada paso de zoom cuando el régimen no ha
+    // cambiado realmente (p.ej. pasar de zoom 14 a 15): el resultado sería
+    // idéntico, así que no merece la pena repetir el trabajo.
+    let regimenTooltipsActual = null;
 
     // Aplicar al cargar
     actualizarTooltips(map.getZoom());
@@ -3144,7 +3373,13 @@
         const name = marker.options.icon.options.html.match(/>([^<]+)<\/span>/)?.[1]?.trim() || '';
         if (name) marker.setIcon(kmIcon(name, zoom));
       });
-      actualizarTooltips(zoom);
+      // Solo tocamos las 300+ etiquetas si el zoom realmente cruza el umbral
+      // ZOOM_LABELS (pasa a mostrar/ocultar etiquetas permanentes). Si nos
+      // movemos dentro del mismo régimen, el resultado sería el mismo y nos
+      // ahorramos el retardo de recrear todos los tooltips.
+      if ((zoom >= ZOOM_LABELS) !== regimenTooltipsActual) {
+        actualizarTooltips(zoom);
+      }
     });
 
     // ── LISTA DE MARCADORES ──
@@ -3366,7 +3601,7 @@
         const visibleH    = window.innerHeight - navH;
         window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'smooth' });
         setTimeout(() => {
-          map.setView([lat, lng], 17, { animate: true });
+          setViewEvitandoPopup([lat, lng], 17, { animate: true });
           abrirPopup();
         }, 350);
       }
@@ -3545,12 +3780,23 @@
       }
     });
 
-    // ── NAV MAPA: centrado perfecto al hacer clic ──
+    // ── NAV MAPA: centrado perfecto al hacer clic (alineado arriba en móvil) ──
     document.querySelector('nav a[href="#mapa"]').addEventListener('click', function(e) {
       e.preventDefault();
       const searchWrap = document.querySelector('.search-wrap');
       const mapFrame   = document.querySelector('.map-frame');
       const navH       = document.querySelector('nav').offsetHeight;
+
+      // En móvil el bloque buscador+mapa ocupa casi toda la pantalla, así que
+      // centrarlo deja asomando un trozo de la cabecera arriba y de la
+      // siguiente sección abajo. Mejor alinear el buscador justo debajo del
+      // nav, para que el mapa aproveche el máximo de pantalla posible.
+      if (window.innerWidth <= 600) {
+        const top = window.scrollY + searchWrap.getBoundingClientRect().top - navH;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+        return;
+      }
+
       // Bloque completo: desde el top del buscador hasta el bottom del mapa
       const blockTop    = window.scrollY + searchWrap.getBoundingClientRect().top;
       const blockBottom = window.scrollY + mapFrame.getBoundingClientRect().bottom;
@@ -3658,6 +3904,16 @@
       return ICONOS_BANDERA.SINDATOS;
     }
 
+    // Genera un slug limpio a partir del nombre de la playa (sin sufijos LIMA/MAR MENOR)
+    // para construir la ruta de la foto: img/playas/{slug}.jpg
+    function slugify(str) {
+      return str
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
     Promise.all([
       fetch("https://web-app.112rmurcia.com/copla-service/copla/BeachFlag?idmun=30035").then(r => r.json()).catch(() => []),
       fetch("https://web-app.112rmurcia.com/copla-service/copla/BeachFlag?idmun=30016").then(r => r.json()).catch(() => [])
@@ -3694,8 +3950,9 @@
           const icono = iconoBandera(p.bandera, esMarMenor);
           const b = (p.bandera || '').toUpperCase();
           const colorTexto = b === 'VERDE' ? 'var(--flag-verde)' : b === 'AMARILLA' ? 'var(--flag-amarilla)' : b === 'ROJA' ? 'var(--flag-roja)' : 'var(--ink)';
-          const nombreCorto = p.nombre.replace(/^PLAYA\s+/i, '').replace(/\s*\((LIMA\s*\d+|MAR MENOR)\)\s*/gi, '').trim()
-            .toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+          const nombreBase = p.nombre.replace(/^PLAYA\s+/i, '').replace(/\s*\((LIMA\s*\d+|MAR MENOR)\)\s*/gi, '').trim();
+          const nombreCorto = nombreBase.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+          const slugPlaya = slugify(nombreBase);
           const estadoUpper = (p.estado || '').toUpperCase() === 'SIN ESTADO' || !(p.estado || '').trim() ? 'Sin datos' : (p.estado || '').toUpperCase();
           const marker = L.marker([lat, lng], { icon: icono, zIndexOffset: -100, nombrePlaya: p.nombre });
           const sinDatos = b !== 'VERDE' && b !== 'AMARILLA' && b !== 'ROJA';
@@ -3708,8 +3965,8 @@
           marker.on('click', () => {
             registrarStats('clic_bandera', nombreCorto + ' · ' + estadoUpper);
             const imgUrl = b === 'VERDE' ? 'Banderitas/Ban_Verde.png' : b === 'AMARILLA' ? 'Banderitas/Ban_Amarilla.png' : b === 'ROJA' ? 'Banderitas/Ban_Roja.png' : 'Banderitas/Ban_Blanca.png';
-            const banderaHTML = `<div style="margin-bottom:8px;"><img src="${imgUrl}" style="height:40px;width:auto;"></div>`;
-            const estadoHTML = `<div style="color:${colorTexto};font-weight:700;font-size:1em;margin-bottom:6px;">ESTADO DE LA MAR: ${estadoUpper}</div>`;
+            const banderaHTML = '';
+            const estadoHTML = `<div style="color:${colorTexto};font-weight:700;font-size:1em;margin-bottom:6px;display:flex;align-items:center;gap:8px;"><img src="${imgUrl}" style="height:18px;width:auto;">ESTADO DE LA MAR: ${estadoUpper}</div>`;
             const fechaHTML = sinDatos ? '' :
               `<div style="color:var(--ink);font-size:1em;font-weight:600;margin-top:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);animation:pulse 2s infinite;vertical-align:middle;margin-right:6px;"></span>Act. ${p.fecha}</div>`;
             const horarioHTML = `<div style="color:var(--ink);font-size:0.9em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
@@ -3718,7 +3975,13 @@
             document.getElementById('ppCapa').textContent = 'PUESTO DE SOCORRISTA';
             document.getElementById('ppName').textContent = 'Playa ' + nombreCorto;
             document.getElementById('ppKm').textContent = kmMasCercano(lat, lng);
-            document.getElementById('ppImg').style.display = 'none';
+            document.getElementById('ppKm').style.removeProperty('color');
+            const imgEl = document.getElementById('ppImg');
+            imgEl.onerror = function() { imgEl.style.display = 'none'; imgEl.onerror = null; };
+            imgEl.alt = 'Playa ' + nombreCorto;
+            imgEl.src = 'img/ban-' + slugPlaya + '.jpg';
+            imgEl.style.display = 'block';
+            imgEl.style.height = ''; imgEl.style.maxHeight = ''; imgEl.style.objectFit = '';
             document.getElementById('ppDesc').innerHTML = banderaHTML + estadoHTML + fechaHTML + horarioHTML;
             document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + lat + ',' + lng;
             popupPanel.dataset.tipo = 'playa';
@@ -3798,6 +4061,7 @@
       document.getElementById('ppCapa').textContent = 'FARMACIA';
       document.getElementById('ppName').textContent = f.nombre;
       document.getElementById('ppKm').textContent = kmMasCercano(f.lat, f.lng);
+      document.getElementById('ppKm').style.removeProperty('color');
       const imgEl = document.getElementById('ppImg');
       imgEl.onerror = function() { imgEl.style.display = 'none'; imgEl.onerror = null; };
       imgEl.src = 'img/' + f.id + '.jpg';
@@ -3858,7 +4122,7 @@
           if (!entry) return;
 
           setTimeout(() => {
-            map.setView([farmacia.lat, farmacia.lng], 17, { animate: false });
+            setViewEvitandoPopup([farmacia.lat, farmacia.lng], 17, { animate: false });
             abrirPopupFarmacia(entry.f, entry.deGuardia);
             // Mismo centrado del bloque mapa+buscador que usa abrirDesdeURL(),
             // para que la experiencia sea igual venga de una capa de GEODATA o de una farmacia.
@@ -3950,8 +4214,8 @@
       const linea = puntos.map(p => `${p.x},${p.y}`).join(' ');
       const detalle = puntos.map(p => `
         <circle cx="${p.x}" cy="${p.y}" r="3" fill="${color}" />
-        <text x="${p.x}" y="${p.y - 8}" font-size="12" font-weight="700" text-anchor="middle" fill="var(--ink)">${p.valor.toFixed(1)}°</text>
-        <text x="${p.x}" y="${H - 6}" font-size="8" text-anchor="middle" fill="var(--ink)">${p.fecha.slice(5).replace('-', '/')}</text>
+        <text x="${p.x}" y="${p.y - 10}" font-size="15" font-weight="700" text-anchor="middle" fill="var(--ink)">${p.valor.toFixed(1)}°</text>
+        <text x="${p.x}" y="${H - 6}" font-size="14" text-anchor="middle" fill="var(--ink)">${p.fecha.slice(5).replace('-', '/')}</text>
       `).join('');
 
       return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="display:block;">
@@ -4036,14 +4300,16 @@
           registrarStats('clic_marcador', 'Temperatura del agua');
           document.getElementById('ppDot').style.background = colorTemp;
           document.getElementById('ppCapa').textContent = 'TEMPERATURA DEL AGUA';
-          document.getElementById('ppName').textContent = ultimo.valor.toFixed(1) + '°C';
-          document.getElementById('ppKm').textContent = '';
+          document.getElementById('ppName').textContent = '';
+          document.getElementById('ppKm').textContent = ultimo.valor.toFixed(1) + '°C';
+          document.getElementById('ppKm').style.color = colorTemp;
           document.getElementById('ppImg').style.display = 'none';
           const MESES_CORTO = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
           const [anioUlt, mesUlt, diaUlt] = ultimo.fecha.split('-').map(Number);
           const fechaLegible = `${diaUlt} de ${MESES_CORTO[mesUlt - 1]}`;
           document.getElementById('ppDesc').innerHTML =
             construirGraficoTemperatura(dias, colorTemp) +
+            `<img src="img/Boya.jpg" alt="Boya de Cabo de Palos" class="lp-boya-img" />` +
             `<div style="margin-top:8px;color:var(--ink);font-size:0.85em;">Temperatura en boya de Cabo de Palos (Puertos del Estado) · Última lectura a las 12:00 del ${fechaLegible}</div>`;
           document.getElementById('ppMaps').href = `https://www.google.com/maps?q=${BOYA_CABO_DE_PALOS.lat},${BOYA_CABO_DE_PALOS.lng}`;
           popupPanel.dataset.tipo = 'temperatura';
@@ -4065,7 +4331,7 @@
         banderasLayerGroup.eachLayer(m => markers.push(m));
         const marker = markers.find(m => m.options.nombrePlaya && m.options.nombrePlaya.toUpperCase().trim() === nombre);
         if (marker) {
-          map.setView(marker.getLatLng(), 17, { animate: true });
+          setViewEvitandoPopup(marker.getLatLng(), 17, { animate: true });
           marker.fire('click');
           const searchWrap = document.querySelector('.search-wrap');
           const mapFrame   = document.querySelector('.map-frame');
@@ -4094,7 +4360,7 @@
         tempAguaLayerGroup.eachLayer(m => markers.push(m));
         const marker = markers[0];
         if (marker) {
-          map.setView(marker.getLatLng(), 17, { animate: true });
+          setViewEvitandoPopup(marker.getLatLng(), 17, { animate: true });
           marker.fire('click');
           const searchWrap = document.querySelector('.search-wrap');
           const mapFrame   = document.querySelector('.map-frame');

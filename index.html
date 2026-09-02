@@ -982,6 +982,17 @@
         white-space: normal;
       }
       .statusbar .status-item:nth-child(odd) { border-right: 1px solid var(--border); }
+
+      /* Con zoom alto puede haber 300+ etiquetas permanentes a la vez en
+         pantalla; el box-shadow con difuminado (blur) obliga al navegador a
+         componer cada una por separado y en móvil eso ralentiza mucho el
+         repintado al cambiar de nivel de zoom. Lo quitamos solo en móvil;
+         en escritorio se mantiene el aspecto original. */
+      .lm-tooltip,
+      .lm-tooltip-permanent,
+      .lm-tooltip-active {
+        box-shadow: none !important;
+      }
       .statusbar .status-item:last-child {
         margin-left: 0 !important;
         border-left: none !important;
@@ -2671,6 +2682,7 @@
         layer.on('click', () => {
           const zoom = map.getZoom();
           const prevActiveFeature = activeFeature;
+          activeFeature = layer;
 
           // Revertir estilo/tooltip solo del elemento que estaba activo antes (no los 372)
           if (prevActiveFeature && prevActiveFeature !== layer) {
@@ -2680,11 +2692,10 @@
               if (prevActiveFeature.getLayers) {
                 prevActiveFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
               }
-              actualizarTooltipItem(prevItem, zoom);
+              actualizarTooltipItem(prevItem, zoom, boundsTooltipsActuales());
             }
           }
 
-          activeFeature = layer;
           layer.setStyle ? layer.setStyle(activeStyle) : null;
           if (layer.getLayers) {
             layer.getLayers().forEach(sub => sub.setStyle(activeStyle));
@@ -2692,7 +2703,7 @@
           // Build item for panel
           const clickedItem = allFeatures.find(f => f.layer === layer);
           if (clickedItem) {
-            actualizarTooltipItem(clickedItem, zoom);
+            actualizarTooltipItem(clickedItem, zoom, boundsTooltipsActuales());
             registrarStats('clic_marcador', clickedItem.name);
             showMapPopup(clickedItem);
           }
@@ -2755,9 +2766,12 @@
             if (activeFeature.getLayers) {
               activeFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
             }
+            activeFeature = null;
+            actualizarTooltipItem(prevItem, map.getZoom(), boundsTooltipsActuales());
+          } else {
+            activeFeature = null;
           }
         }
-        activeFeature = null;
         map.closePopup();
         // Rellenar el panel con los datos del punto kilométrico
         document.getElementById('ppDot').style.background = '#ef5d69';
@@ -3118,7 +3132,9 @@
           if (activeFeature.getLayers) {
             activeFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
           }
-          actualizarTooltipItem(prevItem, map.getZoom());
+          activeFeature = null;
+          actualizarTooltipItem(prevItem, map.getZoom(), boundsTooltipsActuales());
+          return;
         }
       }
       activeFeature = null;
@@ -3255,6 +3271,7 @@
         }
         map.closePopup();
         activeFeature = null;
+        if (prevItem) actualizarTooltipItem(prevItem, map.getZoom(), boundsTooltipsActuales());
       }
       popupPanel.classList.remove('visible');
     }
@@ -3299,12 +3316,28 @@
       }, 100);
     })();
 
-    // ── ETIQUETAS PERMANENTES A PARTIR DE ZOOM 16 ──
+    // ── ETIQUETAS PERMANENTES A PARTIR DE ZOOM 17, SOLO DENTRO DEL VIEWPORT ──
     const ZOOM_LABELS = 17;
 
-    function actualizarTooltipItem({ name, capa, layer }, zoom) {
-      const permanente = zoom >= ZOOM_LABELS;
+    // Margen alrededor del área visible del mapa (proporción del tamaño de los
+    // bounds actuales en cada lado), para que las etiquetas no aparezcan/
+    // desaparezcan justo al borde de la pantalla al desplazar el mapa.
+    const VIEWPORT_PAD = 0.25;
+
+    function actualizarTooltipItem(f, zoom, bounds) {
+      const { name, capa, layer, lat, lng } = f;
       const esActivo = layer === activeFeature;
+      const enViewport = bounds.contains([lat, lng]);
+      const permanente = zoom >= ZOOM_LABELS && enViewport;
+      const estado = esActivo ? 'activo' : (permanente ? 'permanente' : 'normal');
+
+      // Si el tooltip ya está en el mismo "modo" que le corresponde, no lo
+      // tocamos: desvincular y volver a vincular cuesta lo mismo aunque no
+      // cambie nada, y es justo lo que queremos evitar — es la causa del
+      // retardo al hacer zoom o mover el mapa con muchas etiquetas a la vez.
+      if (layer._lmTooltipEstado === estado) return;
+      layer._lmTooltipEstado = estado;
+
       layer.unbindTooltip();
       if (esActivo) {
         layer.bindTooltip(name, {
@@ -3335,16 +3368,24 @@
       }
     }
 
+    function boundsTooltipsActuales() {
+      return map.getBounds().pad(VIEWPORT_PAD);
+    }
+
     function actualizarTooltips(zoom) {
-      allFeatures.forEach(f => actualizarTooltipItem(f, zoom));
+      const bounds = boundsTooltipsActuales();
+      allFeatures.forEach(f => actualizarTooltipItem(f, zoom, bounds));
     }
 
     // Aplicar al cargar
     actualizarTooltips(map.getZoom());
 
-    // Mantener tooltip activo al mover el mapa
+    // Mantener tooltip activo y refrescar qué etiquetas permanentes entran o
+    // salen del área visible al desplazar el mapa. Gracias al cacheo de
+    // estado por marcador (arriba), esta llamada es barata cuando no hay
+    // cambios reales que aplicar.
     map.on('moveend', () => {
-      if (activeFeature) actualizarTooltips(map.getZoom());
+      actualizarTooltips(map.getZoom());
     });
 
     // ── UPDATE KM ICONS ON ZOOM ──

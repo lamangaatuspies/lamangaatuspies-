@@ -2691,7 +2691,7 @@
               if (prevActiveFeature.getLayers) {
                 prevActiveFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
               }
-              actualizarTooltipItem(prevItem, zoom);
+              actualizarTooltipItem(prevItem, zoom, boundsTooltipsActuales());
             }
           }
 
@@ -2703,7 +2703,7 @@
           // Build item for panel
           const clickedItem = allFeatures.find(f => f.layer === layer);
           if (clickedItem) {
-            actualizarTooltipItem(clickedItem, zoom);
+            actualizarTooltipItem(clickedItem, zoom, boundsTooltipsActuales());
             registrarStats('clic_marcador', clickedItem.name);
             showMapPopup(clickedItem);
           }
@@ -3129,7 +3129,7 @@
           if (activeFeature.getLayers) {
             activeFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
           }
-          actualizarTooltipItem(prevItem, map.getZoom());
+          actualizarTooltipItem(prevItem, map.getZoom(), boundsTooltipsActuales());
         }
       }
       activeFeature = null;
@@ -3362,8 +3362,12 @@
       }
     }
 
+    function boundsTooltipsActuales() {
+      return map.getBounds().pad(VIEWPORT_PAD);
+    }
+
     function actualizarTooltips(zoom) {
-      const bounds = map.getBounds().pad(VIEWPORT_PAD);
+      const bounds = boundsTooltipsActuales();
       allFeatures.forEach(f => actualizarTooltipItem(f, zoom, bounds));
     }
 

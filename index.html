@@ -3576,7 +3576,7 @@
         const visibleH    = window.innerHeight - navH;
         window.scrollTo({ top: blockCenter - navH - visibleH / 2, behavior: 'smooth' });
         setTimeout(() => {
-          map.setView([lat, lng], 17, { animate: true });
+          setViewEvitandoPopup([lat, lng], 17, { animate: true });
           abrirPopup();
         }, 350);
       }
@@ -4097,7 +4097,7 @@
           if (!entry) return;
 
           setTimeout(() => {
-            map.setView([farmacia.lat, farmacia.lng], 17, { animate: false });
+            setViewEvitandoPopup([farmacia.lat, farmacia.lng], 17, { animate: false });
             abrirPopupFarmacia(entry.f, entry.deGuardia);
             // Mismo centrado del bloque mapa+buscador que usa abrirDesdeURL(),
             // para que la experiencia sea igual venga de una capa de GEODATA o de una farmacia.
@@ -4306,7 +4306,7 @@
         banderasLayerGroup.eachLayer(m => markers.push(m));
         const marker = markers.find(m => m.options.nombrePlaya && m.options.nombrePlaya.toUpperCase().trim() === nombre);
         if (marker) {
-          map.setView(marker.getLatLng(), 17, { animate: true });
+          setViewEvitandoPopup(marker.getLatLng(), 17, { animate: true });
           marker.fire('click');
           const searchWrap = document.querySelector('.search-wrap');
           const mapFrame   = document.querySelector('.map-frame');
@@ -4335,7 +4335,7 @@
         tempAguaLayerGroup.eachLayer(m => markers.push(m));
         const marker = markers[0];
         if (marker) {
-          map.setView(marker.getLatLng(), 17, { animate: true });
+          setViewEvitandoPopup(marker.getLatLng(), 17, { animate: true });
           marker.fire('click');
           const searchWrap = document.querySelector('.search-wrap');
           const mapFrame   = document.querySelector('.map-frame');

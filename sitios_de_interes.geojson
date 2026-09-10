@@ -2431,13 +2431,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Navemar",
-                "img": "img/Nautica-navemar.jpg",
-                "desc": [
-                    "Naútica"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2461,6 +2454,50 @@
                         [
                             -0.74368,
                             37.751706
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Navemar",
+                "img": "img/Nautica-navemar.jpg",
+                "desc": [
+                    "Naútica"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Edificio 2 Mares",
+                "img": "img/2mares.jpg",
+                "desc": [
+                    "Centro Comercial"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.724597,
+                            37.662929
+                        ],
+                        [
+                            -0.724589,
+                            37.662806
+                        ],
+                        [
+                            -0.724352,
+                            37.662825
+                        ],
+                        [
+                            -0.724354,
+                            37.662948
+                        ],
+                        [
+                            -0.724597,
+                            37.662929
                         ]
                     ]
                 ]

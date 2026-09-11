@@ -18030,7 +18030,7 @@ const OFFSET_PX_MIN  = 2;
 
 function offsetPxParaZoom(z) {
   if (zoomInicial === null) return OFFSET_PX_BASE;
-  const factor = Math.pow(0.6, z - zoomInicial);
+  const factor = Math.pow(0.4, z - zoomInicial);
   return Math.max(OFFSET_PX_MIN, Math.min(OFFSET_PX_BASE * factor, OFFSET_PX_BASE * 3));
 }
 

@@ -18052,6 +18052,7 @@ let correcto    = null;
 let zoomRondaInicial = null;
 let zoomMaximoRonda  = null;
 let avisoZoomMostrado = false;
+let boundsRondaActual = null;
 const TOTAL_RONDAS = 5;
 const BASE_PUNTOS = 4;
 const ZOOM_MAX_PERMITIDO = 3; // niveles de zoom tolerados desde el inicio de la ronda
@@ -18203,6 +18204,7 @@ function iniciarRonda() {
   if (boundsTotal.isValid()) {
     map.fitBounds(boundsTotal, { padding: [50, 50], maxZoom: 16, animate: false });
   }
+  boundsRondaActual = boundsTotal;
 
   // Zoom de referencia de la ronda (para la penalización por zoom excesivo)
   zoomRondaInicial  = map.getZoom();
@@ -18276,6 +18278,12 @@ function responder(lugarElegido, layerElegido) {
     }
   });
 
+  // Si falla, volvemos al encuadre inicial de la ronda para que se vea
+  // tanto la opción correcta como la elegida
+  if (!esCorrecta && boundsRondaActual && boundsRondaActual.isValid()) {
+    map.fitBounds(boundsRondaActual, { padding: [50, 50], maxZoom: 16 });
+  }
+
   // Mostrar resultado
   const overlay = document.getElementById('resultado-overlay');
   const box     = document.getElementById('resultado-box');
@@ -18284,13 +18292,7 @@ function responder(lugarElegido, layerElegido) {
   document.getElementById('resultado-titulo').textContent = esCorrecta ? '¡Correcto!' : 'Incorrecto';
   document.getElementById('resultado-puntos').textContent = esCorrecta
     ? `+${puntosRonda} punto${puntosRonda !== 1 ? 's' : ''}${motivos.length ? ' (' + motivos.join(', ') + ')' : ''}`
-    : (() => {
-        const diffLat = correcto.lat - lugarElegido.lat;
-        const dist = Math.abs(diffLat);
-        const direccion = diffLat > 0 ? 'norte' : 'sur';
-        const lejos = dist > 0.05 ? 'Mucho más' : 'Un poquito más';
-        return `${lejos} al ${direccion}`;
-      })();
+    : `La opción que elegiste es: ${lugarElegido.nombre}`;
   document.getElementById('resultado-nombre').textContent = esCorrecta
     ? correcto.capa
     : '';

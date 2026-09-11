@@ -18396,13 +18396,13 @@ const ESTILO_NORMAL     = { color: '#ffffff', weight: 2,   fillColor: '#58a6ff',
 const ESTILO_CORRECTO   = { color: '#ffffff', weight: 2.5, fillColor: '#3fb950', fillOpacity: 0.8  };
 const ESTILO_INCORRECTO = { color: '#ffffff', weight: 2.5, fillColor: '#f85149', fillOpacity: 0.8  };
 
-// Busca el feature GeoJSON en GEODATA por nombre
-function buscarFeature(nombre) {
-  for (const features of Object.values(GEODATA)) {
-    const f = features.find(feat => feat.properties.name === nombre);
-    if (f) return f;
-  }
-  return null;
+// Busca el feature GeoJSON en GEODATA por nombre Y categoría (capa), ya que
+// puede haber lugares con el mismo nombre en categorías distintas
+// (p.ej. una urbanización y un hotel ambos llamados "Las Gaviotas")
+function buscarFeature(nombre, capa) {
+  const features = GEODATA[capa];
+  if (!features) return null;
+  return features.find(feat => feat.properties.name === nombre) || null;
 }
 
 // ── INICIAR RONDA ──
@@ -18438,7 +18438,7 @@ function iniciarRonda() {
   const candidatos = []; // { lugar, layer, centro, letra }
 
   seleccion.forEach((lugar) => {
-    const feature = buscarFeature(lugar.nombre);
+    const feature = buscarFeature(lugar.nombre, lugar.capa);
     if (!feature) return;
 
     // Polígono

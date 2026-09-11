@@ -481,7 +481,7 @@
   <div class="final-box">
     <div class="final-titulo">Partida finalizada</div>
     <div class="final-subtitulo">¿Cuánto sabes de La Manga?</div>
-    <div class="final-score"><span id="final-score">0</span><span class="final-score-denom">/10</span></div>
+    <div class="final-score"><span id="final-score">0</span><span class="final-score-denom">/20</span></div>
     <div class="final-mensaje" id="final-mensaje"></div>
     <div class="final-btns">
       <button class="btn-rejugar" id="btn-rejugar">Jugar de nuevo</button>
@@ -18007,6 +18007,8 @@ let pistaUsada  = false;
 let respondido  = false;
 let marcadores  = [];
 let correcto    = null;
+let zoomRondaInicial = null;
+let zoomMaximoRonda  = null;
 const TOTAL_RONDAS = 5;
 
 // ── MAPA ──
@@ -18039,6 +18041,13 @@ function actualizarPinesOffset() {
   });
 }
 map.on('zoomend', actualizarPinesOffset);
+
+// Lleva la cuenta del zoom máximo alcanzado en la ronda actual, aunque
+// luego se aleje el mapa antes de responder (penalización por zoom, ver responder())
+map.on('zoomend', () => {
+  if (zoomMaximoRonda === null) return;
+  zoomMaximoRonda = Math.max(zoomMaximoRonda, map.getZoom());
+});
 
 // ── SHUFFLE ──
 function shuffle(arr) {
@@ -18116,6 +18125,10 @@ function iniciarRonda() {
     map.fitBounds(boundsTotal, { padding: [50, 50], maxZoom: 16, animate: false });
   }
 
+  // Zoom de referencia de la ronda (para la penalización por zoom excesivo)
+  zoomRondaInicial = map.getZoom();
+  zoomMaximoRonda  = zoomRondaInicial;
+
   // Pin con letra desplazado arriba-derecha del centroide + línea guía,
   // para no tapar la forma del polígono (sobre todo en edificios pequeños).
   // El offset se recalcula solo al hacer zoom (ver actualizarPinesOffset).
@@ -18153,7 +18166,21 @@ function iniciarRonda() {
 function responder(lugarElegido, layerElegido) {
   respondido = true;
   const esCorrecta = lugarElegido === correcto;
-  const puntosRonda = esCorrecta ? (pistaUsada ? 1 : 2) : 0;
+
+  // Puntuación: 4 puntos base si acierta, partido por la mitad de forma
+  // independiente por cada penalización (zoom excesivo y/o pista usada)
+  const BASE_PUNTOS = 4;
+  const ZOOM_MAX_PERMITIDO = 3; // niveles de zoom tolerados desde el inicio de la ronda
+  const zoomExcedido = esCorrecta && zoomMaximoRonda !== null &&
+    (zoomMaximoRonda - zoomRondaInicial) > ZOOM_MAX_PERMITIDO;
+
+  let puntosRonda = 0;
+  const motivos = [];
+  if (esCorrecta) {
+    puntosRonda = BASE_PUNTOS;
+    if (zoomExcedido) { puntosRonda /= 2; motivos.push('zoom excesivo'); }
+    if (pistaUsada)   { puntosRonda /= 2; motivos.push('pista usada'); }
+  }
   puntos += puntosRonda;
 
   // Revelar correcto e incorrecto visualmente
@@ -18175,7 +18202,7 @@ function responder(lugarElegido, layerElegido) {
   document.getElementById('resultado-emoji').textContent  = esCorrecta ? '🎯' : '❌';
   document.getElementById('resultado-titulo').textContent = esCorrecta ? '¡Correcto!' : 'Incorrecto';
   document.getElementById('resultado-puntos').textContent = esCorrecta
-    ? `+${puntosRonda} punto${puntosRonda > 1 ? 's' : ''}${pistaUsada ? ' (pista usada)' : ''}`
+    ? `+${puntosRonda} punto${puntosRonda !== 1 ? 's' : ''}${motivos.length ? ' (' + motivos.join(', ') + ')' : ''}`
     : (() => {
         const diffLat = correcto.lat - lugarElegido.lat;
         const dist = Math.abs(diffLat);
@@ -18207,12 +18234,12 @@ document.getElementById('btn-siguiente').addEventListener('click', () => {
 function mostrarFinal() {
   document.getElementById('final-score').textContent = puntos;
   const mensajes = [
-    [0,  1,  'Sigue viniendo por La Manga... algo aprenderás. 😄'],
-    [2,  3,  'Conoces algunos rincones, pero La Manga guarda muchos secretos.'],
-    [4,  5,  'No está mal. Tienes terreno recorrido.'],
-    [6,  7,  'Buen nivel. La Manga no tiene muchos secretos para ti.'],
-    [8,  9,  '¡Muy bien! Te mueves por La Manga como un local.'],
-    [10, 10, '¡Perfecto! Eres un auténtico experto de La Manga del Mar Menor. 🏆'],
+    [0,  3,  'Sigue viniendo por La Manga... algo aprenderás. 😄'],
+    [4,  7,  'Conoces algunos rincones, pero La Manga guarda muchos secretos.'],
+    [8,  11, 'No está mal. Tienes terreno recorrido.'],
+    [12, 15, 'Buen nivel. La Manga no tiene muchos secretos para ti.'],
+    [16, 19, '¡Muy bien! Te mueves por La Manga como un local.'],
+    [20, 20, '¡Perfecto! Eres un auténtico experto de La Manga del Mar Menor. 🏆'],
   ];
   const msg = mensajes.find(([min, max]) => puntos >= min && puntos <= max);
   document.getElementById('final-mensaje').textContent = msg ? msg[2] : '';

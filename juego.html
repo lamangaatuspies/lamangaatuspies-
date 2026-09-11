@@ -18279,6 +18279,7 @@ function lugaresJugables() {
 let ronda       = 1;
 let puntos      = 0;
 let historialRondas = [];
+let lugaresUsados = new Set(); // lugares ya preguntados en esta partida (evita repeticiones)
 let pistaUsada  = false;
 let respondido  = false;
 let marcadores  = [];
@@ -18418,10 +18419,16 @@ function iniciarRonda() {
   });
   marcadores = [];
 
-  // Elegir correcto + 4 señuelos al azar
-  const mezclados = shuffle(lugaresJugables());
-  correcto = mezclados[0];
-  const seleccion = shuffle([correcto, ...mezclados.slice(1, 5)]);
+  // Elegir correcto (que no se haya preguntado ya en esta partida) + 4 señuelos al azar
+  const disponibles = lugaresJugables();
+  const noUsados = disponibles.filter(l => !lugaresUsados.has(l));
+  // Si ya se hubieran agotado (categoría muy pequeña + partida muy larga), se permite repetir
+  const candidatosCorrecto = noUsados.length > 0 ? noUsados : disponibles;
+  correcto = shuffle(candidatosCorrecto)[0];
+  lugaresUsados.add(correcto);
+
+  const señuelos = shuffle(disponibles.filter(l => l !== correcto)).slice(0, 4);
+  const seleccion = shuffle([correcto, ...señuelos]);
 
   // UI pregunta
   document.getElementById('ronda-num').textContent   = ronda;
@@ -18624,6 +18631,7 @@ document.getElementById('btn-rejugar').addEventListener('click', () => {
   ronda  = 1;
   puntos = 0;
   historialRondas = [];
+  lugaresUsados = new Set();
   iniciarRonda();
 });
 
@@ -18666,6 +18674,7 @@ btnGuardar.addEventListener('click', () => {
   ronda  = 1;
   puntos = 0;
   historialRondas = [];
+  lugaresUsados = new Set();
   iniciarRonda();
 });
 

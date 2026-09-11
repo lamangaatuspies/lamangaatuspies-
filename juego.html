@@ -18049,8 +18049,12 @@ function iniciarRonda() {
   pistaUsada = false;
   respondido = false;
 
-  // Limpiar polígonos y pins anteriores
-  marcadores.forEach(m => { map.removeLayer(m.marker); map.removeLayer(m.pin); });
+  // Limpiar polígonos, pins y líneas guía anteriores
+  marcadores.forEach(m => {
+    map.removeLayer(m.marker);
+    map.removeLayer(m.pin);
+    if (m.linea) map.removeLayer(m.linea);
+  });
   marcadores = [];
 
   // Elegir correcto + 4 señuelos al azar
@@ -18070,6 +18074,7 @@ function iniciarRonda() {
   // Letras A-E para los marcadores
   const letras = ['A','B','C','D','E'];
   const boundsTotal = L.latLngBounds([]);
+  const candidatos = []; // { lugar, layer, centro, letra }
 
   seleccion.forEach((lugar, i) => {
     const feature = buscarFeature(lugar.nombre);
@@ -18080,29 +18085,47 @@ function iniciarRonda() {
     const b = layer.getBounds();
     if (b.isValid()) boundsTotal.extend(b);
 
-    // Pin con letra sobre el centroide
     const centro = b.isValid() ? b.getCenter() : L.latLng(lugar.lat, lugar.lng);
-    const pin = L.marker(centro, {
+    candidatos.push({ lugar, layer, centro, letra: letras[i] });
+  });
+
+  // Ajustar zoom para ver los 5 polígonos ANTES de colocar los pines:
+  // el desplazamiento del círculo se calcula en píxeles, así que necesita
+  // el zoom definitivo de la ronda para ser preciso.
+  if (boundsTotal.isValid()) {
+    map.fitBounds(boundsTotal, { padding: [50, 50], maxZoom: 16, animate: false });
+  }
+
+  // Pin con letra desplazado arriba-derecha del centroide + línea guía,
+  // para no tapar la forma del polígono (sobre todo en edificios pequeños)
+  const OFFSET_PX = 22;
+  candidatos.forEach(({ lugar, layer, centro, letra }) => {
+    const puntoCentro = map.latLngToContainerPoint(centro);
+    const puntoPin     = L.point(puntoCentro.x + OFFSET_PX, puntoCentro.y - OFFSET_PX);
+    const posPin        = map.containerPointToLatLng(puntoPin);
+
+    // Línea guía entre el centroide real y el pin desplazado
+    const linea = L.polyline([centro, posPin], {
+      color: '#ffffff', weight: 1.5, opacity: 0.85
+    }).addTo(map);
+
+    const pin = L.marker(posPin, {
       icon: L.divIcon({
         className: '',
-        html: `<div class="marker-juego">${letras[i]}</div>`,
+        html: `<div class="marker-juego">${letra}</div>`,
         iconSize: [28, 28],
         iconAnchor: [14, 14],
       })
     }).addTo(map);
 
-    // Click en polígono o en pin → misma respuesta
+    // Click en polígono, línea guía o pin → misma respuesta
     const onClick = () => { if (respondido) return; responder(lugar, layer); };
     layer.on('click', onClick);
+    linea.on('click', onClick);
     pin.on('click', onClick);
 
-    marcadores.push({ marker: layer, pin, lugar });
+    marcadores.push({ marker: layer, pin, linea, lugar });
   });
-
-  // Ajustar zoom para ver los 5 polígonos
-  if (boundsTotal.isValid()) {
-    map.fitBounds(boundsTotal, { padding: [50, 50], maxZoom: 16 });
-  }
 }
 
 // ── RESPONDER ──

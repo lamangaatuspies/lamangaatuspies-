@@ -18010,7 +18010,6 @@ let pistaUsada  = false;
 let respondido  = false;
 let marcadores  = [];
 let correcto    = null;
-let zoomInicial = null;
 const TOTAL_RONDAS = 5;
 
 // ── MAPA ──
@@ -18021,22 +18020,18 @@ L.tileLayer('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{y}.jpeg', {
 }).addTo(map);
 map.setView([37.70, -0.73], 12);
 
-// ── DESPLAZAMIENTO PROGRESIVO DE PINES (arriba-derecha del centroide) ──
-// Al zoom inicial de la ronda el hueco es OFFSET_PX_BASE; cada nivel de
-// zoom que el usuario se acerca lo reduce (hasta casi desaparecer, ya que
-// el polígono ocupa cada vez más espacio en pantalla y no lo necesita).
+// ── DESPLAZAMIENTO CONSTANTE DE PINES (arriba-derecha del centroide) ──
+// El hueco es siempre el mismo nº de píxeles en pantalla, sea cual sea
+// el zoom, para que el círculo nunca vuelva a montarse sobre el polígono.
 const OFFSET_PX_BASE = 22;
-const OFFSET_PX_MIN  = 2;
 
-function offsetPxParaZoom(z) {
-  if (zoomInicial === null) return OFFSET_PX_BASE;
-  const factor = Math.pow(0.9, z - zoomInicial);
-  return Math.max(OFFSET_PX_MIN, Math.min(OFFSET_PX_BASE * factor, OFFSET_PX_BASE * 3));
+function offsetPxParaZoom() {
+  return OFFSET_PX_BASE;
 }
 
 function actualizarPinesOffset() {
   if (!marcadores.length) return;
-  const offset = offsetPxParaZoom(map.getZoom());
+  const offset = offsetPxParaZoom();
   marcadores.forEach(m => {
     if (!m.centro) return;
     const puntoCentro = map.latLngToContainerPoint(m.centro);
@@ -18127,8 +18122,7 @@ function iniciarRonda() {
   // Pin con letra desplazado arriba-derecha del centroide + línea guía,
   // para no tapar la forma del polígono (sobre todo en edificios pequeños).
   // El offset se recalcula solo al hacer zoom (ver actualizarPinesOffset).
-  zoomInicial = map.getZoom();
-  const offsetInicial = offsetPxParaZoom(zoomInicial);
+  const offsetInicial = offsetPxParaZoom();
   candidatos.forEach(({ lugar, layer, centro, letra }) => {
     const puntoCentro = map.latLngToContainerPoint(centro);
     const puntoPin     = L.point(puntoCentro.x + offsetInicial, puntoCentro.y - offsetInicial);

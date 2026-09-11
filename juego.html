@@ -353,6 +353,11 @@
       line-height: 1;
       margin-bottom: 0.3rem;
     }
+    .final-score-denom {
+      font-size: 1.8rem;
+      color: var(--ink-dim);
+      font-weight: 600;
+    }
     .final-score-max {
       font-family: var(--mono);
       font-size: 0.7rem;
@@ -483,7 +488,7 @@
   <div class="final-box">
     <div class="final-titulo">Partida finalizada</div>
     <div class="final-subtitulo">¿Cuánto sabes de La Manga?</div>
-    <div class="final-score" id="final-score">0</div>
+    <div class="final-score"><span id="final-score">0</span><span class="final-score-denom">/10</span></div>
     <div class="final-score-max">de 10 puntos</div>
     <div class="final-mensaje" id="final-mensaje"></div>
     <div class="final-btns">
@@ -18023,7 +18028,7 @@ map.setView([37.70, -0.73], 12);
 // ── DESPLAZAMIENTO CONSTANTE DE PINES (arriba-derecha del centroide) ──
 // El hueco es siempre el mismo nº de píxeles en pantalla, sea cual sea
 // el zoom, para que el círculo nunca vuelva a montarse sobre el polígono.
-const OFFSET_PX_BASE = 30;
+const OFFSET_PX_BASE = 22;
 
 function offsetPxParaZoom() {
   return OFFSET_PX_BASE;

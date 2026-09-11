@@ -246,6 +246,25 @@
       transition: opacity 0.3s ease;
     }
     .zoom-aviso.visible { opacity: 1; }
+    .zoom-aviso-previo {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13,17,23,0.93);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.2rem;
+      z-index: 2500;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .zoom-aviso-previo.visible { opacity: 1; }
     .btn-cerrar-pista {
       background: transparent;
       color: var(--ink-mid);
@@ -534,6 +553,7 @@
     <div id="game-map" style="width:100%; height:100%;"></div>
     <!-- AVISO ZOOM EXCESIVO -->
     <div class="zoom-aviso" id="zoom-aviso">⚠ Zoom excesivo · si aciertas, valdrá la mitad de los puntos</div>
+    <div class="zoom-aviso-previo" id="zoom-aviso-previo">⚠ Un zoom más y jugarás esta ronda por la mitad de puntos</div>
     <!-- FOTO PISTA flotante centro-arriba -->
     <!-- POPUP PISTA -->
     <div class="pista-panel" id="pista-panel">
@@ -18159,10 +18179,22 @@ map.on('zoomend', () => {
   if (zoomMaximoRonda === null) return;
   zoomMaximoRonda = Math.max(zoomMaximoRonda, map.getZoom());
 
-  if (!respondido && !avisoZoomMostrado && zoomEsExcesivo()) {
+  if (respondido) return;
+
+  if (!avisoZoomMostrado && zoomEsExcesivo()) {
     avisoZoomMostrado = true;
+    ocultarAvisoZoomPrevio();
     mostrarAvisoZoom();
     actualizarJuegasPor();
+  } else if (!avisoZoomMostrado) {
+    // Aviso previo: estamos justo en el último nivel de zoom "gratis";
+    // un golpe de zoom más activaría la penalización.
+    const diffActual = map.getZoom() - zoomRondaInicial;
+    if (diffActual === ZOOM_MAX_PERMITIDO) {
+      mostrarAvisoZoomPrevio();
+    } else {
+      ocultarAvisoZoomPrevio();
+    }
   }
 });
 
@@ -18172,6 +18204,16 @@ function mostrarAvisoZoom() {
   el.classList.add('visible');
   clearTimeout(avisoZoomTimeout);
   avisoZoomTimeout = setTimeout(() => el.classList.remove('visible'), 3500);
+}
+
+// Aviso previo (un zoom antes de la penalización): se queda fijo, sin
+// autoocultarse por tiempo. Desaparece si el jugador se aleja de nuevo
+// (ver handler de zoomend), o si acaba activando la penalización real.
+function mostrarAvisoZoomPrevio() {
+  document.getElementById('zoom-aviso-previo').classList.add('visible');
+}
+function ocultarAvisoZoomPrevio() {
+  document.getElementById('zoom-aviso-previo').classList.remove('visible');
 }
 
 // Puntos que valdría un acierto ahora mismo, según las mismas reglas que responder()
@@ -18272,6 +18314,7 @@ function iniciarRonda() {
   avisoZoomMostrado = false;
   clearTimeout(avisoZoomTimeout);
   document.getElementById('zoom-aviso').classList.remove('visible');
+  ocultarAvisoZoomPrevio();
   actualizarJuegasPor();
 
   // Pin con letra desplazado arriba-derecha del centroide + línea guía,
@@ -18310,6 +18353,7 @@ function iniciarRonda() {
 // ── RESPONDER ──
 function responder(lugarElegido, layerElegido) {
   respondido = true;
+  ocultarAvisoZoomPrevio();
   const esCorrecta = lugarElegido === correcto;
 
   // Puntuación: 4 puntos base si acierta, partido por la mitad de forma

@@ -2643,14 +2643,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "Mar & mar",
-                "img": "img/Mar-y-mar.jpg",
-                "desc": [
-                    "Cafeteria",
-                    "Heladeria"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -2678,6 +2670,51 @@
                         [
                             -0.735377,
                             37.747885
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "name": "Mar & mar",
+                "img": "img/Mar-y-mar.jpg",
+                "desc": [
+                    "Cafeteria",
+                    "Heladeria"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Marego's",
+                "img": "img/Maregos.jpg",
+                "desc": [
+                    "Restaurante"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.715442,
+                            37.647708
+                        ],
+                        [
+                            -0.715332,
+                            37.647561
+                        ],
+                        [
+                            -0.715122,
+                            37.647646
+                        ],
+                        [
+                            -0.715225,
+                            37.647789
+                        ],
+                        [
+                            -0.715442,
+                            37.647708
                         ]
                     ]
                 ]

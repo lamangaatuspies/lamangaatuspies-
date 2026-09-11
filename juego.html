@@ -18175,12 +18175,12 @@ function iniciarRonda() {
   document.getElementById('pista-panel').classList.remove('visible');
   document.getElementById('pista-img').src           = '';
 
-  // Letras A-E para los marcadores
+  // Letras A-E para los marcadores, asignadas de sur (A) a norte (E)
   const letras = ['A','B','C','D','E'];
   const boundsTotal = L.latLngBounds([]);
   const candidatos = []; // { lugar, layer, centro, letra }
 
-  seleccion.forEach((lugar, i) => {
+  seleccion.forEach((lugar) => {
     const feature = buscarFeature(lugar.nombre);
     if (!feature) return;
 
@@ -18190,8 +18190,12 @@ function iniciarRonda() {
     if (b.isValid()) boundsTotal.extend(b);
 
     const centro = b.isValid() ? b.getCenter() : L.latLng(lugar.lat, lugar.lng);
-    candidatos.push({ lugar, layer, centro, letra: letras[i] });
+    candidatos.push({ lugar, layer, centro });
   });
+
+  // Ordenar de sur a norte y asignar letras en ese orden
+  candidatos.sort((a, b) => a.centro.lat - b.centro.lat);
+  candidatos.forEach((c, i) => { c.letra = letras[i]; });
 
   // Ajustar zoom para ver los 5 polígonos ANTES de colocar los pines:
   // el desplazamiento del círculo se calcula en píxeles, así que necesita

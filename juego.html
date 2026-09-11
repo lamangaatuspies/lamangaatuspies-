@@ -136,6 +136,24 @@
       text-transform: uppercase;
       white-space: nowrap;
     }
+    .game-instruccion-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+    .juegas-por {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--ink-mid);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    #juegas-por-num {
+      color: var(--accent2);
+      font-weight: 700;
+    }
     .game-score {
       font-family: var(--mono);
       font-size: 0.7rem;
@@ -463,9 +481,12 @@
       <div class="capa-label" id="capa-label">Capa</div>
       <div class="nombre" id="lugar-nombre">—</div>
     </div>
-    <div class="game-instruccion">← Localiza en el mapa la opción correcta y haz clic sobre ella</div>
+    <div class="game-instruccion-col">
+      <div class="game-instruccion">← Localiza en el mapa la opción correcta y haz clic sobre ella</div>
+      <div class="juegas-por" id="juegas-por">(Juegas por <span id="juegas-por-num">4</span> puntos)</div>
+    </div>
     <div style="flex:1"></div>
-    <button class="btn-pista" id="btn-pista">🔍 Ver pista · Resta un punto a tu acierto</button>
+    <button class="btn-pista" id="btn-pista">🔍 Ver pista · Resta la mitad de puntos a tu acierto</button>
     <div class="game-score">Puntos<span id="score-val">0</span></div>
   </div>
 
@@ -18032,6 +18053,7 @@ let zoomRondaInicial = null;
 let zoomMaximoRonda  = null;
 let avisoZoomMostrado = false;
 const TOTAL_RONDAS = 5;
+const BASE_PUNTOS = 4;
 const ZOOM_MAX_PERMITIDO = 3; // niveles de zoom tolerados desde el inicio de la ronda
 
 // ── MAPA ──
@@ -18065,15 +18087,21 @@ function actualizarPinesOffset() {
 }
 map.on('zoomend', actualizarPinesOffset);
 
+// ¿Se ha superado el zoom permitido en algún momento de la ronda?
+function zoomEsExcesivo() {
+  return zoomMaximoRonda !== null && (zoomMaximoRonda - zoomRondaInicial) > ZOOM_MAX_PERMITIDO;
+}
+
 // Lleva la cuenta del zoom máximo alcanzado en la ronda actual, aunque
 // luego se aleje el mapa antes de responder (penalización por zoom, ver responder())
 map.on('zoomend', () => {
   if (zoomMaximoRonda === null) return;
   zoomMaximoRonda = Math.max(zoomMaximoRonda, map.getZoom());
 
-  if (!respondido && !avisoZoomMostrado && (zoomMaximoRonda - zoomRondaInicial) > ZOOM_MAX_PERMITIDO) {
+  if (!respondido && !avisoZoomMostrado && zoomEsExcesivo()) {
     avisoZoomMostrado = true;
     mostrarAvisoZoom();
+    actualizarJuegasPor();
   }
 });
 
@@ -18083,6 +18111,17 @@ function mostrarAvisoZoom() {
   el.classList.add('visible');
   clearTimeout(avisoZoomTimeout);
   avisoZoomTimeout = setTimeout(() => el.classList.remove('visible'), 3500);
+}
+
+// Puntos que valdría un acierto ahora mismo, según las mismas reglas que responder()
+function calcularPuntosPosibles() {
+  let p = BASE_PUNTOS;
+  if (zoomEsExcesivo()) p /= 2;
+  if (pistaUsada) p /= 2;
+  return p;
+}
+function actualizarJuegasPor() {
+  document.getElementById('juegas-por-num').textContent = calcularPuntosPosibles();
 }
 
 // ── SHUFFLE ──
@@ -18167,6 +18206,7 @@ function iniciarRonda() {
   avisoZoomMostrado = false;
   clearTimeout(avisoZoomTimeout);
   document.getElementById('zoom-aviso').classList.remove('visible');
+  actualizarJuegasPor();
 
   // Pin con letra desplazado arriba-derecha del centroide + línea guía,
   // para no tapar la forma del polígono (sobre todo en edificios pequeños).
@@ -18208,7 +18248,6 @@ function responder(lugarElegido, layerElegido) {
 
   // Puntuación: 4 puntos base si acierta, partido por la mitad de forma
   // independiente por cada penalización (zoom excesivo y/o pista usada)
-  const BASE_PUNTOS = 4;
   const zoomExcedido = esCorrecta && zoomMaximoRonda !== null &&
     (zoomMaximoRonda - zoomRondaInicial) > ZOOM_MAX_PERMITIDO;
 
@@ -18299,6 +18338,7 @@ document.getElementById('btn-pista').addEventListener('click', () => {
   document.getElementById('btn-pista').disabled = true;
   document.getElementById('pista-img').src = correcto.img;
   document.getElementById('pista-panel').classList.add('visible');
+  actualizarJuegasPor();
 });
 
 document.getElementById('btn-cerrar-pista').addEventListener('click', () => {

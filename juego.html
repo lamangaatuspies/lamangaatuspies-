@@ -352,7 +352,7 @@
     .final-box {
       background: var(--surface);
       border: 1px solid var(--border);
-      max-width: 480px;
+      max-width: 640px;
       width: 90%;
       padding: 2.5rem;
       text-align: center;
@@ -402,6 +402,47 @@
       margin-bottom: 2rem;
       font-style: italic;
     }
+    .final-tabla-wrap {
+      text-align: left;
+      max-height: 280px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .final-tabla {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+    }
+    .final-tabla th, .final-tabla td {
+      padding: 0.5rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .final-tabla th {
+      position: sticky;
+      top: 0;
+      background: var(--surface2);
+      color: var(--ink-mid);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.62rem;
+    }
+    .final-tabla td:nth-child(4), .final-tabla td:nth-child(5),
+    .final-tabla th:nth-child(4), .final-tabla th:nth-child(5) { text-align: center; }
+    .final-tabla tr.fila-acierto-total   td { background: rgba(63,185,80,0.22); }
+    .final-tabla tr.fila-acierto-parcial td { background: rgba(240,136,62,0.22); }
+    .final-tabla tr.fila-fallo           td { background: rgba(248,81,73,0.22); }
+    .final-tabla tfoot td {
+      font-weight: 700;
+      color: var(--ink);
+      border-top: 2px solid var(--border);
+      border-bottom: none;
+      background: var(--surface2);
+      text-align: right;
+    }
+    .final-tabla tfoot td:last-child { text-align: center; }
     .final-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
     .btn-rejugar {
       background: var(--accent3);
@@ -525,6 +566,26 @@
     <div class="final-subtitulo">¿Cuánto sabes de La Manga?</div>
     <div class="final-score"><span id="final-score">0</span><span class="final-score-denom">/20</span></div>
     <div class="final-mensaje" id="final-mensaje"></div>
+    <div class="final-tabla-wrap">
+      <table class="final-tabla">
+        <thead>
+          <tr>
+            <th>Ronda</th>
+            <th>Buscado</th>
+            <th>Tipo</th>
+            <th>Pistas</th>
+            <th>Puntos</th>
+          </tr>
+        </thead>
+        <tbody id="final-tabla-body"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4">Total puntos</td>
+            <td id="final-tabla-total">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
     <div class="final-btns">
       <button class="btn-rejugar" id="btn-rejugar">Jugar de nuevo</button>
       <a href="index.html" class="btn-volver">Volver al mapa</a>
@@ -18045,6 +18106,7 @@ Object.entries(GEODATA).forEach(([capa, features]) => {
 // ── ESTADO DEL JUEGO ──
 let ronda       = 1;
 let puntos      = 0;
+let historialRondas = [];
 let pistaUsada  = false;
 let respondido  = false;
 let marcadores  = [];
@@ -18254,7 +18316,7 @@ function responder(lugarElegido, layerElegido) {
 
   // Puntuación: 4 puntos base si acierta, partido por la mitad de forma
   // independiente por cada penalización (zoom excesivo y/o pista usada)
-  const zoomExcedido = esCorrecta && zoomMaximoRonda !== null &&
+  const zoomExcedido = zoomMaximoRonda !== null &&
     (zoomMaximoRonda - zoomRondaInicial) > ZOOM_MAX_PERMITIDO;
 
   let puntosRonda = 0;
@@ -18265,6 +18327,18 @@ function responder(lugarElegido, layerElegido) {
     if (pistaUsada)   { puntosRonda /= 2; motivos.push('pista usada'); }
   }
   puntos += puntosRonda;
+
+  // Nº de "pistas" usadas en la ronda a efectos del historial: cuenta tanto
+  // haber pulsado el botón de pista como haber hecho zoom excesivo
+  const numPistasRonda = (pistaUsada ? 1 : 0) + (zoomExcedido ? 1 : 0);
+  historialRondas.push({
+    ronda,
+    nombre: correcto.nombre,
+    tipo: correcto.capa,
+    numPistas: numPistasRonda,
+    puntos: puntosRonda,
+    correcta: esCorrecta,
+  });
 
   // Revelar correcto e incorrecto visualmente
   marcadores.forEach(m => {
@@ -18326,6 +18400,25 @@ function mostrarFinal() {
   ];
   const msg = mensajes.find(([min, max]) => puntos >= min && puntos <= max);
   document.getElementById('final-mensaje').textContent = msg ? msg[2] : '';
+
+  // Tabla resumen de la partida
+  const filas = historialRondas.map(h => {
+    let clase = 'fila-fallo';
+    if (h.correcta) {
+      clase = h.puntos >= BASE_PUNTOS ? 'fila-acierto-total' : 'fila-acierto-parcial';
+    }
+    return `<tr class="${clase}">
+      <td>${h.ronda}</td>
+      <td>${h.nombre}</td>
+      <td>${h.tipo}</td>
+      <td>${h.numPistas}</td>
+      <td>${h.puntos}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('final-tabla-body').innerHTML = filas;
+  document.getElementById('final-tabla-total').textContent = puntos;
+
   document.getElementById('final-overlay').classList.add('visible');
 }
 
@@ -18334,6 +18427,7 @@ document.getElementById('btn-rejugar').addEventListener('click', () => {
   document.getElementById('final-overlay').classList.remove('visible');
   ronda  = 1;
   puntos = 0;
+  historialRondas = [];
   iniciarRonda();
 });
 

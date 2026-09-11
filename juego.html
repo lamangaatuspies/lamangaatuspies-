@@ -209,6 +209,25 @@
       text-transform: uppercase;
       margin-bottom: 1.2rem;
     }
+    .zoom-aviso {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13,17,23,0.93);
+      border: 1px solid var(--accent2);
+      color: var(--accent2);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.2rem;
+      z-index: 2500;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .zoom-aviso.visible { opacity: 1; }
     .btn-cerrar-pista {
       background: transparent;
       color: var(--ink-mid);
@@ -453,6 +472,8 @@
   <!-- MAPA + PISTA FLOTANTE + OVERLAY RESULTADO -->
   <div style="flex:1; min-height:0; position:relative;">
     <div id="game-map" style="width:100%; height:100%;"></div>
+    <!-- AVISO ZOOM EXCESIVO -->
+    <div class="zoom-aviso" id="zoom-aviso">⚠ Zoom excesivo · si aciertas, valdrá la mitad de los puntos</div>
     <!-- FOTO PISTA flotante centro-arriba -->
     <!-- POPUP PISTA -->
     <div class="pista-panel" id="pista-panel">
@@ -18009,7 +18030,9 @@ let marcadores  = [];
 let correcto    = null;
 let zoomRondaInicial = null;
 let zoomMaximoRonda  = null;
+let avisoZoomMostrado = false;
 const TOTAL_RONDAS = 5;
+const ZOOM_MAX_PERMITIDO = 3; // niveles de zoom tolerados desde el inicio de la ronda
 
 // ── MAPA ──
 const map = L.map('game-map', { zoomControl: true, attributionControl: false });
@@ -18047,7 +18070,20 @@ map.on('zoomend', actualizarPinesOffset);
 map.on('zoomend', () => {
   if (zoomMaximoRonda === null) return;
   zoomMaximoRonda = Math.max(zoomMaximoRonda, map.getZoom());
+
+  if (!respondido && !avisoZoomMostrado && (zoomMaximoRonda - zoomRondaInicial) > ZOOM_MAX_PERMITIDO) {
+    avisoZoomMostrado = true;
+    mostrarAvisoZoom();
+  }
 });
+
+let avisoZoomTimeout = null;
+function mostrarAvisoZoom() {
+  const el = document.getElementById('zoom-aviso');
+  el.classList.add('visible');
+  clearTimeout(avisoZoomTimeout);
+  avisoZoomTimeout = setTimeout(() => el.classList.remove('visible'), 3500);
+}
 
 // ── SHUFFLE ──
 function shuffle(arr) {
@@ -18126,8 +18162,11 @@ function iniciarRonda() {
   }
 
   // Zoom de referencia de la ronda (para la penalización por zoom excesivo)
-  zoomRondaInicial = map.getZoom();
-  zoomMaximoRonda  = zoomRondaInicial;
+  zoomRondaInicial  = map.getZoom();
+  zoomMaximoRonda   = zoomRondaInicial;
+  avisoZoomMostrado = false;
+  clearTimeout(avisoZoomTimeout);
+  document.getElementById('zoom-aviso').classList.remove('visible');
 
   // Pin con letra desplazado arriba-derecha del centroide + línea guía,
   // para no tapar la forma del polígono (sobre todo en edificios pequeños).
@@ -18170,7 +18209,6 @@ function responder(lugarElegido, layerElegido) {
   // Puntuación: 4 puntos base si acierta, partido por la mitad de forma
   // independiente por cada penalización (zoom excesivo y/o pista usada)
   const BASE_PUNTOS = 4;
-  const ZOOM_MAX_PERMITIDO = 3; // niveles de zoom tolerados desde el inicio de la ronda
   const zoomExcedido = esCorrecta && zoomMaximoRonda !== null &&
     (zoomMaximoRonda - zoomRondaInicial) > ZOOM_MAX_PERMITIDO;
 

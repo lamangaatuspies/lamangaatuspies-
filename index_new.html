@@ -1321,7 +1321,7 @@
     .map-popup-close {
       background: transparent;
       border: none;
-      color: var(--ink-dim);
+      color: var(--ink-mid);
       cursor: pointer;
       font-size: 0.85rem;
       line-height: 1;
@@ -1939,6 +1939,7 @@
         <li><a href="#lista">Lista</a></li>
         <li><a href="#proyecto">Proyecto</a></li>
         <li><a href="#contacto">Contacto</a></li>
+        <li><a href="juego.html">JUEGO</a></li>
       </ul>
       <div class="nav-controls">
         <button class="basemap-toggle" id="basemap-toggle" type="button" aria-label="Cambiar entre mapa y satélite" title="Cambiar entre mapa y satélite">
@@ -2332,7 +2333,7 @@
     // Edificios sin marcador propio en el GeoJSON: heredan la posición de su urbanización.
     // Se declara aquí (antes de usarse) porque tanto el contador como el listado de marcadores
     // la necesitan; declararla más abajo causó en el pasado un bug de orden de ejecución.
-    const EDIFICIOS_ALIAS = [{"edificio": "ESTOCOLMO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "OSLO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "BERNA", "urbanizacion": "EUROVOSA 1"}, {"edificio": "MADRID", "urbanizacion": "EUROVOSA 1"}, {"edificio": "LONDRES (Hotel)", "urbanizacion": "EUROVOSA 1"}, {"edificio": "ISLAS VERDES", "urbanizacion": "BORINQUEN 2"}, {"edificio": "LUQUILLO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "EL DORADO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "MAYAGUEZ", "urbanizacion": "BORINQUEN"}, {"edificio": "CONDADO", "urbanizacion": "BORINQUEN"}, {"edificio": "PONCE", "urbanizacion": "BORINQUEN"}, {"edificio": "SAN JUAN", "urbanizacion": "BORINQUEN"}, {"edificio": "AMSTERDAN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BRUSELAS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "LISBOA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "ROMA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "PARIS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BERLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MONACO", "urbanizacion": "EUROVOSA 2"}, {"edificio": "DUBLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MILANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "NAPOLES", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TINTORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "VAPORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "GENOVA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "FLORENCIA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TIZIANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CAPRI", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CANAL", "urbanizacion": "ABITY BEACH"}, {"edificio": "AVENIDA", "urbanizacion": "ABITY BEACH"}, {"edificio": "VARADERO", "urbanizacion": "ABITY BEACH"}, {"edificio": "Club de Personas Mayores", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Biblioteca", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Asociacion de Vecinos", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Consultorio Cavanna", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "TORRE VARADERO", "urbanizacion": "PROGALESA"}, {"edificio": "BAJAMAR", "urbanizacion": "PROGALESA"}, {"edificio": "SOLYMAR", "urbanizacion": "PROGALESA"}, {"edificio": "FRENMAR", "urbanizacion": "PROGALESA"}, {"edificio": "ALAMAR", "urbanizacion": "PROGALESA"}, {"edificio": "DARBAIDA", "urbanizacion": "POLIGONO J8"}, {"edificio": "OMEGA MAR", "urbanizacion": "POLIGONO J8"}, {"edificio": "PUNTA MANGA", "urbanizacion": "POLIGONO J8"}];
+    const EDIFICIOS_ALIAS = [{"edificio": "ESTOCOLMO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "OSLO", "urbanizacion": "EUROVOSA 1"}, {"edificio": "BERNA", "urbanizacion": "EUROVOSA 1"}, {"edificio": "MADRID", "urbanizacion": "EUROVOSA 1"}, {"edificio": "LONDRES (Hotel)", "urbanizacion": "EUROVOSA 1"}, {"edificio": "ISLAS VERDES", "urbanizacion": "BORINQUEN 2"}, {"edificio": "LUQUILLO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "EL DORADO", "urbanizacion": "BORINQUEN 2"}, {"edificio": "MAYAGUEZ", "urbanizacion": "BORINQUEN"}, {"edificio": "CONDADO", "urbanizacion": "BORINQUEN"}, {"edificio": "PONCE", "urbanizacion": "BORINQUEN"}, {"edificio": "SAN JUAN", "urbanizacion": "BORINQUEN"}, {"edificio": "AMSTERDAN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BRUSELAS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "LISBOA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "ROMA", "urbanizacion": "EUROVOSA 2"}, {"edificio": "PARIS", "urbanizacion": "EUROVOSA 2"}, {"edificio": "BERLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MONACO", "urbanizacion": "EUROVOSA 2"}, {"edificio": "DUBLIN", "urbanizacion": "EUROVOSA 2"}, {"edificio": "MILANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "NAPOLES", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TINTORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "VAPORETTO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "GENOVA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "FLORENCIA", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "TIZIANO", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CAPRI", "urbanizacion": "LAS GONDOLAS"}, {"edificio": "CANAL", "urbanizacion": "ABITY BEACH"}, {"edificio": "AVENIDA", "urbanizacion": "ABITY BEACH"}, {"edificio": "VARADERO", "urbanizacion": "ABITY BEACH"}, {"edificio": "Club de Personas Mayores", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Biblioteca", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Asociacion de Vecinos", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "Consultorio Cavanna", "urbanizacion": "Edificio MULTIUSOS"}, {"edificio": "TORRE VARADERO", "urbanizacion": "PROGALESA"}, {"edificio": "BAJAMAR", "urbanizacion": "PROGALESA"}, {"edificio": "SOLYMAR", "urbanizacion": "PROGALESA"}, {"edificio": "FRENMAR", "urbanizacion": "PROGALESA"}, {"edificio": "ALAMAR", "urbanizacion": "PROGALESA"}, {"edificio": "DARBAIDA", "urbanizacion": "POLIGONO J8"}, {"edificio": "OMEGA MAR", "urbanizacion": "POLIGONO J8"}, {"edificio": "PUNTA MANGA", "urbanizacion": "POLIGONO J8"},{"edificio": "NORAY", "urbanizacion": "NUEVO PUERTO BELLO"},{"edificio": "VALENCIA", "urbanizacion": "NUEVO PUERTO BELLO"},{"edificio": "GALICIA", "urbanizacion": "NUEVO PUERTO BELLO"},{"edificio": "CANARIAS", "urbanizacion": "NUEVO PUERTO BELLO"},{"edificio": "TORRE NUEVO PUERTO BELLO", "urbanizacion": "NUEVO PUERTO BELLO"}];
 
     // ── CONTADORES AUTOMÁTICOS DESDE GEODATA ──
     // Todas las cifras de la web se calculan aquí. No hay que tocarlas manualmente.
@@ -2682,6 +2683,7 @@
         layer.on('click', () => {
           const zoom = map.getZoom();
           const prevActiveFeature = activeFeature;
+          activeFeature = layer;
 
           // Revertir estilo/tooltip solo del elemento que estaba activo antes (no los 372)
           if (prevActiveFeature && prevActiveFeature !== layer) {
@@ -2695,7 +2697,6 @@
             }
           }
 
-          activeFeature = layer;
           layer.setStyle ? layer.setStyle(activeStyle) : null;
           if (layer.getLayers) {
             layer.getLayers().forEach(sub => sub.setStyle(activeStyle));
@@ -2766,9 +2767,12 @@
             if (activeFeature.getLayers) {
               activeFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
             }
+            activeFeature = null;
+            actualizarTooltipItem(prevItem, map.getZoom(), boundsTooltipsActuales());
+          } else {
+            activeFeature = null;
           }
         }
-        activeFeature = null;
         map.closePopup();
         // Rellenar el panel con los datos del punto kilométrico
         document.getElementById('ppDot').style.background = '#ef5d69';
@@ -3129,7 +3133,9 @@
           if (activeFeature.getLayers) {
             activeFeature.getLayers().forEach(sub => sub.setStyle(prevItem.normalStyle));
           }
+          activeFeature = null;
           actualizarTooltipItem(prevItem, map.getZoom(), boundsTooltipsActuales());
+          return;
         }
       }
       activeFeature = null;
@@ -3266,6 +3272,7 @@
         }
         map.closePopup();
         activeFeature = null;
+        if (prevItem) actualizarTooltipItem(prevItem, map.getZoom(), boundsTooltipsActuales());
       }
       popupPanel.classList.remove('visible');
     }
@@ -3771,11 +3778,11 @@
 
     // ── NAV: contraer mapa expandido al navegar a otra sección ──
     navLinks.forEach(a => {
-      if (a.getAttribute('href') !== '#mapa') {
+      const href = a.getAttribute('href');
+      if (href.startsWith('#') && href !== '#mapa') {
         a.addEventListener('click', function(e) {
           if (mapaExpandido) {
             e.preventDefault();
-            const href = this.getAttribute('href');
             toggleExpandMap();
             setTimeout(() => {
               const target = document.querySelector(href);

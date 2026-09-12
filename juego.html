@@ -77,11 +77,10 @@
     .game-header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
-      display: flex;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
-      gap: 2rem;
-      flex-wrap: wrap;
+      column-gap: 2rem;
       position: relative;
     }
     .game-header::before {
@@ -92,7 +91,39 @@
       background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
     }
 
-    .game-ronda {
+    .header-instruccion {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--ink);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .header-top-celda {
+      border-bottom: 1px solid var(--border);
+      padding: 0.4rem 0;
+    }
+    .header-top-celda.izq  { padding-left: 2rem; }
+    .header-top-celda.der  { padding-right: 2rem; }
+
+    .header-izq {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0.85rem 0 0.85rem 2rem;
+    }
+    .header-izq-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .header-divisor {
+      width: 1px;
+      align-self: stretch;
+      background: var(--border);
+    }
+    .stat-linea {
       font-family: var(--mono);
       font-size: 0.7rem;
       color: var(--ink-mid);
@@ -100,16 +131,24 @@
       text-transform: uppercase;
       white-space: nowrap;
     }
-    .game-ronda span {
-      color: var(--accent);
-      font-size: 1.1rem;
+    .stat-linea .valor {
       font-family: var(--sans);
+      font-size: 1.05rem;
       font-weight: 700;
+    }
+    .stat-linea .valor.ronda  { color: var(--accent); }
+    .stat-linea .valor.puntos { color: var(--accent3); }
+    .valor-juegas {
+      font-family: var(--sans);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--accent2);
+      white-space: nowrap;
     }
 
     .game-pregunta {
-      flex: 1;
-      min-width: 200px;
+      padding: 0.85rem 0;
+      text-align: center;
     }
     .game-pregunta .capa-label {
       font-family: var(--mono);
@@ -128,65 +167,96 @@
       letter-spacing: 0.03em;
     }
 
-    .game-instruccion {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--ink);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      white-space: nowrap;
+    .header-der {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 0.85rem 2rem 0.85rem 0;
     }
-    .game-instruccion-col {
+    .pistas-grupo {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 0.25rem;
+      align-items: center;
+      gap: 6px;
     }
-    .juegas-por {
+    .pistas-label {
       font-family: var(--mono);
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: var(--ink-mid);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    #juegas-por-num {
-      color: var(--accent2);
-      font-weight: 700;
-    }
-    .game-score {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--ink-mid);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      text-align: right;
-      white-space: nowrap;
-    }
-    .game-score span {
-      display: block;
-      font-family: var(--sans);
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--accent3);
-      line-height: 1.1;
-    }
-
-    .btn-pista {
-      background: transparent;
-      border: 1px solid var(--accent2);
-      color: var(--accent2);
-      font-family: var(--mono);
-      font-size: 0.65rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 0.4rem 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
     }
-    .btn-pista:hover { background: rgba(240,136,62,0.12); }
-    .btn-pista:disabled { opacity: 0.3; cursor: default; }
+    .pistas-iconos {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .pista-icono-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .pista-icono {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--accent3);
+      background: transparent;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      padding: 0;
+      color: inherit;
+      font-family: inherit;
+      line-height: 1;
+      transition: background 0.2s;
+    }
+    button.pista-icono { cursor: pointer; }
+    button.pista-icono:disabled { cursor: default; }
+    .pista-icono.checked { background: rgba(240,136,62,0.18); }
+    .pista-icono-etiqueta {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      color: var(--ink-mid);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .pista-tooltip {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      line-height: 1.5;
+      padding: 0.55rem 0.7rem;
+      border-radius: 4px;
+      width: 190px;
+      text-align: center;
+      text-transform: none;
+      letter-spacing: normal;
+      transition: opacity 0.15s;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .pista-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--border);
+    }
+    .pista-icono-wrap:hover .pista-tooltip { visibility: visible; opacity: 1; }
 
     .btn-config {
       background: transparent;
@@ -649,19 +719,45 @@
 
   <!-- CABECERA CON PREGUNTA -->
   <div class="game-header">
-    <div class="game-ronda">Ronda <span id="ronda-num">1</span> / 5</div>
+    <div class="header-top-celda izq"></div>
+    <div class="header-top-celda header-instruccion">Localiza en el mapa...</div>
+    <div class="header-top-celda der"></div>
+
+    <div class="header-izq">
+      <div class="header-izq-col">
+        <div class="stat-linea">Ronda <span class="valor ronda"><span id="ronda-num">1</span> / 5</span></div>
+        <div class="stat-linea">Puntos <span class="valor puntos" id="score-val">0</span></div>
+      </div>
+      <div class="header-divisor"></div>
+      <div class="header-izq-col">
+        <div class="stat-linea">Juegas por</div>
+        <div class="valor-juegas"><span id="juegas-por-num">4</span> puntos</div>
+      </div>
+    </div>
+
     <div class="game-pregunta">
       <div class="capa-label" id="capa-label">Capa</div>
       <div class="nombre" id="lugar-nombre">—</div>
     </div>
-    <div class="game-instruccion-col">
-      <div class="game-instruccion">← Localiza en el mapa la opción correcta y haz clic sobre ella</div>
-      <div class="juegas-por" id="juegas-por">(Juegas por <span id="juegas-por-num">4</span> puntos)</div>
+
+    <div class="header-der">
+      <div class="pistas-grupo">
+        <div class="pistas-label">Pistas</div>
+        <div class="pistas-iconos">
+          <div class="pista-icono-wrap">
+            <div class="pista-tooltip">Pista de foto: haz clic en el icono para ver una foto del edificio. Resta la mitad de los puntos si aciertas.</div>
+            <button class="pista-icono" id="btn-pista">🏢</button>
+            <div class="pista-icono-etiqueta">Foto</div>
+          </div>
+          <div class="pista-icono-wrap">
+            <div class="pista-tooltip">Pista de zoom: si te acercas más de 3 niveles con la rueda del ratón, resta la mitad de los puntos si aciertas.</div>
+            <div class="pista-icono" id="pista-zoom-icono">🔍</div>
+            <div class="pista-icono-etiqueta">Zoom</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-config" id="btn-config" title="Configurar categorías">⚙️</button>
     </div>
-    <div style="flex:1"></div>
-    <button class="btn-pista" id="btn-pista">🔍 Ver pista · Resta la mitad de puntos a tu acierto</button>
-    <button class="btn-config" id="btn-config" title="Configurar categorías">⚙️</button>
-    <div class="game-score">Puntos<span id="score-val">0</span></div>
   </div>
 
   <!-- MAPA + PISTA FLOTANTE + OVERLAY RESULTADO -->
@@ -18338,6 +18434,7 @@ map.on('zoomend', () => {
 
   if (!avisoZoomMostrado && zoomEsExcesivo()) {
     avisoZoomMostrado = true;
+    document.getElementById('pista-zoom-icono').classList.add('checked');
     ocultarAvisoZoomPrevio();
     mostrarAvisoZoom();
     actualizarJuegasPor();
@@ -18436,6 +18533,7 @@ function iniciarRonda() {
   document.getElementById('lugar-nombre').textContent = correcto.nombre;
   document.getElementById('score-val').textContent   = puntos;
   document.getElementById('btn-pista').disabled      = false;
+  document.getElementById('btn-pista').classList.remove('checked');
   document.getElementById('pista-panel').classList.remove('visible');
   document.getElementById('pista-img').src           = '';
 
@@ -18473,6 +18571,7 @@ function iniciarRonda() {
   zoomRondaInicial  = map.getZoom();
   zoomMaximoRonda   = zoomRondaInicial;
   avisoZoomMostrado = false;
+  document.getElementById('pista-zoom-icono').classList.remove('checked');
   clearTimeout(avisoZoomTimeout);
   document.getElementById('zoom-aviso').classList.remove('visible');
   ocultarAvisoZoomPrevio();
@@ -18683,6 +18782,7 @@ document.getElementById('btn-pista').addEventListener('click', () => {
   if (pistaUsada || respondido) return;
   pistaUsada = true;
   document.getElementById('btn-pista').disabled = true;
+  document.getElementById('btn-pista').classList.add('checked');
   document.getElementById('pista-img').src = correcto.img;
   document.getElementById('pista-panel').classList.add('visible');
   actualizarJuegasPor();

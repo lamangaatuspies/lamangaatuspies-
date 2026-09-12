@@ -99,13 +99,8 @@
       text-transform: uppercase;
       text-align: center;
       white-space: nowrap;
+      margin-bottom: 0.35rem;
     }
-    .header-top-celda {
-      border-bottom: 1px solid var(--border);
-      padding: 0.4rem 0;
-    }
-    .header-top-celda.izq  { padding-left: 2rem; }
-    .header-top-celda.der  { padding-right: 2rem; }
 
     .header-izq {
       display: flex;
@@ -156,7 +151,7 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent2);
-      margin-bottom: 0.2rem;
+      margin-top: 0.25rem;
     }
     .game-pregunta .nombre {
       font-family: var(--sans);
@@ -719,10 +714,6 @@
 
   <!-- CABECERA CON PREGUNTA -->
   <div class="game-header">
-    <div class="header-top-celda izq"></div>
-    <div class="header-top-celda header-instruccion">Localiza en el mapa...</div>
-    <div class="header-top-celda der"></div>
-
     <div class="header-izq">
       <div class="header-izq-col">
         <div class="stat-linea">Ronda <span class="valor ronda"><span id="ronda-num">1</span> / 5</span></div>
@@ -736,8 +727,9 @@
     </div>
 
     <div class="game-pregunta">
-      <div class="capa-label" id="capa-label">Capa</div>
+      <div class="header-instruccion">Localiza en el mapa...</div>
       <div class="nombre" id="lugar-nombre">—</div>
+      <div class="capa-label" id="capa-label">Capa</div>
     </div>
 
     <div class="header-der">

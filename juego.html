@@ -18617,8 +18617,8 @@ function responder(lugarElegido, layerElegido) {
   const motivos = [];
   if (esCorrecta) {
     puntosRonda = BASE_PUNTOS;
-    if (zoomExcedido) { puntosRonda /= 2; motivos.push('zoom excesivo'); }
-    if (pistaUsada)   { puntosRonda /= 2; motivos.push('pista usada'); }
+    if (zoomExcedido) { puntosRonda /= 2; motivos.push('usada pista zoom'); }
+    if (pistaUsada)   { puntosRonda /= 2; motivos.push('usada pista foto'); }
   }
   puntos += puntosRonda;
 

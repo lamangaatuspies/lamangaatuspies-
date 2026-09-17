@@ -695,6 +695,21 @@
     }
     .btn-siguiente:hover { opacity: 0.85; }
 
+    /* ── PANEL RESULTADO EN MÓVIL: mucho más compacto, para que siga
+       viéndose el mapa (y el pin correcto) detrás/alrededor ── */
+    @media (max-width: 600px) {
+      .resultado-box {
+        padding: 0.9rem 1.1rem;
+        max-height: 45vh;
+        overflow-y: auto;
+      }
+      .resultado-emoji { font-size: 1.6rem; margin-bottom: 0.2rem; }
+      .resultado-titulo { font-size: 1.15rem; margin-bottom: 0.25rem; }
+      .resultado-puntos { font-size: 0.62rem; margin-bottom: 0.4rem; }
+      .resultado-nombre { font-size: 0.8rem; margin-bottom: 0.6rem; }
+      .btn-siguiente { padding: 0.5rem 1.4rem; font-size: 0.65rem; }
+    }
+
     /* ── PANTALLA FINAL ── */
     .final-overlay {
       display: none;

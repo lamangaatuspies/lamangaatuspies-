@@ -1939,6 +1939,7 @@
         <li><a href="#lista">Lista</a></li>
         <li><a href="#proyecto">Proyecto</a></li>
         <li><a href="#contacto">Contacto</a></li>
+        <li><a href="juego.html">JUEGO</a></li>
       </ul>
       <div class="nav-controls">
         <button class="basemap-toggle" id="basemap-toggle" type="button" aria-label="Cambiar entre mapa y satélite" title="Cambiar entre mapa y satélite">
@@ -3777,11 +3778,11 @@
 
     // ── NAV: contraer mapa expandido al navegar a otra sección ──
     navLinks.forEach(a => {
-      if (a.getAttribute('href') !== '#mapa') {
+      const href = a.getAttribute('href');
+      if (href.startsWith('#') && href !== '#mapa') {
         a.addEventListener('click', function(e) {
           if (mapaExpandido) {
             e.preventDefault();
-            const href = this.getAttribute('href');
             toggleExpandMap();
             setTimeout(() => {
               const target = document.querySelector(href);

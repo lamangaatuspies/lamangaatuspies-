@@ -277,6 +277,9 @@
       letter-spacing: 0.06em;
     }
     .status-item:last-child { border-right: none; }
+    .status-item-clickable { cursor: pointer; transition: color 0.15s; }
+    .status-item-clickable:hover { color: var(--ink); }
+    .status-item-clickable:hover .status-val { text-decoration: underline; }
     .status-val {
       font-size: 1rem;
       font-family: var(--sans);
@@ -2028,27 +2031,27 @@
       <span>Estado</span>
       <span class="status-val" style="color:var(--accent3)">Activo</span>
     </div>
-    <div class="status-item">
+    <div class="status-item status-item-clickable" id="stat-urb">
       <span>Edificios y urbanizaciones</span>
       <span class="status-val" id="cnt-urb">250</span>
     </div>
-    <div class="status-item">
+    <div class="status-item status-item-clickable" id="stat-hot">
       <span>Hoteles</span>
       <span class="status-val" id="cnt-hot">10</span>
     </div>
-    <div class="status-item">
+    <div class="status-item status-item-clickable" id="stat-bar">
       <span>Restaurantes</span>
       <span class="status-val" id="cnt-bar">21</span>
     </div>
-    <div class="status-item">
+    <div class="status-item status-item-clickable" id="stat-sit">
       <span>Sitios de interés</span>
       <span class="status-val" id="cnt-sit">26</span>
     </div>
-    <div class="status-item">
+    <div class="status-item status-item-clickable" id="stat-farm">
       <span>Farmacias</span>
       <span class="status-val" id="cnt-farm">—</span>
     </div>
-    <div class="status-item" style="margin-left:auto; border-right:none; border-left:1px solid var(--border); padding-left:1.4rem;">
+    <div class="status-item" style="border-right:none; border-left:1px solid var(--border); padding-left:1.4rem;">
       <span>Actualizado</span>
       <span class="status-val" id="status-fecha">Mayo 2025</span>
     </div>
@@ -3606,6 +3609,23 @@
         filtro.appendChild(btn);
       });
 
+      // ── Barra de estado (statusbar): clic en un grupo → ir a Lista con su filtro activo ──
+      function irAListaConFiltro(key) {
+        aplicarFiltro(key);
+        document.getElementById('lista').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      const STAT_A_CAPA = {
+        'stat-urb':  'Urbanizaciones y Edificios',
+        'stat-hot':  'Hoteles',
+        'stat-bar':  'Bares y Restaurantes',
+        'stat-sit':  'Sitios de Interés',
+        'stat-farm': 'Farmacias',
+      };
+      Object.entries(STAT_A_CAPA).forEach(([id, key]) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', () => irAListaConFiltro(key));
+      });
+
       // ── Click en fila → ver en mapa (ignora clics en píldoras de tag) ──
       function irAlMapaDesdeLista(lat, lng, abrirPopup) {
         const searchWrap = document.querySelector('.search-wrap');
@@ -3701,7 +3721,7 @@
 
           // Pestaña de filtro propia
           const btnFarm = document.createElement('button');
-          btnFarm.className = 'lista-filtro-btn';
+          btnFarm.className = 'lista-filtro-btn' + (filtroActivo === 'Farmacias' ? ' active' : '');
           btnFarm.dataset.capa = 'Farmacias';
           btnFarm.innerHTML = `<span class="filtro-dot" style="background:#00a651"></span>Farmacias <span class="filtro-count">${items.length}</span>`;
           btnFarm.title = 'Filtrar por: Farmacias';

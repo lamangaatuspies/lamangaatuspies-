@@ -1275,6 +1275,46 @@ const TOTAL_RONDAS = 5;
 const BASE_PUNTOS = 4;
 const ZOOM_MAX_PERMITIDO = 3; // niveles de zoom tolerados desde el inicio de la ronda
 
+// ── ESTADÍSTICAS (mismo proxy de Apps Script que index.html; se usan
+// tipos con sufijo "_juego" para distinguirlos en la misma hoja) ──
+const STATS_URL = 'https://script.google.com/macros/s/AKfycbw2gnACQnWF1FeyVjOXLpq36UnRs_YROqTH7zTQKGDk6omz-fX98IMu_UZlyB7WJd68yg/exec';
+const SESION_ID = Math.random().toString(36).substring(2, 6);
+function registrarStats(tipo, detalle, textobusq) {
+  const params = '?sesion=' + encodeURIComponent(SESION_ID)
+               + '&tipo='   + encodeURIComponent(tipo)
+               + '&detalle='+ encodeURIComponent(detalle)
+               + '&textobusq=' + encodeURIComponent(textobusq || '');
+  fetch(STATS_URL + params).catch(() => {});
+}
+const SESION_INICIO = Date.now();
+window.addEventListener('beforeunload', () => {
+  const segundosTotales = Math.round((Date.now() - SESION_INICIO) / 1000);
+  const minutos = Math.floor(segundosTotales / 60);
+  const segundos = segundosTotales % 60;
+  const duracion = minutos + 'min ' + segundos + 's';
+  const url = STATS_URL + '?sesion=' + encodeURIComponent(SESION_ID)
+            + '&tipo=cierre_juego&detalle=' + encodeURIComponent(duracion) + '&textobusq=';
+  try { navigator.sendBeacon(url); } catch(e) {}
+  try { fetch(url, { keepalive: true }); } catch(e) {}
+});
+fetch('https://geolocation-db.com/json/')
+  .then(r => r.json())
+  .then(d => {
+    const pais   = d.country_code || '?';
+    const dispositivo = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio';
+    const ref = document.referrer;
+    const origen = !ref                        ? 'directo'
+                 : /google\./i.test(ref)       ? 'google'
+                 : /facebook\.|fb\./i.test(ref)? 'facebook'
+                 : /instagram\./i.test(ref)    ? 'instagram'
+                 : /twitter\.|x\.com/i.test(ref)? 'twitter'
+                 : /whatsapp\./i.test(ref)     ? 'whatsapp'
+                 : /t\.co/i.test(ref)          ? 'twitter'
+                 : new URL(ref).hostname;
+    registrarStats('visita_juego', pais + ' · ' + dispositivo + ' · ' + origen);
+  })
+  .catch(() => registrarStats('visita_juego', '? · ' + (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio') + ' · ?'));
+
 // ── MAPA ──
 const map = L.map('game-map', { zoomControl: true, attributionControl: false });
 L.tileLayer('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{y}.jpeg', {
@@ -1529,6 +1569,12 @@ function responder(lugarElegido, layerElegido) {
     correcta: esCorrecta,
   });
 
+  registrarStats(
+    'ronda_juego',
+    (esCorrecta ? 'Correcto' : 'Incorrecto') + ' · ' + puntosRonda + 'pt' + (numPistasRonda ? ' · con pista' : ''),
+    correcto.nombre
+  );
+
   // Revelar correcto e incorrecto visualmente
   marcadores.forEach(m => {
     const pinDiv = m.pin.getElement()?.querySelector('.marker-juego');
@@ -1608,11 +1654,17 @@ function mostrarFinal() {
   document.getElementById('final-tabla-body').innerHTML = filas;
   document.getElementById('final-tabla-total').textContent = puntos;
 
+  const aciertos = historialRondas.filter(h => h.correcta).length;
+  registrarStats('partida_completada_juego', puntos + '/' + (TOTAL_RONDAS * BASE_PUNTOS) + ' · ' + aciertos + '/' + TOTAL_RONDAS + ' aciertos');
+
   document.getElementById('final-overlay').classList.add('visible');
 }
 
 // ── REJUGAR ──
+let partidasJugadas = 1;
 document.getElementById('btn-rejugar').addEventListener('click', () => {
+  partidasJugadas++;
+  registrarStats('rejugar_juego', 'Partida nº ' + partidasJugadas + ' de la sesión');
   document.getElementById('final-overlay').classList.remove('visible');
   ronda  = 1;
   puntos = 0;

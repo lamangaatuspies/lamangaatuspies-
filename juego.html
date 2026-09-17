@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!-- Tema (claro/oscuro): se lee la preferencia guardada desde index.html.
-       El icono reflejará el estado, aunque juego.html aún no tiene un tema
-       claro propio (ver nota junto al botón de tema en el nav). -->
+  <!-- Tema (claro/oscuro): se lee la preferencia guardada desde index.html. -->
   <script>
     (function() {
       var t = localStorage.getItem('lm-theme');
@@ -39,6 +37,18 @@
       --mono:      'Share Tech Mono', monospace;
       --sans:      'Rajdhani', sans-serif;
       --serif:     'Crimson Pro', serif;
+    }
+    html[data-theme="light"] {
+      --bg:        #f6f7f9;
+      --surface:   #ffffff;
+      --surface2:  #eef1f4;
+      --ink:       #1c2430;
+      --ink-mid:   #4b5563;
+      --ink-dim:   #8a92a0;
+      --accent:    #1f6feb;
+      --accent2:   #d9670b;
+      --accent3:   #1f8a3d;
+      --border:    #d7dce3;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; font-size: 18px; }
@@ -223,6 +233,7 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       white-space: nowrap;
+      line-height: 1;
     }
     .stat-linea .valor {
       font-family: var(--sans);
@@ -237,6 +248,7 @@
       font-weight: 700;
       color: var(--accent2);
       white-space: nowrap;
+      line-height: 1;
     }
 
     .game-pregunta {
@@ -380,6 +392,7 @@
         gap: 0.7rem;
         flex: 1 1 auto;
       }
+      .header-izq-col { gap: 0.2rem; }
       .header-divisor { display: none; }
       .stat-linea { font-size: 0.58rem; letter-spacing: 0.06em; }
       .stat-linea .valor { font-size: 0.85rem; }
@@ -949,9 +962,7 @@
 </script>
 
 <!-- Toggle de tema claro/oscuro: mantiene sincronizada la preferencia (localStorage)
-     con index.html. juego.html todavía no tiene un tema claro propio, así que por
-     ahora solo cambia el icono ☀️/🌙 y guarda la preferencia para cuando se
-     vuelva al mapa; no re-tematiza esta pantalla. -->
+     con index.html. -->
 <script>
   (function() {
     var btn = document.getElementById('theme-toggle');

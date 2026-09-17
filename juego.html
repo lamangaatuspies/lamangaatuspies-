@@ -140,6 +140,9 @@
     .basemap-toggle .icon-tosat { display: none; }
     html[data-basemap="mapa"] .basemap-toggle .icon-tomap { display: none; }
     html[data-basemap="mapa"] .basemap-toggle .icon-tosat { display: block; }
+    /* En el juego no cambia la capa (siempre usa la ortofoto), así que
+       se oculta para no confundir; sigue disponible en index.html. */
+    .basemap-toggle { display: none; }
 
     @media (max-width: 600px) {
       nav .nav-inner { padding: 0 1rem; position: relative; }
@@ -392,7 +395,7 @@
         gap: 0.7rem;
         flex: 1 1 auto;
       }
-      .header-izq-col { gap: 0.2rem; }
+      .header-izq-col { gap: 0.2rem; align-items: center; text-align: center; }
       .header-divisor { display: none; }
       .stat-linea { font-size: 0.58rem; letter-spacing: 0.06em; }
       .stat-linea .valor { font-size: 0.85rem; }

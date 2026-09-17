@@ -3567,6 +3567,11 @@
           const t = tag.textContent.trim();
           tagsActivos.has(t) ? tagsActivos.delete(t) : tagsActivos.add(t);
           rerender();
+          // Tras filtrar la lista puede acortarse: subimos a la cabecera del
+          // grupo para que la lista filtrada quede visible desde el principio.
+          const navH = document.querySelector('nav').offsetHeight;
+          const top = window.scrollY + grupo.getBoundingClientRect().top - navH - 12;
+          window.scrollTo({ top, behavior: 'smooth' });
         });
       });
 

@@ -698,7 +698,10 @@
     /* ── PANEL RESULTADO EN MÓVIL: mucho más compacto, para que siga
        viéndose el mapa (y el pin correcto) detrás/alrededor ── */
     @media (max-width: 600px) {
+      .resultado-overlay { width: 100%; }
       .resultado-box {
+        width: 78%;
+        max-width: 280px;
         padding: 0.9rem 1.1rem;
         max-height: 45vh;
         overflow-y: auto;

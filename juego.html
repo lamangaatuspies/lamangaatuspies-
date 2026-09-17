@@ -364,6 +364,48 @@
     .btn-config:hover { color: var(--ink); border-color: var(--ink-mid); background: rgba(255,255,255,0.05); }
     .btn-config:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
 
+    /* ── CABECERA EN MÓVIL: stats+pistas en una fila compacta arriba,
+       pregunta a ancho completo debajo ── */
+    @media (max-width: 600px) {
+      .game-header {
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 0;
+        row-gap: 0.4rem;
+        padding: 0.55rem 0.8rem;
+      }
+      .header-izq {
+        order: 1;
+        padding: 0;
+        gap: 0.7rem;
+        flex: 1 1 auto;
+      }
+      .header-divisor { display: none; }
+      .stat-linea { font-size: 0.58rem; letter-spacing: 0.06em; }
+      .stat-linea .valor { font-size: 0.85rem; }
+      .valor-juegas { font-size: 0.85rem; }
+      .header-der {
+        order: 2;
+        padding: 0;
+        gap: 0.6rem;
+        flex: 0 0 auto;
+      }
+      .pistas-label { display: none; }
+      .pistas-iconos { gap: 0.4rem; }
+      .pista-icono { width: 26px; height: 26px; font-size: 12px; }
+      .pista-icono-etiqueta { display: none; }
+      .btn-config { padding: 0.3rem 0.5rem; font-size: 0.9rem; }
+      .game-pregunta {
+        order: 3;
+        flex: 0 0 100%;
+        padding: 0;
+        text-align: center;
+      }
+      .header-instruccion { font-size: 0.58rem; margin-bottom: 0.15rem; }
+      .game-pregunta .nombre { font-size: 1.2rem; }
+      .game-pregunta .capa-label { font-size: 0.56rem; margin-top: 0.15rem; }
+    }
+
     /* ── MODAL CONFIGURACIÓN ── */
     .config-overlay {
       display: none;

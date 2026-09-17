@@ -748,6 +748,7 @@
       text-align: left;
       border: 1px solid var(--border);
       margin-bottom: 1.2rem;
+      overflow-x: auto;
     }
     .final-tabla {
       width: 100%;
@@ -784,6 +785,61 @@
       text-align: right;
     }
     .final-tabla tfoot td:last-child { text-align: center; }
+
+    /* ── TABLA FINAL EN MÓVIL: cada fila pasa a ser una tarjeta apilada
+       en vez de columnas, para que nada se corte por la derecha ── */
+    @media (max-width: 600px) {
+      .final-box { padding: 1.3rem 1rem; }
+      .final-tabla thead { display: none; }
+      .final-tabla, .final-tabla tbody, .final-tabla tr, .final-tabla td {
+        display: block;
+        width: 100%;
+      }
+      .final-tabla tr {
+        margin-bottom: 0.5rem;
+        border: 1px solid var(--border);
+      }
+      .final-tabla td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.8rem;
+        border-bottom: 1px solid rgba(255,255,255,0.12);
+        padding: 0.35rem 0.6rem;
+        text-align: right;
+      }
+      .final-tabla td:last-child { border-bottom: none; }
+      .final-tabla td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        opacity: 0.75;
+        text-transform: uppercase;
+        font-size: 0.55rem;
+        letter-spacing: 0.06em;
+        text-align: left;
+      }
+      .final-tabla td[data-label="Buscado"] { text-align: right; }
+      .final-tabla tfoot tr {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        border-top: 2px solid var(--border);
+        margin-bottom: 0;
+        background: var(--surface2);
+        padding: 0.5rem 0.6rem;
+      }
+      .final-tabla tfoot td {
+        display: block;
+        width: auto;
+        border: none;
+        padding: 0;
+        background: transparent;
+        text-align: right;
+      }
+      .final-tabla tfoot td[colspan] { text-align: left; }
+    }
+
     .final-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
     .btn-rejugar {
       background: var(--accent3);
@@ -1508,11 +1564,11 @@ function mostrarFinal() {
       clase = h.puntos >= BASE_PUNTOS ? 'fila-acierto-total' : 'fila-acierto-parcial';
     }
     return `<tr class="${clase}">
-      <td>${h.ronda}</td>
-      <td>${h.nombre}</td>
-      <td>${h.tipo}</td>
-      <td>${h.numPistas}</td>
-      <td>${h.puntos}</td>
+      <td data-label="Ronda">${h.ronda}</td>
+      <td data-label="Buscado">${h.nombre}</td>
+      <td data-label="Tipo">${h.tipo}</td>
+      <td data-label="Pistas">${h.numPistas}</td>
+      <td data-label="Puntos">${h.puntos}</td>
     </tr>`;
   }).join('');
 

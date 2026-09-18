@@ -1,0 +1,33 @@
+{
+  "name": "La Manga a tus pies",
+  "short_name": "La Manga",
+  "description": "Mapa interactivo de La Manga del Mar Menor: urbanizaciones, hoteles, bares, farmacias de guardia, banderas de playa y más.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "es",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "categories": ["travel", "navigation"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

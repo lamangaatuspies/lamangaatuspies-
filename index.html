@@ -945,6 +945,9 @@
     }
     footer a { color: var(--accent); text-decoration: none; }
 
+    /* ── PWA install banner (oculto por defecto; solo visible en móvil vía JS) ── */
+    .pwa-install-banner { display: none; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       .layers-wrap { grid-template-columns: 1fr 1fr; }
@@ -1117,6 +1120,65 @@
       }
       .map-frame.map-expanded .expand-control {
         z-index: 960;
+      }
+
+      /* PWA install banner: visible solo en móvil cuando JS añade .pwa-show */
+      .pwa-install-banner.pwa-show {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        position: fixed;
+        left: 0.7rem;
+        right: 0.7rem;
+        bottom: 0.7rem;
+        z-index: 1200;
+        padding: 0.8rem 1rem;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      }
+      .pwa-install-banner .pwa-install-icon {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+      }
+      .pwa-install-banner .pwa-install-text {
+        flex: 1;
+        min-width: 0;
+      }
+      .pwa-install-banner .pwa-install-title {
+        font-weight: 600;
+        color: var(--ink);
+        font-size: 0.92rem;
+        line-height: 1.25;
+      }
+      .pwa-install-banner .pwa-install-sub {
+        color: var(--ink-mid);
+        font-size: 0.78rem;
+        line-height: 1.25;
+      }
+      .pwa-install-banner .pwa-install-btn {
+        flex-shrink: 0;
+        background: var(--accent);
+        color: #0d1117;
+        border: none;
+        border-radius: 10px;
+        padding: 0.55rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .pwa-install-banner .pwa-install-close {
+        flex-shrink: 0;
+        background: none;
+        border: none;
+        color: var(--ink-mid);
+        font-size: 1.1rem;
+        line-height: 1;
+        padding: 0.3rem;
+        cursor: pointer;
       }
     }
 
@@ -4427,6 +4489,82 @@
     })();
 
   }); // DOMContentLoaded
+  </script>
+
+  <!-- PWA: banner propio de instalación (solo visible en móvil, ver CSS) -->
+  <div class="pwa-install-banner" id="pwaInstallBanner">
+    <img src="icons/icon-192.png" alt="" class="pwa-install-icon"/>
+    <div class="pwa-install-text">
+      <div class="pwa-install-title">Instala La Manga a tus pies</div>
+      <div class="pwa-install-sub" id="pwaInstallSub">Acceso directo desde tu pantalla de inicio, sin buscarla en el navegador.</div>
+    </div>
+    <button type="button" class="pwa-install-btn" id="pwaInstallBtn" style="display:none;">Instalar</button>
+    <button type="button" class="pwa-install-close" id="pwaInstallClose" aria-label="Cerrar aviso de instalación">✕</button>
+  </div>
+  <script>
+    (function() {
+      var STORAGE_KEY = 'pwaInstallDismissedAt';
+      var banner   = document.getElementById('pwaInstallBanner');
+      var btn      = document.getElementById('pwaInstallBtn');
+      var closeBtn = document.getElementById('pwaInstallClose');
+      var sub      = document.getElementById('pwaInstallSub');
+      var deferredPrompt = null;
+
+      function isStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches ||
+               window.navigator.standalone === true;
+      }
+
+      function wasDismissedRecently() {
+        var ts = localStorage.getItem(STORAGE_KEY);
+        if (!ts) return false;
+        var CATORCE_DIAS = 14 * 24 * 60 * 60 * 1000;
+        return (Date.now() - parseInt(ts, 10)) < CATORCE_DIAS;
+      }
+
+      function hideBanner() {
+        banner.classList.remove('pwa-show');
+      }
+
+      function showBanner() {
+        if (isStandalone() || wasDismissedRecently()) return;
+        banner.classList.add('pwa-show');
+      }
+
+      closeBtn.addEventListener('click', function() {
+        hideBanner();
+        try { localStorage.setItem(STORAGE_KEY, String(Date.now())); } catch (e) {}
+      });
+
+      // Android/Chrome: evento nativo de instalación
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        btn.style.display = '';
+        showBanner();
+      });
+
+      btn.addEventListener('click', function() {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.finally(function() {
+          deferredPrompt = null;
+          hideBanner();
+        });
+      });
+
+      window.addEventListener('appinstalled', function() {
+        hideBanner();
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      });
+
+      // iOS/Safari: no existe beforeinstallprompt; mostramos instrucciones manuales
+      var esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+      if (esIOS && !isStandalone()) {
+        sub.textContent = 'Toca el icono compartir de Safari y luego "Añadir a pantalla de inicio".';
+        showBanner();
+      }
+    })();
   </script>
 
   <!-- PWA: registro del Service Worker -->

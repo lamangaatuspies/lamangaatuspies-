@@ -1,9 +1,9 @@
 {
-  "id": "/index_new.html?source=pwa",
+  "id": "/?source=pwa",
   "name": "La Manga a tus pies",
   "short_name": "La Manga",
   "description": "Mapa interactivo de La Manga del Mar Menor: urbanizaciones, hoteles, bares, farmacias de guardia, banderas de playa y más.",
-  "start_url": "/index_new.html?source=pwa",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",

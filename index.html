@@ -24,7 +24,7 @@
     gtag('config', 'G-50Z4QGPF3Q');
   </script>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>La Manga a tus pies — Mapa interactivo de La Manga del Mar Menor</title>
 
   <!-- SEO básico -->
@@ -312,6 +312,7 @@
       left: 0;
       right: 0;
       z-index: 1000;
+      padding-top: env(safe-area-inset-top);
     }
     nav .nav-inner {
       max-width: 1200px;
@@ -955,7 +956,7 @@
       .about-wrap { grid-template-columns: 1fr; gap: 2rem; }
     }
     @media (max-width: 600px) {
-      html, body { overflow-x: hidden; }
+      html, body { overflow-x: hidden; overscroll-behavior-y: contain; }
       :root { --hero-h: 55vh; }
       .hero { min-height: 320px; }
       .hero-content { padding: 1.5rem 1.5rem 2rem; }
@@ -1130,7 +1131,7 @@
         position: fixed;
         left: 0.7rem;
         right: 0.7rem;
-        bottom: 0.7rem;
+        bottom: calc(0.7rem + env(safe-area-inset-bottom));
         z-index: 1200;
         padding: 0.8rem 1rem;
         background: var(--surface2);
@@ -1668,8 +1669,8 @@
     @keyframes lbZoomIn { from { transform: scale(0.93); opacity:0; } to { transform: scale(1); opacity:1; } }
     .lightbox-close {
       position: fixed;
-      top: 1.2rem;
-      right: 1.4rem;
+      top: calc(1.2rem + env(safe-area-inset-top));
+      right: calc(1.4rem + env(safe-area-inset-right));
       background: rgba(22,27,34,0.85);
       border: 1px solid #30363d;
       color: #8b949e;
@@ -3825,14 +3826,14 @@
       document.body.style.overflow = 'hidden';
       // Móvil: permitir pinch-to-zoom
       const vp = document.querySelector('meta[name="viewport"]');
-      if (vp) vp.content = 'width=device-width, initial-scale=1.0';
+      if (vp) vp.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
     }
     function closeLightbox() {
       lightboxOverlay.classList.remove('visible');
       document.body.style.overflow = '';
       // Móvil: restaurar bloqueo de zoom
       const vp = document.querySelector('meta[name="viewport"]');
-      if (vp) vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+      if (vp) vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
     }
 
     // Escritorio: zoom con rueda del ratón

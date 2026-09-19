@@ -39,6 +39,13 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
   <link rel="apple-touch-icon" href="favicon.png"/>
 
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#0d1117"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="La Manga"/>
+
   <!-- Open Graph (para compartir en redes sociales) -->
   <meta property="og:title" content="La Manga a tus pies — Mapa interactivo de La Manga del Mar Menor"/>
   <meta property="og:description" content="Encuentra hoteles, restaurantes, urbanizaciones, edificios y sitios de interés de La Manga del Mar Menor en un mapa interactivo."/>
@@ -277,6 +284,9 @@
       letter-spacing: 0.06em;
     }
     .status-item:last-child { border-right: none; }
+    .status-item-clickable { cursor: pointer; transition: color 0.15s; }
+    .status-item-clickable:hover { color: var(--ink); }
+    .status-item-clickable:hover .status-val { text-decoration: underline; }
     .status-val {
       font-size: 1rem;
       font-family: var(--sans);
@@ -384,12 +394,11 @@
 
     /* ── SECTION HEADER ── */
     .sec-head {
-      padding: 3rem 0 1.5rem;
+      padding: 3rem 0 0.5rem;
       display: flex;
       align-items: baseline;
       gap: 1.2rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2rem;
+      margin-bottom: 0.5rem;
     }
     .sec-head h2 {
       font-family: var(--sans);
@@ -2029,27 +2038,27 @@
       <span>Estado</span>
       <span class="status-val" style="color:var(--accent3)">Activo</span>
     </div>
-    <div class="status-item">
+    <div class="status-item status-item-clickable" id="stat-urb">
       <span>Edificios y urbanizaciones</span>
       <span class="status-val" id="cnt-urb">250</span>
     </div>
-    <div class="status-item">
+    <div class="status-item status-item-clickable" id="stat-hot">
       <span>Hoteles</span>
       <span class="status-val" id="cnt-hot">10</span>
     </div>
-    <div class="status-item">
+    <div class="status-item status-item-clickable" id="stat-bar">
       <span>Restaurantes</span>
       <span class="status-val" id="cnt-bar">21</span>
     </div>
-    <div class="status-item">
+    <div class="status-item status-item-clickable" id="stat-sit">
       <span>Sitios de interés</span>
       <span class="status-val" id="cnt-sit">26</span>
     </div>
-    <div class="status-item">
+    <div class="status-item status-item-clickable" id="stat-farm">
       <span>Farmacias</span>
       <span class="status-val" id="cnt-farm">—</span>
     </div>
-    <div class="status-item" style="margin-left:auto; border-right:none; border-left:1px solid var(--border); padding-left:1.4rem;">
+    <div class="status-item" style="border-right:none; border-left:1px solid var(--border); padding-left:1.4rem;">
       <span>Actualizado</span>
       <span class="status-val" id="status-fecha">Mayo 2025</span>
     </div>
@@ -3565,6 +3574,11 @@
           const t = tag.textContent.trim();
           tagsActivos.has(t) ? tagsActivos.delete(t) : tagsActivos.add(t);
           rerender();
+          // Tras filtrar la lista puede acortarse: subimos a la cabecera del
+          // grupo para que la lista filtrada quede visible desde el principio.
+          const navH = document.querySelector('nav').offsetHeight;
+          const top = window.scrollY + grupo.getBoundingClientRect().top - navH - 12;
+          window.scrollTo({ top, behavior: 'smooth' });
         });
       });
 
@@ -3605,6 +3619,23 @@
         btn.title = `Filtrar por: ${capa.label}`;
         btn.addEventListener('click', () => aplicarFiltro(capa.key));
         filtro.appendChild(btn);
+      });
+
+      // ── Barra de estado (statusbar): clic en un grupo → ir a Lista con su filtro activo ──
+      function irAListaConFiltro(key) {
+        aplicarFiltro(key);
+        document.getElementById('lista').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      const STAT_A_CAPA = {
+        'stat-urb':  'Urbanizaciones y Edificios',
+        'stat-hot':  'Hoteles',
+        'stat-bar':  'Bares y Restaurantes',
+        'stat-sit':  'Sitios de Interés',
+        'stat-farm': 'Farmacias',
+      };
+      Object.entries(STAT_A_CAPA).forEach(([id, key]) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', () => irAListaConFiltro(key));
       });
 
       // ── Click en fila → ver en mapa (ignora clics en píldoras de tag) ──
@@ -3702,7 +3733,7 @@
 
           // Pestaña de filtro propia
           const btnFarm = document.createElement('button');
-          btnFarm.className = 'lista-filtro-btn';
+          btnFarm.className = 'lista-filtro-btn' + (filtroActivo === 'Farmacias' ? ' active' : '');
           btnFarm.dataset.capa = 'Farmacias';
           btnFarm.innerHTML = `<span class="filtro-dot" style="background:#00a651"></span>Farmacias <span class="filtro-count">${items.length}</span>`;
           btnFarm.title = 'Filtrar por: Farmacias';
@@ -4395,6 +4426,16 @@
     })();
 
   }); // DOMContentLoaded
+  </script>
+
+  <!-- PWA: registro del Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .catch((err) => console.warn('Registro de Service Worker falló:', err));
+      });
+    }
   </script>
 </body>
 </html>

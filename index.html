@@ -4548,7 +4548,17 @@
       btn.addEventListener('click', function() {
         if (!deferredPrompt) return;
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.finally(function() {
+        deferredPrompt.userChoice.then(function(choice) {
+          if (typeof gtag === 'function') {
+            gtag('event', 'pwa_install_prompt', {
+              event_category: 'PWA',
+              event_label: choice.outcome // 'accepted' o 'dismissed'
+            });
+          }
+          if (typeof registrarStats === 'function') {
+            registrarStats('pwa_prompt', choice.outcome); // 'accepted' o 'dismissed'
+          }
+        }).finally(function() {
           deferredPrompt = null;
           hideBanner();
         });
@@ -4557,6 +4567,12 @@
       window.addEventListener('appinstalled', function() {
         hideBanner();
         try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        if (typeof gtag === 'function') {
+          gtag('event', 'app_install', { event_category: 'PWA' });
+        }
+        if (typeof registrarStats === 'function') {
+          registrarStats('app_install', /Android/i.test(navigator.userAgent) ? 'Android' : 'Otro');
+        }
       });
 
       // iOS/Safari: no existe beforeinstallprompt; mostramos instrucciones manuales

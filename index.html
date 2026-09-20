@@ -4570,9 +4570,14 @@
         if (typeof gtag === 'function') {
           gtag('event', 'app_install', { event_category: 'PWA' });
         }
-        if (typeof registrarStats === 'function') {
-          registrarStats('app_install', /Android/i.test(navigator.userAgent) ? 'Android' : 'Otro');
-        }
+        // fetch() normal puede no llegar a completarse: Chrome suele cerrar o
+        // repintar la pestaña casi al instante tras instalar. Mismo patrón
+        // robusto que ya usa el registro de 'cierre' más abajo.
+        var detalle = /Android/i.test(navigator.userAgent) ? 'Android' : 'Otro';
+        var url = STATS_URL + '?sesion=' + encodeURIComponent(SESION_ID)
+                + '&tipo=app_install&detalle=' + encodeURIComponent(detalle) + '&textobusq=';
+        try { navigator.sendBeacon(url); } catch (e) {}
+        try { fetch(url, { keepalive: true }); } catch (e) {}
       });
 
       // iOS/Safari: no existe beforeinstallprompt; mostramos instrucciones manuales

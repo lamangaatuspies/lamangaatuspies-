@@ -4565,6 +4565,7 @@
       });
 
       window.addEventListener('appinstalled', function() {
+        alert('DIAGNÓSTICO: el evento appinstalled se ha disparado.'); // TEMPORAL: quitar tras la prueba
         hideBanner();
         try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
         if (typeof gtag === 'function') {

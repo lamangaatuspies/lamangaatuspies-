@@ -4565,21 +4565,20 @@
       });
 
       window.addEventListener('appinstalled', function() {
+        // sendBeacon va lo primero de todo: Chrome puede pasar la pestaña a
+        // segundo plano casi al instante tras instalar (abre la app recién
+        // instalada en su propia ventana), así que le damos prioridad máxima
+        // antes de hacer ninguna otra cosa.
+        var detalle = /Android/i.test(navigator.userAgent) ? 'Android' : 'Otro';
+        var url = STATS_URL + '?sesion=' + encodeURIComponent(SESION_ID)
+                + '&tipo=app_install&detalle=' + encodeURIComponent(detalle) + '&textobusq=';
+        try { navigator.sendBeacon(url); } catch (e) {}
+
         hideBanner();
         try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
         if (typeof gtag === 'function') {
           gtag('event', 'app_install', { event_category: 'PWA' });
         }
-        var detalle = /Android/i.test(navigator.userAgent) ? 'Android' : 'Otro';
-        var url = STATS_URL + '?sesion=' + encodeURIComponent(SESION_ID)
-                + '&tipo=app_install&detalle=' + encodeURIComponent(detalle) + '&textobusq=';
-        alert('DIAGNÓSTICO: URL a enviar:\n' + url); // TEMPORAL: quitar tras la prueba
-        try { navigator.sendBeacon(url); } catch (e) {
-          alert('DIAGNÓSTICO: sendBeacon lanzó un error: ' + e); // TEMPORAL
-        }
-        fetch(url, { keepalive: true })
-          .then(function(r) { alert('DIAGNÓSTICO: fetch respondió, status ' + r.status); }) // TEMPORAL
-          .catch(function(err) { alert('DIAGNÓSTICO: fetch falló: ' + err); }); // TEMPORAL
       });
 
       // iOS/Safari: no existe beforeinstallprompt; mostramos instrucciones manuales

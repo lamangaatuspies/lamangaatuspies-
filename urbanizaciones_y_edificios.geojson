@@ -9528,40 +9528,40 @@
                             37.652704
                         ],
                         [
-                            -0.720516,
-                            37.652568
-                        ],
-                        [
-                            -0.720388,
-                            37.652466
-                        ],
-                        [
-                            -0.720474,
-                            37.652364
-                        ],
-                        [
                             -0.72064,
                             37.652288
                         ],
                         [
-                            -0.720629,
-                            37.652152
+                            -0.720805,
+                            37.651912
                         ],
                         [
-                            -0.720484,
-                            37.65208
+                            -0.720648,
+                            37.651764
                         ],
                         [
-                            -0.720388,
-                            37.652097
+                            -0.720812,
+                            37.650744
                         ],
                         [
-                            -0.720195,
-                            37.651931
+                            -0.720684,
+                            37.650506
                         ],
                         [
-                            -0.720066,
-                            37.65191
+                            -0.720116,
+                            37.650851
+                        ],
+                        [
+                            -0.720183,
+                            37.65104
+                        ],
+                        [
+                            -0.719756,
+                            37.651337
+                        ],
+                        [
+                            -0.720138,
+                            37.651823
                         ],
                         [
                             -0.719508,
@@ -9595,69 +9595,8 @@
                 ]
             },
             "properties": {
-                "name": "PUERTO BELLO JA",
-                "img": "img/Puerto_Bello_JA.jpg",
-                "desc": [
-                    "Apartamentos"
-                ]
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
-                            -0.720398,
-                            37.65171
-                        ],
-                        [
-                            -0.720608,
-                            37.651766
-                        ],
-                        [
-                            -0.720736,
-                            37.650729
-                        ],
-                        [
-                            -0.720559,
-                            37.650713
-                        ],
-                        [
-                            -0.720479,
-                            37.650806
-                        ],
-                        [
-                            -0.720382,
-                            37.650713
-                        ],
-                        [
-                            -0.720136,
-                            37.65084
-                        ],
-                        [
-                            -0.72027,
-                            37.651027
-                        ],
-                        [
-                            -0.719755,
-                            37.651298
-                        ],
-                        [
-                            -0.720189,
-                            37.651774
-                        ],
-                        [
-                            -0.720398,
-                            37.65171
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "name": "PUERTO BELLO JB",
-                "img": "img/Puerto-Bello-JB.jpg",
+                "name": "PUERTO BELLO",
+                "img": "img/Puerto_Bello.jpg",
                 "desc": [
                     "Apartamentos"
                 ]
@@ -12421,13 +12360,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "BOHEMIA",
-                "img": "img/Bohemia.jpg",
-                "desc": [
-                    "Apartamentos"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -12454,17 +12386,17 @@
                         ]
                     ]
                 ]
+            },
+            "properties": {
+                "name": "BOHEMIA",
+                "img": "img/Bohemia.jpg",
+                "desc": [
+                    "Apartamentos"
+                ]
             }
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "ONDARRETA",
-                "img": "img/Ondarreta.jpg",
-                "desc": [
-                    "Apartamentos"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -12490,6 +12422,13 @@
                             37.663642
                         ]
                     ]
+                ]
+            },
+            "properties": {
+                "name": "ONDARRETA",
+                "img": "img/Ondarreta.jpg",
+                "desc": [
+                    "Apartamentos"
                 ]
             }
         }

@@ -2177,7 +2177,7 @@
               <ul class="lp-pisos-lista" id="ppPisosLista"></ul>
               <div class="lp-pisos-fecha" id="ppPisosFecha"></div>
             </div>
-            <div class="lp-footer">
+            <div class="lp-footer" id="ppFooter">
               <a class="lp-maps" id="ppMaps" href="#" target="_blank">↗ Ver en Google Maps</a>
               <button class="lp-share" id="ppShare" title="Copiar enlace">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3239,20 +3239,24 @@
     function togglePisosPopup() {
       const imgEl = document.getElementById('ppImg');
       const descEl = document.getElementById('ppDesc');
+      const footerEl = document.getElementById('ppFooter');
       const wrap = document.getElementById('ppPisosWrap');
       const btn = document.getElementById('ppPisosBtn');
       popupVistaPisos = !popupVistaPisos;
       if (popupVistaPisos) {
         imgEl.dataset.dispNormal = imgEl.style.display || 'block';
         descEl.dataset.dispNormal = descEl.style.display || 'block';
+        footerEl.dataset.dispNormal = footerEl.style.display || 'flex';
         imgEl.style.display = 'none';
         descEl.style.display = 'none';
+        footerEl.style.display = 'none';
         wrap.classList.add('visible');
         btn.classList.add('lp-pisos-btn-volver');
         btn.innerHTML = '← VOLVER';
       } else {
         imgEl.style.display = imgEl.dataset.dispNormal || 'block';
         descEl.style.display = descEl.dataset.dispNormal || 'block';
+        footerEl.style.display = footerEl.dataset.dispNormal || 'flex';
         wrap.classList.remove('visible');
         btn.classList.remove('lp-pisos-btn-volver');
         btn.innerHTML = ICONO_PISOS + ' PISOS EN VENTA (<span class="n">' + (popupAnunciosActuales ? popupAnunciosActuales.length : 0) + '</span>)';

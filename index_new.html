@@ -3233,6 +3233,12 @@
       btn.style.display = 'none';
       btn.classList.remove('lp-pisos-btn-volver');
       document.getElementById('ppPisosWrap').classList.remove('visible');
+      // Por si se cerró el popup (✕) estando en la vista de listado sin pasar
+      // por "← Volver": togglePisosPopup() es el único sitio que oculta estos
+      // elementos, así que si no se restauran aquí se quedan en display:none
+      // para siempre en el siguiente popup que se abra.
+      document.getElementById('ppFooter').style.display = '';
+      document.getElementById('ppDesc').style.display = '';
     }
 
     // Mismo botón, dos estados: alterna entre "PISOS EN VENTA (n)" y "← VOLVER".

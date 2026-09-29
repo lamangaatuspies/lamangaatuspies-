@@ -39,13 +39,6 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
   <link rel="apple-touch-icon" href="favicon.png"/>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json"/>
-  <meta name="theme-color" content="#0d1117"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="La Manga"/>
-
   <!-- Open Graph (para compartir en redes sociales) -->
   <meta property="og:title" content="La Manga a tus pies — Mapa interactivo de La Manga del Mar Menor"/>
   <meta property="og:description" content="Encuentra hoteles, restaurantes, urbanizaciones, edificios y sitios de interés de La Manga del Mar Menor en un mapa interactivo."/>
@@ -922,6 +915,83 @@
       display: none;
     }
     .lp-share-tip.visible { display: inline; }
+
+    /* ── PISOS EN VENTA (Idealista): un único botón que alterna con "← Volver" ── */
+    .lp-pisos-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      width: 100%;
+      margin-top: 0.55rem;
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid var(--accent3);
+      color: var(--accent3);
+      background: rgba(63,185,80,0.08);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .lp-pisos-btn:hover { background: rgba(63,185,80,0.16); }
+    .lp-pisos-btn .n { color: var(--ink); font-weight: 700; }
+    .lp-pisos-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .lp-pisos-btn-volver { border-color: var(--border); color: var(--ink-mid); background: transparent; }
+    .lp-pisos-btn-volver:hover { background: var(--surface2); color: var(--ink); border-color: var(--accent); }
+
+    /* Listado de anuncios: sustituye la foto/descripción bajo el nombre */
+    .lp-pisos-wrap { display: none; flex-direction: column; }
+    .lp-pisos-wrap.visible { display: flex; }
+    .lp-pisos-cabecera,
+    .lp-piso-link {
+      display: grid;
+      grid-template-columns: 84px 1fr 16px;
+      align-items: center;
+      column-gap: 0.5rem;
+    }
+    .lp-pisos-cabecera {
+      padding: 0.4rem 0.7rem;
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-bottom: none;
+    }
+    .lp-pisos-cabecera .col-precio,
+    .lp-pisos-cabecera .col-detalle { text-align: center; }
+    .lp-pisos-lista {
+      list-style: none;
+      margin: 0 0 0.7rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      overflow-y: auto;
+      max-height: 260px;
+    }
+    .lp-piso-item { border-bottom: 1px solid var(--border); }
+    .lp-piso-item:last-child { border-bottom: none; }
+    .lp-piso-link {
+      padding: 0.6rem 0.7rem;
+      text-decoration: none;
+      color: var(--ink);
+      font-family: var(--mono);
+      transition: background 0.12s;
+    }
+    .lp-piso-link:hover { background: var(--surface2); }
+    .lp-piso-precio { font-size: 0.82rem; font-weight: 700; color: var(--accent3); }
+    .lp-piso-detalle { font-size: 0.68rem; color: var(--ink-mid); text-align: right; white-space: nowrap; }
+    .lp-piso-detalle .sep { color: var(--ink-dim); margin: 0 0.3rem; }
+    .lp-piso-arrow { color: var(--ink-dim); font-size: 0.7rem; text-align: right; }
+    .lp-pisos-fecha {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      line-height: 1.7;
+      color: var(--ink-dim);
+      margin-bottom: 0.55rem;
+    }
     .leaflet-control-layers {
       background: var(--surface) !important;
       border: 1px solid var(--border) !important;
@@ -1109,6 +1179,9 @@
         flex-shrink: 0;
       }
       .lp-share svg { width: 18px; height: 18px; }
+      .lp-pisos-wrap.visible { flex: 1 1 auto; min-height: 0; }
+      .lp-pisos-lista { max-height: none; flex: 1 1 auto; min-height: 0; }
+      .lp-pisos-btn { flex: 0 0 auto; }
       .map-popup-close {
         font-size: 1.4rem;
         padding: 0.3rem 0.5rem;
@@ -2099,6 +2172,11 @@
             <div class="lp-name" id="ppName"></div>
             <img class="lp-img" id="ppImg" src="" alt="" style="display:none"/>
             <div class="lp-desc" id="ppDesc"></div>
+            <div class="lp-pisos-wrap" id="ppPisosWrap">
+              <div class="lp-pisos-cabecera"><span class="col-precio">Precio</span><span class="col-detalle">Hab · m²</span></div>
+              <ul class="lp-pisos-lista" id="ppPisosLista"></ul>
+              <div class="lp-pisos-fecha" id="ppPisosFecha"></div>
+            </div>
             <div class="lp-footer">
               <a class="lp-maps" id="ppMaps" href="#" target="_blank">↗ Ver en Google Maps</a>
               <button class="lp-share" id="ppShare" title="Copiar enlace">
@@ -2109,6 +2187,7 @@
               </button>
               <span class="lp-share-tip" id="ppShareTip">✓ ENLACE COPIADO</span>
             </div>
+            <button class="lp-pisos-btn" id="ppPisosBtn"></button>
           </div>
         </div>
       </div>
@@ -2331,6 +2410,16 @@
       })
     );
     // ****************************** FIN CARGA DE DATOS ********************************************
+
+    // Anuncios de Idealista para el botón "Pisos en venta" del popup. Se carga
+    // en paralelo, sin await, para no retrasar el resto de la web si tarda o falla:
+    // si el fetch aún no ha terminado cuando el usuario abre un popup, el botón
+    // simplemente no aparece esa vez (no rompe nada).
+    let ANUNCIOS_IDEALISTA = null;
+    fetch('anuncios.json?t=' + Date.now())
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { ANUNCIOS_IDEALISTA = data; })
+      .catch(() => {});
 
     const CAPA_CONFIG = {
       'Urbanizaciones y Edificios': { color: '#1f938a', fill: '#1f938a', label: 'Urbanización' },
@@ -2784,6 +2873,7 @@
         }
         map.closePopup();
         // Rellenar el panel con los datos del punto kilométrico
+        resetPisosPopup();
         document.getElementById('ppDot').style.background = '#ef5d69';
         document.getElementById('ppCapa').textContent = 'PUNTO KILOMÉTRICO';
         document.getElementById('ppKm').textContent = '';
@@ -3111,7 +3201,66 @@
     const popupPanel = document.getElementById('mapPopupPanel');
     const popupClose = document.getElementById('mapPopupClose');
 
+    // ── PISOS EN VENTA (Idealista) ──
+    const ICONO_PISOS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>';
+    let popupAnunciosActuales = null;
+    let popupVistaPisos = false;
+
+    function formatearFechaAnuncios(iso) {
+      if (!iso) return '';
+      const [y, m, d] = iso.split('-');
+      return d + '/' + m + '/' + y;
+    }
+
+    function pintarListaPisos(anuncios) {
+      document.getElementById('ppPisosLista').innerHTML = anuncios.slice().sort((a, b) => a.p - b.p).map(a => {
+        const hab = (a.h != null) ? a.h + 'd' : '—';
+        return '<li class="lp-piso-item"><a class="lp-piso-link" href="https://www.idealista.com/inmueble/' + a.id + '/" target="_blank" rel="noopener">' +
+          '<span class="lp-piso-precio">' + a.p.toLocaleString('es-ES') + ' €</span>' +
+          '<span class="lp-piso-detalle">' + hab + '<span class="sep">·</span>' + a.m + ' m²</span>' +
+          '<span class="lp-piso-arrow">↗</span></a></li>';
+      }).join('');
+    }
+
+    // Oculta el botón y el listado, y limpia el estado. Se llama al abrir
+    // CUALQUIER popup (urbanización, farmacia, punto km, socorrista, boya)
+    // para que un "Pisos en venta" abierto no se quede colgando al pasar
+    // a un marcador de otro tipo.
+    function resetPisosPopup() {
+      popupAnunciosActuales = null;
+      popupVistaPisos = false;
+      const btn = document.getElementById('ppPisosBtn');
+      btn.style.display = 'none';
+      btn.classList.remove('lp-pisos-btn-volver');
+      document.getElementById('ppPisosWrap').classList.remove('visible');
+    }
+
+    // Mismo botón, dos estados: alterna entre "PISOS EN VENTA (n)" y "← VOLVER".
+    function togglePisosPopup() {
+      const imgEl = document.getElementById('ppImg');
+      const descEl = document.getElementById('ppDesc');
+      const wrap = document.getElementById('ppPisosWrap');
+      const btn = document.getElementById('ppPisosBtn');
+      popupVistaPisos = !popupVistaPisos;
+      if (popupVistaPisos) {
+        imgEl.dataset.dispNormal = imgEl.style.display || 'block';
+        descEl.dataset.dispNormal = descEl.style.display || 'block';
+        imgEl.style.display = 'none';
+        descEl.style.display = 'none';
+        wrap.classList.add('visible');
+        btn.classList.add('lp-pisos-btn-volver');
+        btn.innerHTML = '← VOLVER';
+      } else {
+        imgEl.style.display = imgEl.dataset.dispNormal || 'block';
+        descEl.style.display = descEl.dataset.dispNormal || 'block';
+        wrap.classList.remove('visible');
+        btn.classList.remove('lp-pisos-btn-volver');
+        btn.innerHTML = ICONO_PISOS + ' PISOS EN VENTA (<span class="n">' + (popupAnunciosActuales ? popupAnunciosActuales.length : 0) + '</span>)';
+      }
+    }
+
     function showMapPopup(item) {
+      resetPisosPopup();
       const cfg = CAPA_CONFIG[item.capa] || { color: '#888', label: item.capa };
       document.getElementById('ppDot').style.background = cfg.color;
       document.getElementById('ppCapa').textContent = cfg.label;
@@ -3130,10 +3279,24 @@
         : '';
       document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + item.lat + ',' + item.lng;
       popupPanel.dataset.tipo = '';
+      if (item.capa === 'Urbanizaciones y Edificios' && ANUNCIOS_IDEALISTA && ANUNCIOS_IDEALISTA.urbanizaciones) {
+        const anuncios = ANUNCIOS_IDEALISTA.urbanizaciones[item.name];
+        if (anuncios && anuncios.length) {
+          popupAnunciosActuales = anuncios;
+          pintarListaPisos(anuncios);
+          document.getElementById('ppPisosFecha').textContent = 'Fuente: Idealista · Actualizado el ' + formatearFechaAnuncios(ANUNCIOS_IDEALISTA.actualizado);
+          const btn = document.getElementById('ppPisosBtn');
+          btn.style.display = 'flex';
+          btn.innerHTML = ICONO_PISOS + ' PISOS EN VENTA (<span class="n">' + anuncios.length + '</span>)';
+        }
+      }
       popupPanel.classList.add('visible');
     }
 
+    document.getElementById('ppPisosBtn').addEventListener('click', togglePisosPopup);
+
     popupClose.addEventListener('click', () => {
+      resetPisosPopup();
       popupPanel.classList.remove('visible');
       if (activeFeature) {
         const prevItem = allFeatures.find(f => f.layer === activeFeature);
@@ -4019,6 +4182,7 @@
               `<div style="color:var(--ink);font-size:1em;font-weight:600;margin-top:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);animation:pulse 2s infinite;vertical-align:middle;margin-right:6px;"></span>Act. ${p.fecha}</div>`;
             const horarioHTML = `<div style="color:var(--ink);font-size:0.9em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
 
+            resetPisosPopup();
             document.getElementById('ppDot').style.background = colorTexto;
             document.getElementById('ppCapa').textContent = 'PUESTO DE SOCORRISTA';
             document.getElementById('ppName').textContent = 'Playa ' + nombreCorto;
@@ -4105,6 +4269,7 @@
         ? `<div style="color:var(--ink);font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
         : '';
 
+      resetPisosPopup();
       document.getElementById('ppDot').style.background = deGuardia ? 'var(--farmacia-roja)' : 'var(--farmacia-verde)';
       document.getElementById('ppCapa').textContent = 'FARMACIA';
       document.getElementById('ppName').textContent = f.nombre;
@@ -4346,6 +4511,7 @@
 
         marker.on('click', () => {
           registrarStats('clic_marcador', 'Temperatura del agua');
+          resetPisosPopup();
           document.getElementById('ppDot').style.background = colorTemp;
           document.getElementById('ppCapa').textContent = 'TEMPERATURA DEL AGUA';
           document.getElementById('ppName').textContent = '';
@@ -4426,16 +4592,6 @@
     })();
 
   }); // DOMContentLoaded
-  </script>
-
-  <!-- PWA: registro del Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .catch((err) => console.warn('Registro de Service Worker falló:', err));
-      });
-    }
   </script>
 </body>
 </html>

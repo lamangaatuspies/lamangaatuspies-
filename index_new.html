@@ -3296,6 +3296,17 @@
         btn.classList.remove('lp-pisos-btn-volver');
         btn.innerHTML = ICONO_PISOS + ' PISOS EN VENTA (<span class="n">' + (popupAnunciosActuales ? popupAnunciosActuales.length : 0) + '</span>)';
       }
+      // Reafirmar la etiqueta roja del marcador activo en el mapa: el panel
+      // cambia de alto al alternar esta vista, y por lo que sea esa etiqueta
+      // puede perderse en el proceso. Forzamos su re-vinculación aquí para
+      // que quede garantizada, independientemente de la causa.
+      if (activeFeature) {
+        const activeItem = allFeatures.find(f => f.layer === activeFeature);
+        if (activeItem) {
+          activeFeature._lmTooltipEstado = null;
+          actualizarTooltipItem(activeItem, map.getZoom(), boundsTooltipsActuales());
+        }
+      }
     }
 
     function showMapPopup(item) {

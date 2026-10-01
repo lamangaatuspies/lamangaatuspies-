@@ -3590,6 +3590,33 @@
           offset: [0, 0],
           className: 'lm-tooltip-icono',
         });
+        // Por debajo de zoom 17 el icono es una tooltip permanente, así que
+        // Leaflet ya no dispara ninguna al pasar el cursor (solo lo hace
+        // cuando no hay tooltip vinculada). Para que el nombre se siga
+        // viendo al hacer hover, lo añadimos a mano y lo quitamos al salir.
+        if (!layer._lmIconoHoverBound) {
+          layer._lmIconoHoverBound = true;
+          layer.on('mouseover', function () {
+            if (layer._lmTooltipEstado !== 'icono') return;
+            layer.unbindTooltip();
+            layer.bindTooltip(`<span class="lm-tooltip-icono-inline">${ICONO_PISOS}</span>${name}`, {
+              permanent: true,
+              direction: 'top',
+              offset: [0, -4],
+              className: 'lm-tooltip-permanent',
+            });
+          });
+          layer.on('mouseout', function () {
+            if (layer._lmTooltipEstado !== 'icono') return;
+            layer.unbindTooltip();
+            layer.bindTooltip(ICONO_PISOS, {
+              permanent: true,
+              direction: 'center',
+              offset: [0, 0],
+              className: 'lm-tooltip-icono',
+            });
+          });
+        }
       } else {
         layer.bindTooltip(name, {
           sticky: true,

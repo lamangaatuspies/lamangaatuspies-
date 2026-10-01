@@ -3570,7 +3570,11 @@
       // retardo al hacer zoom o mover el mapa con muchas etiquetas a la vez.
       // (El estado incluye si lleva icono, para que si los anuncios tardan en
       // llegar, en cuanto estén disponibles el tooltip se actualice igualmente.)
-      if (layer._lmTooltipEstado === estado) return;
+      // Excepción: el marcador activo (seleccionado) nunca se salta por
+      // caché, aunque su estado no cambie — se reafirma en cada movimiento/
+      // zoom del mapa. Es una sola capa (no las 372), así que no cuesta nada,
+      // y evita que su etiqueta roja se pierda al arrastrar el mapa.
+      if (layer._lmTooltipEstado === estado && !esActivo) return;
       layer._lmTooltipEstado = estado;
 
       layer.unbindTooltip();

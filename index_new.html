@@ -1384,6 +1384,10 @@
     .lm-tooltip-icono::before { display: none !important; }
     .lm-tooltip-icono svg { width: 13px; height: 13px; display: block; color: #3fb950; }
 
+    /* Mismo icono, en miniatura, pegado a la izquierda del nombre a partir de zoom 17 */
+    .lm-tooltip-icono-inline { display: inline-flex; vertical-align: -1px; margin-right: 3px; color: #3fb950; }
+    .lm-tooltip-icono-inline svg { width: 10px; height: 10px; display: block; }
+
     /* Etiqueta del marcador activo (seleccionado) */
     .lm-tooltip-active {
       background: rgba(13,17,23,0.82) !important;
@@ -3546,12 +3550,15 @@
       const enViewport = bounds.contains([lat, lng]);
       const permanente = zoom >= ZOOM_LABELS && enViewport;
       const conIcono = !permanente && zoom >= ZOOM_ICONO && enViewport && capa === 'Urbanizaciones y Edificios' && tieneAnuncios(name);
-      const estado = esActivo ? 'activo' : (permanente ? 'permanente' : (conIcono ? 'icono' : 'normal'));
+      const iconoEnNombre = permanente && capa === 'Urbanizaciones y Edificios' && tieneAnuncios(name);
+      const estado = esActivo ? 'activo' : (permanente ? (iconoEnNombre ? 'permanente-icono' : 'permanente') : (conIcono ? 'icono' : 'normal'));
 
       // Si el tooltip ya está en el mismo "modo" que le corresponde, no lo
       // tocamos: desvincular y volver a vincular cuesta lo mismo aunque no
       // cambie nada, y es justo lo que queremos evitar — es la causa del
       // retardo al hacer zoom o mover el mapa con muchas etiquetas a la vez.
+      // (El estado incluye si lleva icono, para que si los anuncios tardan en
+      // llegar, en cuanto estén disponibles el tooltip se actualice igualmente.)
       if (layer._lmTooltipEstado === estado) return;
       layer._lmTooltipEstado = estado;
 
@@ -3569,7 +3576,8 @@
           'Sitios de Interés':    '#6ddc6d',
         };
         const color = TOOLTIP_COLORS[capa] || '#e6edf3';
-        layer.bindTooltip(`<span style="color:${color}">${name}</span>`, {
+        const iconoHtml = iconoEnNombre ? `<span class="lm-tooltip-icono-inline">${ICONO_PISOS}</span>` : '';
+        layer.bindTooltip(`${iconoHtml}<span style="color:${color}">${name}</span>`, {
           permanent: true,
           direction: 'top',
           offset: [0, -4],
@@ -3578,8 +3586,8 @@
       } else if (conIcono) {
         layer.bindTooltip(ICONO_PISOS, {
           permanent: true,
-          direction: 'top',
-          offset: [0, -4],
+          direction: 'center',
+          offset: [0, 0],
           className: 'lm-tooltip-icono',
         });
       } else {

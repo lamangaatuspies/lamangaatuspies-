@@ -1368,6 +1368,22 @@
     }
     .lm-tooltip-permanent::before { display: none !important; }
 
+    /* Icono "pisos en venta" sobre el marcador, un salto de zoom antes de que
+       aparezca el nombre (ver ZOOM_ICONO) */
+    .lm-tooltip-icono {
+      background: rgba(13,17,23,0.82) !important;
+      border: 1px solid rgba(48,54,61,0.7) !important;
+      border-radius: 50% !important;
+      padding: 3px !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.6) !important;
+      pointer-events: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .lm-tooltip-icono::before { display: none !important; }
+    .lm-tooltip-icono svg { width: 13px; height: 13px; display: block; color: #3fb950; }
+
     /* Etiqueta del marcador activo (seleccionado) */
     .lm-tooltip-active {
       background: rgba(13,17,23,0.82) !important;
@@ -2419,7 +2435,15 @@
     let ANUNCIOS_IDEALISTA = null;
     fetch('anuncios.json?t=' + Date.now())
       .then(res => res.ok ? res.json() : null)
-      .then(data => { ANUNCIOS_IDEALISTA = data; })
+      .then(data => {
+        ANUNCIOS_IDEALISTA = data;
+        // Si el usuario ya está mirando el mapa a un zoom con iconos de
+        // "pisos en venta" cuando terminan de llegar los datos, repintamos
+        // para que aparezcan sin que tenga que mover el mapa.
+        if (typeof actualizarTooltips === 'function' && typeof map !== 'undefined') {
+          actualizarTooltips(map.getZoom());
+        }
+      })
       .catch(() => {});
 
     const CAPA_CONFIG = {
@@ -3203,7 +3227,7 @@
     const popupClose = document.getElementById('mapPopupClose');
 
     // ── PISOS EN VENTA (Idealista) ──
-    const ICONO_PISOS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>';
+    const ICONO_PISOS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/><text x="12" y="17" text-anchor="middle" font-size="8" font-weight="700" fill="currentColor" stroke="none" font-family="Arial, sans-serif">\u20ac</text></svg>';
     let popupAnunciosActuales = null;
     let popupVistaPisos = false;
 
@@ -3503,6 +3527,14 @@
     // ── ETIQUETAS PERMANENTES A PARTIR DE ZOOM 17, SOLO DENTRO DEL VIEWPORT ──
     const ZOOM_LABELS = 17;
 
+    // Un nivel de zoom antes de que aparezcan los nombres: icono "pisos en
+    // venta" para las urbanizaciones que tienen anuncios en ANUNCIOS_IDEALISTA.
+    const ZOOM_ICONO = 16;
+
+    function tieneAnuncios(name) {
+      return !!(ANUNCIOS_IDEALISTA && ANUNCIOS_IDEALISTA.urbanizaciones && ANUNCIOS_IDEALISTA.urbanizaciones[name] && ANUNCIOS_IDEALISTA.urbanizaciones[name].length);
+    }
+
     // Margen alrededor del área visible del mapa (proporción del tamaño de los
     // bounds actuales en cada lado), para que las etiquetas no aparezcan/
     // desaparezcan justo al borde de la pantalla al desplazar el mapa.
@@ -3513,7 +3545,8 @@
       const esActivo = layer === activeFeature;
       const enViewport = bounds.contains([lat, lng]);
       const permanente = zoom >= ZOOM_LABELS && enViewport;
-      const estado = esActivo ? 'activo' : (permanente ? 'permanente' : 'normal');
+      const conIcono = !permanente && zoom >= ZOOM_ICONO && enViewport && capa === 'Urbanizaciones y Edificios' && tieneAnuncios(name);
+      const estado = esActivo ? 'activo' : (permanente ? 'permanente' : (conIcono ? 'icono' : 'normal'));
 
       // Si el tooltip ya está en el mismo "modo" que le corresponde, no lo
       // tocamos: desvincular y volver a vincular cuesta lo mismo aunque no
@@ -3541,6 +3574,13 @@
           direction: 'top',
           offset: [0, -4],
           className: 'lm-tooltip-permanent',
+        });
+      } else if (conIcono) {
+        layer.bindTooltip(ICONO_PISOS, {
+          permanent: true,
+          direction: 'top',
+          offset: [0, -4],
+          className: 'lm-tooltip-icono',
         });
       } else {
         layer.bindTooltip(name, {

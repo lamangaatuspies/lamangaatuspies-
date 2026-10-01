@@ -3577,7 +3577,12 @@
         };
         const color = TOOLTIP_COLORS[capa] || '#e6edf3';
         const iconoHtml = iconoEnNombre ? `<span class="lm-tooltip-icono-inline">${ICONO_PISOS}</span>` : '';
-        layer.bindTooltip(`${iconoHtml}<span style="color:${color}">${name}</span>`, {
+        layer.bindTooltip(`${iconoHtml}<span style="color:${color}">${name}</span>`, iconoEnNombre ? {
+          permanent: true,
+          direction: 'center',
+          offset: [0, 0],
+          className: 'lm-tooltip-permanent',
+        } : {
           permanent: true,
           direction: 'top',
           offset: [0, -4],
@@ -3601,8 +3606,8 @@
             layer.unbindTooltip();
             layer.bindTooltip(`<span class="lm-tooltip-icono-inline">${ICONO_PISOS}</span>${name}`, {
               permanent: true,
-              direction: 'top',
-              offset: [0, -4],
+              direction: 'center',
+              offset: [0, 0],
               className: 'lm-tooltip-permanent',
             });
           });

@@ -953,13 +953,15 @@
     /* Listado de anuncios: sustituye la foto/descripción bajo el nombre */
     .lp-pisos-wrap { display: none; flex-direction: column; }
     .lp-pisos-wrap.visible { display: flex; }
-    /* En alquiler el precio lleva "€/mes": columna de precio más ancha */
-    .lp-pisos-wrap.tipo-alquiler .lp-pisos-cabecera,
-    .lp-pisos-wrap.tipo-alquiler .lp-piso-link { grid-template-columns: 104px 1fr 16px; }
+    /* Columnas de la lista (la cabecera y las filas comparten la misma rejilla):
+       precio | hueco | hab | m² | flecha. En alquiler el precio lleva "€/mes":
+       columna de precio más ancha */
+    .lp-pisos-wrap { --col-precio: 84px; }
+    .lp-pisos-wrap.tipo-alquiler { --col-precio: 104px; }
     .lp-pisos-cabecera,
     .lp-piso-link {
       display: grid;
-      grid-template-columns: 84px 1fr 16px;
+      grid-template-columns: var(--col-precio) 1fr 32px 56px 16px;
       align-items: center;
       column-gap: 0.5rem;
     }
@@ -973,8 +975,12 @@
       border: 1px solid var(--border);
       border-bottom: none;
     }
-    .lp-pisos-cabecera .col-precio,
-    .lp-pisos-cabecera .col-detalle { text-align: center; }
+    /* Si la lista tiene barra de desplazamiento, las filas se estrechan; la cabecera
+       resta ese mismo ancho (--sb-lista, lo calcula ajustarCabeceraLista) para seguir alineada */
+    .lp-pisos-cabecera { padding-right: calc(0.7rem + var(--sb-lista, 0px)); }
+    .lp-pisos-cabecera .col-precio { grid-column: 1; text-align: left; }
+    .lp-pisos-cabecera .col-hab { grid-column: 3; text-align: right; }
+    .lp-pisos-cabecera .col-m2 { grid-column: 4; text-align: right; }
     .lp-pisos-lista {
       list-style: none;
       margin: 0 0 0.7rem;
@@ -993,10 +999,13 @@
       transition: background 0.12s;
     }
     .lp-piso-link:hover { background: var(--surface2); }
-    .lp-piso-precio { font-size: 0.82rem; font-weight: 700; color: var(--accent3); }
-    .lp-piso-detalle { font-size: 0.68rem; color: var(--ink-mid); text-align: right; white-space: nowrap; }
-    .lp-piso-detalle .sep { color: var(--ink-dim); margin: 0 0.3rem; }
-    .lp-piso-arrow { color: var(--ink-dim); font-size: 0.7rem; text-align: right; }
+    .lp-piso-precio { grid-column: 1; font-size: 0.82rem; font-weight: 700; color: var(--accent3); white-space: nowrap; }
+    /* Precios de alquiler en azul (verde = venta, azul = alquiler) */
+    .lp-pisos-wrap.tipo-alquiler .lp-piso-precio { color: var(--accent); }
+    .lp-piso-hab, .lp-piso-m2 { font-size: 0.68rem; color: var(--ink-mid); text-align: right; white-space: nowrap; }
+    .lp-piso-hab { grid-column: 3; }
+    .lp-piso-m2 { grid-column: 4; }
+    .lp-piso-arrow { grid-column: 5; color: var(--ink-dim); font-size: 0.7rem; text-align: right; }
     .lp-pisos-fecha {
       font-family: var(--mono);
       font-size: 0.58rem;
@@ -2218,7 +2227,7 @@
             <img class="lp-img" id="ppImg" src="" alt="" style="display:none"/>
             <div class="lp-desc" id="ppDesc"></div>
             <div class="lp-pisos-wrap" id="ppPisosWrap">
-              <div class="lp-pisos-cabecera"><span class="col-precio">Precio</span><span class="col-detalle">Hab · m²</span></div>
+              <div class="lp-pisos-cabecera"><span class="col-precio">Precio</span><span class="col-hab">Hab</span><span class="col-m2">m²</span></div>
               <ul class="lp-pisos-lista" id="ppPisosLista"></ul>
               <div class="lp-pisos-fecha" id="ppPisosFecha"></div>
             </div>
@@ -3316,7 +3325,8 @@
         const metros = (a.m != null) ? a.m + ' m²' : '—';
         return '<li class="lp-piso-item"><a class="lp-piso-link" data-id="' + a.id + '" href="https://www.idealista.com/inmueble/' + a.id + '/" target="_blank" rel="noopener">' +
           '<span class="lp-piso-precio">' + precio + '</span>' +
-          '<span class="lp-piso-detalle">' + hab + '<span class="sep">·</span>' + metros + '</span>' +
+          '<span class="lp-piso-hab">' + hab + '</span>' +
+          '<span class="lp-piso-m2">' + metros + '</span>' +
           '<span class="lp-piso-arrow">↗</span></a></li>';
       }).join('');
     }
@@ -3372,6 +3382,16 @@
       }
     }
 
+    // Si la lista tiene barra de desplazamiento, las filas se estrechan y la cabecera
+    // dejaría de coincidir con las columnas: se mide ese ancho y se le aplica a la cabecera.
+    function ajustarCabeceraLista() {
+      const lista = document.getElementById('ppPisosLista');
+      const cab = document.querySelector('#ppPisosWrap .lp-pisos-cabecera');
+      if (!lista || !cab) return;
+      const sb = Math.max(0, lista.offsetWidth - lista.clientWidth - 2 * lista.clientLeft);
+      cab.style.setProperty('--sb-lista', sb + 'px');
+    }
+
     // Abre la lista de pisos de un tipo ('venta' | 'alquiler') en el popup
     function abrirListaPisos(tipo) {
       if (!popupAnunciosActuales || !popupAnunciosActuales[tipo]) return;
@@ -3391,6 +3411,7 @@
       footerEl.style.display = 'none';
       wrap.classList.toggle('tipo-alquiler', tipo === 'alquiler');
       wrap.classList.add('visible');
+      ajustarCabeceraLista();
       ORDEN_TIPOS_PISOS.forEach(t => { document.getElementById(TIPOS_PISOS[t].btnId).style.display = 'none'; });
       document.getElementById('ppPisosBtns').style.display = 'flex';
       document.getElementById('ppPisosBtnVolver').style.display = 'flex';

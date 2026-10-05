@@ -905,6 +905,7 @@
     .lp-maps:hover, .lp-share:hover { color: var(--ink); border-color: var(--ink-mid); }
     .lp-share.copied { color: var(--accent3); border-color: var(--accent3); }
     .lp-maps svg, .lp-share svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .lp-share svg { color: var(--accent3); }
 
     /* ── PISOS EN VENTA / ALQUILER (Idealista): dos botones lado a lado (verde = venta, azul = alquiler);
           con una lista abierta se sustituyen por un único "← Volver" ── */
@@ -1176,6 +1177,7 @@
       .lp-km { font-size: 0.75rem; white-space: nowrap; }
       .lp-footer { flex: 0 0 auto; }
       .lp-maps, .lp-share { padding-left: 0.4rem; padding-right: 0.4rem; letter-spacing: 0.06em; }
+      .lp-maps-ver { display: none; }  /* en móvil el botón dice solo "Google Maps": no cabe más */
       .lp-pisos-wrap.visible { flex: 1 1 auto; min-height: 0; }
       .lp-pisos-lista { max-height: none; flex: 1 1 auto; min-height: 0; }
       .lp-pisos-btns { flex: 0 0 auto; }
@@ -2218,7 +2220,7 @@
                     <polygon fill="#4285F4" points="12,9 12,0 24,0 24,12"/>
                   </g>
                 </svg>
-                <span>Ver en Google Maps</span>
+                <span><span class="lp-maps-ver">Ver en </span>Google Maps</span>
               </a>
               <button class="lp-share" id="ppShare" title="Copiar enlace">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

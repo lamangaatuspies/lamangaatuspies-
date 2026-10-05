@@ -3342,7 +3342,7 @@
         const btn = document.getElementById(TIPOS_PISOS[t].btnId);
         if (tipos.indexOf(t) === -1) { btn.style.display = 'none'; return; }
         const etiqueta = tipos.length > 1 ? TIPOS_PISOS[t].etiquetaCorta : TIPOS_PISOS[t].etiquetaCompleta;
-        btn.innerHTML = ICONO_PISOS + ' ' + etiqueta + ' (<span class="n">' + hay[t].length + '</span>)';
+        btn.innerHTML = '<span class="n">' + hay[t].length + '</span> ' + etiqueta;
         btn.style.display = 'flex';
       });
       document.getElementById('ppPisosBtnVolver').style.display = 'none';

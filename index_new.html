@@ -875,46 +875,36 @@
       }
     }
     .lp-desc span::before { content: '· '; color: var(--accent2); }
-    .lp-maps {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 0.3rem 0.7rem;
-      border: 1px solid var(--border);
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .lp-maps:hover { border-color: var(--accent); }
+    /* Pie del popup: "Ver en Google Maps" y "Compartir", neutros (grises), del mismo
+       tamaño entre sí y con la misma altura/tipografía que los botones de pisos. */
     .lp-footer {
       display: flex;
-      align-items: center;
-      gap: 0.6rem;
+      align-items: stretch;
+      gap: 0.5rem;
     }
-    .lp-share {
-      display: inline-flex;
+    .lp-maps, .lp-share {
+      display: flex;
       align-items: center;
       justify-content: center;
-      width: 2rem;
-      height: 2rem;
+      gap: 0.4rem;
+      flex: 1 1 0;
+      min-width: 0;
+      white-space: nowrap;
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.55rem 0.7rem;
       border: 1px solid var(--border);
       color: var(--ink-mid);
-      cursor: pointer;
       background: transparent;
+      text-decoration: none;
+      cursor: pointer;
       transition: color 0.2s, border-color 0.2s;
-      flex-shrink: 0;
     }
-    .lp-share:hover { color: var(--ink); border-color: var(--accent); }
+    .lp-maps:hover, .lp-share:hover { color: var(--ink); border-color: var(--ink-mid); }
     .lp-share.copied { color: var(--accent3); border-color: var(--accent3); }
-    .lp-share-tip {
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      color: var(--accent3);
-      letter-spacing: 0.06em;
-      display: none;
-    }
-    .lp-share-tip.visible { display: inline; }
+    .lp-maps svg, .lp-share svg { width: 13px; height: 13px; flex-shrink: 0; }
 
     /* ── PISOS EN VENTA / ALQUILER (Idealista): dos botones lado a lado (verde = venta, azul = alquiler);
           con una lista abierta se sustituyen por un único "← Volver" ── */
@@ -1184,22 +1174,8 @@
         word-break: break-word;
       }
       .lp-km { font-size: 0.75rem; white-space: nowrap; }
-      .lp-footer { flex: 0 0 auto; gap: 0.7rem; }
-      .lp-maps {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex: 1 1 auto;
-        font-size: 0.7rem;
-        min-height: 2.75rem;
-        padding: 0.5rem 0.8rem;
-      }
-      .lp-share {
-        width: 2.75rem;
-        height: 2.75rem;
-        flex-shrink: 0;
-      }
-      .lp-share svg { width: 18px; height: 18px; }
+      .lp-footer { flex: 0 0 auto; }
+      .lp-maps, .lp-share { padding-left: 0.4rem; padding-right: 0.4rem; letter-spacing: 0.06em; }
       .lp-pisos-wrap.visible { flex: 1 1 auto; min-height: 0; }
       .lp-pisos-lista { max-height: none; flex: 1 1 auto; min-height: 0; }
       .lp-pisos-btns { flex: 0 0 auto; }
@@ -2232,14 +2208,25 @@
               <div class="lp-pisos-fecha" id="ppPisosFecha"></div>
             </div>
             <div class="lp-footer" id="ppFooter">
-              <a class="lp-maps" id="ppMaps" href="#" target="_blank">↗ Ver en Google Maps</a>
+              <a class="lp-maps" id="ppMaps" href="#" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <defs><clipPath id="lpPinClip"><path clip-rule="evenodd" d="M12 1.5a7.5 7.5 0 0 0-7.5 7.5c0 5.4 7.5 13.5 7.5 13.5s7.5-8.1 7.5-13.5A7.5 7.5 0 0 0 12 1.5zM12 6.4a2.6 2.6 0 1 1 0 5.2 2.6 2.6 0 0 1 0-5.2z"/></clipPath></defs>
+                  <g clip-path="url(#lpPinClip)">
+                    <polygon fill="#EA4335" points="12,9 12,0 0,0 0,8"/>
+                    <polygon fill="#FBBC04" points="12,9 0,8 0,15 9,23"/>
+                    <polygon fill="#34A853" points="12,9 9,23 12,24 24,24 24,12"/>
+                    <polygon fill="#4285F4" points="12,9 12,0 24,0 24,12"/>
+                  </g>
+                </svg>
+                <span>Ver en Google Maps</span>
+              </a>
               <button class="lp-share" id="ppShare" title="Copiar enlace">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
                   <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                 </svg>
+                <span class="lp-share-txt">Compartir</span>
               </button>
-              <span class="lp-share-tip" id="ppShareTip">✓ ENLACE COPIADO</span>
             </div>
             <div class="lp-pisos-btns" id="ppPisosBtns">
               <button class="lp-pisos-btn" id="ppPisosBtnVenta"></button>
@@ -2561,12 +2548,12 @@
       const url = window.location.origin + window.location.pathname + param + '#mapa';
       navigator.clipboard.writeText(url).then(() => {
         const btn = this;
-        const tip = document.getElementById('ppShareTip');
+        const txt = btn.querySelector('.lp-share-txt');
         btn.classList.add('copied');
-        tip.classList.add('visible');
+        txt.textContent = '✓ Enlace copiado';
         setTimeout(() => {
           btn.classList.remove('copied');
-          tip.classList.remove('visible');
+          txt.textContent = 'Compartir';
         }, 2200);
       });
     });

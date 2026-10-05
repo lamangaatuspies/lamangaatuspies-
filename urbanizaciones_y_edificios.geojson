@@ -4813,64 +4813,6 @@
                 "coordinates": [
                     [
                         [
-                            -0.743063,
-                            37.709186
-                        ],
-                        [
-                            -0.743412,
-                            37.708906
-                        ],
-                        [
-                            -0.74365,
-                            37.708779
-                        ],
-                        [
-                            -0.743613,
-                            37.708679
-                        ],
-                        [
-                            -0.74364,
-                            37.708537
-                        ],
-                        [
-                            -0.743278,
-                            37.708469
-                        ],
-                        [
-                            -0.743079,
-                            37.708639
-                        ],
-                        [
-                            -0.743052,
-                            37.708707
-                        ],
-                        [
-                            -0.742792,
-                            37.708936
-                        ],
-                        [
-                            -0.743063,
-                            37.709186
-                        ]
-                    ]
-                ]
-            },
-            "properties": {
-                "name": "ISLA DEL TESORO",
-                "img": "img/isla-del-tesoro.jpg",
-                "desc": [
-                    "Edificio",
-                    "Piscina"
-                ]
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [
                             -0.739351,
                             37.72456
                         ],
@@ -5440,12 +5382,12 @@
                             37.70852
                         ],
                         [
-                            -0.743023,
-                            37.708703
+                            -0.742774,
+                            37.708949
                         ],
                         [
-                            -0.743095,
-                            37.708631
+                            -0.743065,
+                            37.709211
                         ],
                         [
                             -0.743471,
@@ -5479,8 +5421,8 @@
                 ]
             },
             "properties": {
-                "name": "LA ESPAÑOLA",
-                "img": "img/la-espanola.jpg",
+                "name": "LAS ANTILLAS",
+                "img": "img/las-antillas.jpg",
                 "desc": [
                     "Edificio",
                     "Piscina"
@@ -10780,7 +10722,7 @@
                 "img": "img/Terrazas-sol.jpg",
                 "desc": [
                     "Edificio",
-					"Piscina cubierta"
+                    "Piscina cubierta"
                 ]
             }
         },

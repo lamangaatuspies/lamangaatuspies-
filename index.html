@@ -24,7 +24,7 @@
     gtag('config', 'G-50Z4QGPF3Q');
   </script>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>La Manga a tus pies — Mapa interactivo de La Manga del Mar Menor</title>
 
   <!-- SEO básico -->
@@ -38,14 +38,6 @@
   <link rel="icon" href="favicon.ico"/>
   <link rel="icon" type="image/png" href="favicon.png"/>
   <link rel="apple-touch-icon" href="favicon.png"/>
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json"/>
-  <meta name="theme-color" content="#0d1117"/>
-  <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="La Manga"/>
 
   <!-- Open Graph (para compartir en redes sociales) -->
   <meta property="og:title" content="La Manga a tus pies — Mapa interactivo de La Manga del Mar Menor"/>
@@ -312,7 +304,6 @@
       left: 0;
       right: 0;
       z-index: 1000;
-      padding-top: env(safe-area-inset-top);
     }
     nav .nav-inner {
       max-width: 1200px;
@@ -884,46 +875,135 @@
       }
     }
     .lp-desc span::before { content: '· '; color: var(--accent2); }
-    .lp-maps {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 0.3rem 0.7rem;
-      border: 1px solid var(--border);
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .lp-maps:hover { border-color: var(--accent); }
+    /* Pie del popup: "Ver en Google Maps" y "Compartir", neutros (grises), del mismo
+       tamaño entre sí y con la misma altura/tipografía que los botones de pisos. */
     .lp-footer {
       display: flex;
-      align-items: center;
-      gap: 0.6rem;
+      align-items: stretch;
+      gap: 0.5rem;
     }
-    .lp-share {
-      display: inline-flex;
+    .lp-maps, .lp-share {
+      display: flex;
       align-items: center;
       justify-content: center;
-      width: 2rem;
-      height: 2rem;
+      gap: 0.4rem;
+      flex: 1 1 0;
+      min-width: 0;
+      white-space: nowrap;
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.55rem 0.7rem;
       border: 1px solid var(--border);
       color: var(--ink-mid);
-      cursor: pointer;
       background: transparent;
+      text-decoration: none;
+      cursor: pointer;
       transition: color 0.2s, border-color 0.2s;
-      flex-shrink: 0;
     }
-    .lp-share:hover { color: var(--ink); border-color: var(--accent); }
+    .lp-maps:hover, .lp-share:hover { color: var(--ink); border-color: var(--ink-mid); }
     .lp-share.copied { color: var(--accent3); border-color: var(--accent3); }
-    .lp-share-tip {
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      color: var(--accent3);
-      letter-spacing: 0.06em;
+    .lp-maps svg, .lp-share svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .lp-share svg { color: var(--accent3); }
+
+    /* ── PISOS EN VENTA / ALQUILER (Idealista): dos botones lado a lado (verde = venta, azul = alquiler);
+          con una lista abierta se sustituyen por un único "← Volver" ── */
+    .lp-pisos-btns {
       display: none;
+      gap: 0.5rem;
+      margin-top: 0.55rem;
     }
-    .lp-share-tip.visible { display: inline; }
+    .lp-pisos-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      flex: 1 1 0;
+      min-width: 0;
+      white-space: nowrap;
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid var(--accent3);
+      color: var(--accent3);
+      background: rgba(63,185,80,0.08);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .lp-pisos-btn:hover { background: rgba(63,185,80,0.16); }
+    .lp-pisos-btn-alquiler { border-color: var(--accent); color: var(--accent); background: rgba(88,166,255,0.08); }
+    .lp-pisos-btn-alquiler:hover { background: rgba(88,166,255,0.16); }
+    .lp-pisos-btn .n { color: var(--ink); font-weight: 700; }
+    .lp-pisos-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .lp-pisos-btn-volver { border-color: var(--border); color: var(--ink-mid); background: transparent; }
+    .lp-pisos-btn-volver:hover { background: var(--surface2); color: var(--ink); border-color: var(--accent); }
+
+    /* Listado de anuncios: sustituye la foto/descripción bajo el nombre */
+    .lp-pisos-wrap { display: none; flex-direction: column; }
+    .lp-pisos-wrap.visible { display: flex; }
+    /* Columnas de la lista (la cabecera y las filas comparten la misma rejilla):
+       precio | hueco | hab | m² | flecha. En alquiler el precio lleva "€/mes":
+       columna de precio más ancha */
+    .lp-pisos-wrap { --col-precio: 84px; }
+    .lp-pisos-wrap.tipo-alquiler { --col-precio: 104px; }
+    .lp-pisos-cabecera,
+    .lp-piso-link {
+      display: grid;
+      grid-template-columns: var(--col-precio) 1fr 32px 56px 16px;
+      align-items: center;
+      column-gap: 0.5rem;
+    }
+    .lp-pisos-cabecera {
+      padding: 0.4rem 0.7rem;
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-bottom: none;
+    }
+    /* Si la lista tiene barra de desplazamiento, las filas se estrechan; la cabecera
+       resta ese mismo ancho (--sb-lista, lo calcula ajustarCabeceraLista) para seguir alineada */
+    .lp-pisos-cabecera { padding-right: calc(0.7rem + var(--sb-lista, 0px)); }
+    .lp-pisos-cabecera .col-precio { grid-column: 1; text-align: left; }
+    .lp-pisos-cabecera .col-hab { grid-column: 3; text-align: right; }
+    .lp-pisos-cabecera .col-m2 { grid-column: 4; text-align: right; }
+    .lp-pisos-lista {
+      list-style: none;
+      margin: 0 0 0.7rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      overflow-y: auto;
+      max-height: 260px;
+    }
+    .lp-piso-item { border-bottom: 1px solid var(--border); }
+    .lp-piso-item:last-child { border-bottom: none; }
+    .lp-piso-link {
+      padding: 0.6rem 0.7rem;
+      text-decoration: none;
+      color: var(--ink);
+      font-family: var(--mono);
+      transition: background 0.12s;
+    }
+    .lp-piso-link:hover { background: var(--surface2); }
+    .lp-piso-precio { grid-column: 1; font-size: 0.82rem; font-weight: 700; color: var(--accent3); white-space: nowrap; }
+    /* Precios de alquiler en azul (verde = venta, azul = alquiler) */
+    .lp-pisos-wrap.tipo-alquiler .lp-piso-precio { color: var(--accent); }
+    .lp-piso-hab, .lp-piso-m2 { font-size: 0.68rem; color: var(--ink-mid); text-align: right; white-space: nowrap; }
+    .lp-piso-hab { grid-column: 3; }
+    .lp-piso-m2 { grid-column: 4; }
+    .lp-piso-arrow { grid-column: 5; color: var(--ink-dim); font-size: 0.7rem; text-align: right; }
+    .lp-pisos-fecha {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      line-height: 1.7;
+      color: var(--ink-dim);
+      margin-bottom: 0.55rem;
+    }
     .leaflet-control-layers {
       background: var(--surface) !important;
       border: 1px solid var(--border) !important;
@@ -945,9 +1025,6 @@
       letter-spacing: 0.06em;
     }
     footer a { color: var(--accent); text-decoration: none; }
-
-    /* ── PWA install banner (oculto por defecto; solo visible en móvil vía JS) ── */
-    .pwa-install-banner { display: none; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
@@ -1098,22 +1175,13 @@
         word-break: break-word;
       }
       .lp-km { font-size: 0.75rem; white-space: nowrap; }
-      .lp-footer { flex: 0 0 auto; gap: 0.7rem; }
-      .lp-maps {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex: 1 1 auto;
-        font-size: 0.7rem;
-        min-height: 2.75rem;
-        padding: 0.5rem 0.8rem;
-      }
-      .lp-share {
-        width: 2.75rem;
-        height: 2.75rem;
-        flex-shrink: 0;
-      }
-      .lp-share svg { width: 18px; height: 18px; }
+      .lp-footer { flex: 0 0 auto; }
+      .lp-maps, .lp-share { padding-left: 0.4rem; padding-right: 0.4rem; letter-spacing: 0.06em; }
+      .lp-maps-ver { display: none; }  /* en móvil el botón dice solo "Google Maps": no cabe más */
+      .lp-pisos-wrap.visible { flex: 1 1 auto; min-height: 0; }
+      .lp-pisos-lista { max-height: none; flex: 1 1 auto; min-height: 0; }
+      .lp-pisos-btns { flex: 0 0 auto; }
+      .lp-pisos-btn { padding-left: 0.4rem; padding-right: 0.4rem; letter-spacing: 0.06em; }
       .map-popup-close {
         font-size: 1.4rem;
         padding: 0.3rem 0.5rem;
@@ -1121,65 +1189,6 @@
       }
       .map-frame.map-expanded .expand-control {
         z-index: 960;
-      }
-
-      /* PWA install banner: visible solo en móvil cuando JS añade .pwa-show */
-      .pwa-install-banner.pwa-show {
-        display: flex;
-        align-items: center;
-        gap: 0.7rem;
-        position: fixed;
-        left: 0.7rem;
-        right: 0.7rem;
-        bottom: calc(0.7rem + env(safe-area-inset-bottom));
-        z-index: 1200;
-        padding: 0.8rem 1rem;
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      }
-      .pwa-install-banner .pwa-install-icon {
-        flex-shrink: 0;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-      }
-      .pwa-install-banner .pwa-install-text {
-        flex: 1;
-        min-width: 0;
-      }
-      .pwa-install-banner .pwa-install-title {
-        font-weight: 600;
-        color: var(--ink);
-        font-size: 0.92rem;
-        line-height: 1.25;
-      }
-      .pwa-install-banner .pwa-install-sub {
-        color: var(--ink-mid);
-        font-size: 0.78rem;
-        line-height: 1.25;
-      }
-      .pwa-install-banner .pwa-install-btn {
-        flex-shrink: 0;
-        background: var(--accent);
-        color: #0d1117;
-        border: none;
-        border-radius: 10px;
-        padding: 0.55rem 0.9rem;
-        font-weight: 600;
-        font-size: 0.85rem;
-        cursor: pointer;
-      }
-      .pwa-install-banner .pwa-install-close {
-        flex-shrink: 0;
-        background: none;
-        border: none;
-        color: var(--ink-mid);
-        font-size: 1.1rem;
-        line-height: 1;
-        padding: 0.3rem;
-        cursor: pointer;
       }
     }
 
@@ -1358,6 +1367,37 @@
       pointer-events: none !important;
     }
     .lm-tooltip-permanent::before { display: none !important; }
+
+    /* Icono de casa sobre el marcador (zoom 16), en blanco: hay pisos en venta y/o alquiler.
+       Un salto de zoom antes de que aparezca el nombre (ver ZOOM_ICONO) */
+    .lm-tooltip-icono {
+      background: rgba(13,17,23,0.82) !important;
+      border: 1px solid rgba(48,54,61,0.7) !important;
+      border-radius: 50% !important;
+      padding: 3px !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.6) !important;
+      pointer-events: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .lm-tooltip-icono::before { display: none !important; }
+    .lm-tooltip-icono svg { width: 13px; height: 13px; display: block; color: #ffffff; }
+
+    /* Puntos junto al nombre (zoom 17+ y al pasar el cursor a zoom 16):
+       verde a la izquierda = hay pisos en venta, azul a la derecha = hay pisos en alquiler */
+    .lm-punto {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.55);
+    }
+    .lm-punto-venta { background: #3fb950; margin-right: 5px; }
+    .lm-punto-alquiler { background: #58a6ff; margin-left: 5px; }
 
     /* Etiqueta del marcador activo (seleccionado) */
     .lm-tooltip-active {
@@ -1669,8 +1709,8 @@
     @keyframes lbZoomIn { from { transform: scale(0.93); opacity:0; } to { transform: scale(1); opacity:1; } }
     .lightbox-close {
       position: fixed;
-      top: calc(1.2rem + env(safe-area-inset-top));
-      right: calc(1.4rem + env(safe-area-inset-right));
+      top: 1.2rem;
+      right: 1.4rem;
       background: rgba(22,27,34,0.85);
       border: 1px solid #30363d;
       color: #8b949e;
@@ -2086,6 +2126,7 @@
       <h1>
 		La Manga <span style="color:rgba(255,255,255,0.45)">a tus pies</span>
         <span class="sub">Directorio cartográfico de La Manga del Mar Menor</span>
+		<span class="sub">(...y mucho más)</span>
       </h1>
       <div class="hero-tagline">
         <strong>El único registro exhaustivo</strong> de edificios, urbanizaciones<br/>
@@ -2163,15 +2204,36 @@
             <div class="lp-name" id="ppName"></div>
             <img class="lp-img" id="ppImg" src="" alt="" style="display:none"/>
             <div class="lp-desc" id="ppDesc"></div>
-            <div class="lp-footer">
-              <a class="lp-maps" id="ppMaps" href="#" target="_blank">↗ Ver en Google Maps</a>
+            <div class="lp-pisos-wrap" id="ppPisosWrap">
+              <div class="lp-pisos-cabecera"><span class="col-precio">Precio</span><span class="col-hab">Hab</span><span class="col-m2">m²</span></div>
+              <ul class="lp-pisos-lista" id="ppPisosLista"></ul>
+              <div class="lp-pisos-fecha" id="ppPisosFecha"></div>
+            </div>
+            <div class="lp-footer" id="ppFooter">
+              <a class="lp-maps" id="ppMaps" href="#" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <defs><clipPath id="lpPinClip"><path clip-rule="evenodd" d="M12 1.5a7.5 7.5 0 0 0-7.5 7.5c0 5.4 7.5 13.5 7.5 13.5s7.5-8.1 7.5-13.5A7.5 7.5 0 0 0 12 1.5zM12 6.4a2.6 2.6 0 1 1 0 5.2 2.6 2.6 0 0 1 0-5.2z"/></clipPath></defs>
+                  <g clip-path="url(#lpPinClip)">
+                    <polygon fill="#EA4335" points="12,9 12,0 0,0 0,8"/>
+                    <polygon fill="#FBBC04" points="12,9 0,8 0,15 9,23"/>
+                    <polygon fill="#34A853" points="12,9 9,23 12,24 24,24 24,12"/>
+                    <polygon fill="#4285F4" points="12,9 12,0 24,0 24,12"/>
+                  </g>
+                </svg>
+                <span><span class="lp-maps-ver">Ver en </span>Google Maps</span>
+              </a>
               <button class="lp-share" id="ppShare" title="Copiar enlace">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
                   <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                 </svg>
+                <span class="lp-share-txt">Compartir</span>
               </button>
-              <span class="lp-share-tip" id="ppShareTip">✓ ENLACE COPIADO</span>
+            </div>
+            <div class="lp-pisos-btns" id="ppPisosBtns">
+              <button class="lp-pisos-btn" id="ppPisosBtnVenta"></button>
+              <button class="lp-pisos-btn lp-pisos-btn-alquiler" id="ppPisosBtnAlquiler"></button>
+              <button class="lp-pisos-btn lp-pisos-btn-volver" id="ppPisosBtnVolver">← VOLVER</button>
             </div>
           </div>
         </div>
@@ -2293,6 +2355,14 @@
               <span class="tl-desc">Qué farmacia está de guardia hoy, sincronizado en tiempo real con el Colegio Oficial de Farmacéuticos de la Región de Murcia.</span>
             </div>
           </div>
+          <div class="tl-item">
+            <div class="tl-date">Oct 2026</div>
+            <div class="tl-right">
+              <span class="tl-badge update">Actualización</span>
+              <span class="tl-title">Pisos en venta y alquiler</span>
+              <span class="tl-desc">Anuncios de Idealista vinculados a cada urbanización, actualizados a diario: consulta qué hay disponible y accede al anuncio original desde su ficha.</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -2396,6 +2466,29 @@
     );
     // ****************************** FIN CARGA DE DATOS ********************************************
 
+    // Anuncios de Idealista (venta y alquiler) para los botones del popup y los puntos del mapa.
+    // Cada JSON se carga en paralelo, sin await y de forma independiente: si uno tarda o falla,
+    // el otro funciona igual y el resto de la web no se retrasa. Si los datos aún no han llegado
+    // cuando el usuario abre un popup, el botón de ese tipo simplemente no aparece esa vez.
+    let ANUNCIOS_IDEALISTA = null;   // pisos en venta (anuncios.json)
+    let ANUNCIOS_ALQUILER = null;    // pisos en alquiler (alquileres.json)
+    function cargarAnuncios(archivo, guardar) {
+      fetch(archivo + '?t=' + Date.now())
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          guardar(data);
+          // Si el usuario ya está mirando el mapa a un zoom con iconos o puntos de
+          // anuncios cuando terminan de llegar los datos, repintamos para que
+          // aparezcan sin que tenga que mover el mapa.
+          if (typeof actualizarTooltips === 'function' && typeof map !== 'undefined') {
+            actualizarTooltips(map.getZoom());
+          }
+        })
+        .catch(() => {});
+    }
+    cargarAnuncios('anuncios.json', datos => { ANUNCIOS_IDEALISTA = datos; });
+    cargarAnuncios('alquileres.json', datos => { ANUNCIOS_ALQUILER = datos; });
+
     const CAPA_CONFIG = {
       'Urbanizaciones y Edificios': { color: '#1f938a', fill: '#1f938a', label: 'Urbanización' },
       'Hoteles':                    { color: '#ef5d69', fill: '#ef5d69', label: 'Hotel' },
@@ -2465,12 +2558,12 @@
       const url = window.location.origin + window.location.pathname + param + '#mapa';
       navigator.clipboard.writeText(url).then(() => {
         const btn = this;
-        const tip = document.getElementById('ppShareTip');
+        const txt = btn.querySelector('.lp-share-txt');
         btn.classList.add('copied');
-        tip.classList.add('visible');
+        txt.textContent = '✓ Enlace copiado';
         setTimeout(() => {
           btn.classList.remove('copied');
-          tip.classList.remove('visible');
+          txt.textContent = 'Compartir';
         }, 2200);
       });
     });
@@ -2595,10 +2688,7 @@
       .then(r => r.json())
       .then(d => {
         const pais   = d.country_code || '?';
-        const esAppInstalada = window.matchMedia('(display-mode: standalone)').matches
-                             || window.navigator.standalone === true;
-        const dispositivo = (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio')
-                           + (esAppInstalada ? ' (app)' : '');
+        const dispositivo = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio';
         const ref = document.referrer;
         const origen = !ref                        ? 'directo'
                      : /google\./i.test(ref)       ? 'google'
@@ -2610,13 +2700,7 @@
                      : new URL(ref).hostname;
         registrarStats('visita', pais + ' · ' + dispositivo + ' · ' + origen);
       })
-      .catch(() => {
-        const esAppInstalada = window.matchMedia('(display-mode: standalone)').matches
-                             || window.navigator.standalone === true;
-        const dispositivo = (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio')
-                           + (esAppInstalada ? ' (app)' : '');
-        registrarStats('visita', '? · ' + dispositivo + ' · ?');
-      });
+      .catch(() => registrarStats('visita', '? · ' + (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'móvil' : 'escritorio') + ' · ?'));
 
     function toggleExpandMap() {
       const mapFrame = document.querySelector('.map-frame');
@@ -2857,6 +2941,7 @@
         }
         map.closePopup();
         // Rellenar el panel con los datos del punto kilométrico
+        resetPisosPopup();
         document.getElementById('ppDot').style.background = '#ef5d69';
         document.getElementById('ppCapa').textContent = 'PUNTO KILOMÉTRICO';
         document.getElementById('ppKm').textContent = '';
@@ -3184,7 +3269,169 @@
     const popupPanel = document.getElementById('mapPopupPanel');
     const popupClose = document.getElementById('mapPopupClose');
 
+    // ── PISOS EN VENTA (Idealista) ──
+    const ICONO_PISOS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/><text x="12" y="17" text-anchor="middle" font-size="8" font-weight="700" fill="currentColor" stroke="none" font-family="Arial, sans-serif">\u20ac</text></svg>';
+    // Tipos de anuncio. 'datos' se evalúa en el momento de usarse porque los JSON llegan de forma asíncrona.
+    const TIPOS_PISOS = {
+      venta: {
+        datos: () => ANUNCIOS_IDEALISTA,
+        sufijoPrecio: ' €',
+        etiquetaCompleta: 'PISOS EN VENTA',
+        etiquetaCorta: 'EN VENTA',
+        btnId: 'ppPisosBtnVenta'
+      },
+      alquiler: {
+        datos: () => ANUNCIOS_ALQUILER,
+        sufijoPrecio: ' €/mes',
+        etiquetaCompleta: 'PISOS EN ALQUILER',
+        etiquetaCorta: 'EN ALQUILER',
+        btnId: 'ppPisosBtnAlquiler'
+      }
+    };
+    const ORDEN_TIPOS_PISOS = ['venta', 'alquiler'];
+
+    // Lista de anuncios de un tipo para una urbanización (o null si no hay ninguno)
+    function anunciosDe(tipo, name) {
+      const d = TIPOS_PISOS[tipo].datos();
+      const lista = (d && d.urbanizaciones) ? d.urbanizaciones[name] : null;
+      return (lista && lista.length) ? lista : null;
+    }
+
+    // Qué tipos de anuncio tiene una urbanización: { venta: bool, alquiler: bool }
+    function tiposAnuncios(name) {
+      return { venta: !!anunciosDe('venta', name), alquiler: !!anunciosDe('alquiler', name) };
+    }
+
+    let popupAnunciosActuales = null;   // { venta: [...] | null, alquiler: [...] | null } del popup abierto
+    let popupNombreActual = '';         // nombre de la urbanización del popup abierto (para estadísticas)
+    let popupTipoLista = null;          // 'venta' | 'alquiler' mientras hay una lista abierta; si no, null
+
+    function formatearFechaAnuncios(iso) {
+      if (!iso) return '';
+      const [y, m, d] = iso.split('-');
+      return d + '/' + m + '/' + y;
+    }
+
+    function pintarListaPisos(anuncios, tipo) {
+      const sufijo = TIPOS_PISOS[tipo].sufijoPrecio;
+      // Por precio ascendente; los que no tienen precio, al final
+      const ordenados = anuncios.slice().sort((a, b) => ((a.p == null) - (b.p == null)) || ((a.p || 0) - (b.p || 0)));
+      document.getElementById('ppPisosLista').innerHTML = ordenados.map(a => {
+        const hab = (a.h != null) ? a.h + 'd' : '—';
+        const precio = (a.p != null) ? a.p.toLocaleString('es-ES') + sufijo : '—';
+        const metros = (a.m != null) ? a.m + ' m²' : '—';
+        return '<li class="lp-piso-item"><a class="lp-piso-link" data-id="' + a.id + '" href="https://www.idealista.com/inmueble/' + a.id + '/" target="_blank" rel="noopener">' +
+          '<span class="lp-piso-precio">' + precio + '</span>' +
+          '<span class="lp-piso-hab">' + hab + '</span>' +
+          '<span class="lp-piso-m2">' + metros + '</span>' +
+          '<span class="lp-piso-arrow">↗</span></a></li>';
+      }).join('');
+    }
+
+    // Botones de la vista normal del popup: uno por cada tipo con anuncios.
+    // Si hay los dos, cada uno ocupa la mitad con texto corto ("EN VENTA (n)");
+    // si solo hay uno, ocupa todo el ancho con el texto completo ("PISOS EN VENTA (n)").
+    function pintarBotonesPisos() {
+      const hay = popupAnunciosActuales;
+      const tipos = ORDEN_TIPOS_PISOS.filter(t => hay && hay[t]);
+      document.getElementById('ppPisosBtns').style.display = tipos.length ? 'flex' : 'none';
+      ORDEN_TIPOS_PISOS.forEach(t => {
+        const btn = document.getElementById(TIPOS_PISOS[t].btnId);
+        if (tipos.indexOf(t) === -1) { btn.style.display = 'none'; return; }
+        const etiqueta = tipos.length > 1 ? TIPOS_PISOS[t].etiquetaCorta : TIPOS_PISOS[t].etiquetaCompleta;
+        btn.innerHTML = '<span class="n">' + hay[t].length + '</span> ' + etiqueta;
+        btn.style.display = 'flex';
+      });
+      document.getElementById('ppPisosBtnVolver').style.display = 'none';
+    }
+
+    // Oculta los botones y el listado, y limpia el estado. Se llama al abrir
+    // CUALQUIER popup (urbanización, farmacia, punto km, socorrista, boya)
+    // para que un listado de pisos abierto no se quede colgando al pasar
+    // a un marcador de otro tipo.
+    function resetPisosPopup() {
+      popupAnunciosActuales = null;
+      popupNombreActual = '';
+      popupTipoLista = null;
+      document.getElementById('ppPisosBtns').style.display = 'none';
+      ORDEN_TIPOS_PISOS.forEach(t => { document.getElementById(TIPOS_PISOS[t].btnId).style.display = 'none'; });
+      document.getElementById('ppPisosBtnVolver').style.display = 'none';
+      document.getElementById('ppPisosWrap').classList.remove('visible');
+      // Por si se cerró el popup (✕) estando en la vista de listado sin pasar
+      // por "← Volver": cerrarListaPisos() es el único sitio que restaura estos
+      // elementos, así que si no se restauran aquí se quedan en display:none
+      // para siempre en el siguiente popup que se abra.
+      document.getElementById('ppFooter').style.display = '';
+      document.getElementById('ppDesc').style.display = '';
+    }
+
+    // Reafirma la etiqueta roja del marcador activo en el mapa: el panel
+    // cambia de alto al alternar la vista de listado, y por lo que sea esa
+    // etiqueta puede perderse en el proceso. Forzamos su re-vinculación aquí
+    // para que quede garantizada, independientemente de la causa.
+    function reafirmarTooltipActivo() {
+      if (activeFeature) {
+        const activeItem = allFeatures.find(f => f.layer === activeFeature);
+        if (activeItem) {
+          activeFeature._lmTooltipEstado = null;
+          actualizarTooltipItem(activeItem, map.getZoom(), boundsTooltipsActuales());
+        }
+      }
+    }
+
+    // Si la lista tiene barra de desplazamiento, las filas se estrechan y la cabecera
+    // dejaría de coincidir con las columnas: se mide ese ancho y se le aplica a la cabecera.
+    function ajustarCabeceraLista() {
+      const lista = document.getElementById('ppPisosLista');
+      const cab = document.querySelector('#ppPisosWrap .lp-pisos-cabecera');
+      if (!lista || !cab) return;
+      const sb = Math.max(0, lista.offsetWidth - lista.clientWidth - 2 * lista.clientLeft);
+      cab.style.setProperty('--sb-lista', sb + 'px');
+    }
+
+    // Abre la lista de pisos de un tipo ('venta' | 'alquiler') en el popup
+    function abrirListaPisos(tipo) {
+      if (!popupAnunciosActuales || !popupAnunciosActuales[tipo]) return;
+      const imgEl = document.getElementById('ppImg');
+      const descEl = document.getElementById('ppDesc');
+      const footerEl = document.getElementById('ppFooter');
+      const wrap = document.getElementById('ppPisosWrap');
+      popupTipoLista = tipo;
+      pintarListaPisos(popupAnunciosActuales[tipo], tipo);
+      const datos = TIPOS_PISOS[tipo].datos();
+      document.getElementById('ppPisosFecha').textContent = 'Fuente: Idealista · Actualizado el ' + formatearFechaAnuncios(datos && datos.actualizado);
+      imgEl.dataset.dispNormal = imgEl.style.display || 'block';
+      descEl.dataset.dispNormal = descEl.style.display || 'block';
+      footerEl.dataset.dispNormal = footerEl.style.display || 'flex';
+      imgEl.style.display = 'none';
+      descEl.style.display = 'none';
+      footerEl.style.display = 'none';
+      wrap.classList.toggle('tipo-alquiler', tipo === 'alquiler');
+      wrap.classList.add('visible');
+      ajustarCabeceraLista();
+      ORDEN_TIPOS_PISOS.forEach(t => { document.getElementById(TIPOS_PISOS[t].btnId).style.display = 'none'; });
+      document.getElementById('ppPisosBtns').style.display = 'flex';
+      document.getElementById('ppPisosBtnVolver').style.display = 'flex';
+      reafirmarTooltipActivo();
+      if (typeof registrarStats === 'function') registrarStats('ver_pisos_' + tipo, popupNombreActual);
+    }
+
+    // "← VOLVER": cierra la lista y recupera la vista normal del popup
+    function cerrarListaPisos() {
+      const imgEl = document.getElementById('ppImg');
+      const descEl = document.getElementById('ppDesc');
+      const footerEl = document.getElementById('ppFooter');
+      popupTipoLista = null;
+      imgEl.style.display = imgEl.dataset.dispNormal || 'block';
+      descEl.style.display = descEl.dataset.dispNormal || 'block';
+      footerEl.style.display = footerEl.dataset.dispNormal || 'flex';
+      document.getElementById('ppPisosWrap').classList.remove('visible');
+      pintarBotonesPisos();
+      reafirmarTooltipActivo();
+    }
+
     function showMapPopup(item) {
+      resetPisosPopup();
       const cfg = CAPA_CONFIG[item.capa] || { color: '#888', label: item.capa };
       document.getElementById('ppDot').style.background = cfg.color;
       document.getElementById('ppCapa').textContent = cfg.label;
@@ -3203,10 +3450,36 @@
         : '';
       document.getElementById('ppMaps').href = 'https://www.google.com/maps?q=' + item.lat + ',' + item.lng;
       popupPanel.dataset.tipo = '';
+      popupNombreActual = item.name;
+      if (item.capa === 'Urbanizaciones y Edificios') {
+        const venta = anunciosDe('venta', item.name);
+        const alquiler = anunciosDe('alquiler', item.name);
+        if (venta || alquiler) {
+          popupAnunciosActuales = { venta: venta, alquiler: alquiler };
+          pintarBotonesPisos();
+        }
+      }
       popupPanel.classList.add('visible');
     }
 
+    document.getElementById('ppPisosBtnVenta').addEventListener('click', () => abrirListaPisos('venta'));
+    document.getElementById('ppPisosBtnAlquiler').addEventListener('click', () => abrirListaPisos('alquiler'));
+    document.getElementById('ppPisosBtnVolver').addEventListener('click', cerrarListaPisos);
+
+    // Estadísticas: clic (o clic con la rueda) en un anuncio de la lista
+    function registrarClicPiso(ev) {
+      const enlace = ev.target && ev.target.closest ? ev.target.closest('.lp-piso-link') : null;
+      if (!enlace || !popupTipoLista) return;
+      if (ev.type === 'auxclick' && ev.button !== 1) return;
+      if (typeof registrarStats === 'function') {
+        registrarStats('clic_piso_' + popupTipoLista, popupNombreActual + ' · ID ' + (enlace.dataset.id || ''));
+      }
+    }
+    document.getElementById('ppPisosLista').addEventListener('click', registrarClicPiso);
+    document.getElementById('ppPisosLista').addEventListener('auxclick', registrarClicPiso);
+
     popupClose.addEventListener('click', () => {
+      resetPisosPopup();
       popupPanel.classList.remove('visible');
       if (activeFeature) {
         const prevItem = allFeatures.find(f => f.layer === activeFeature);
@@ -3402,6 +3675,23 @@
     // ── ETIQUETAS PERMANENTES A PARTIR DE ZOOM 17, SOLO DENTRO DEL VIEWPORT ──
     const ZOOM_LABELS = 17;
 
+    // Un nivel de zoom antes de que aparezcan los nombres: icono de casa (blanco)
+    // para las urbanizaciones que tienen anuncios de venta y/o alquiler.
+    const ZOOM_ICONO = 16;
+
+    function tieneAnuncios(name) {
+      const t = tiposAnuncios(name);
+      return t.venta || t.alquiler;
+    }
+
+    // Etiqueta con los puntos de anuncios: punto verde a la izquierda si hay pisos
+    // en venta y punto azul a la derecha si hay pisos en alquiler.
+    function etiquetaConPuntos(nombreHtml, tipos) {
+      return (tipos.venta ? '<span class="lm-punto lm-punto-venta"></span>' : '') +
+             nombreHtml +
+             (tipos.alquiler ? '<span class="lm-punto lm-punto-alquiler"></span>' : '');
+    }
+
     // Margen alrededor del área visible del mapa (proporción del tamaño de los
     // bounds actuales en cada lado), para que las etiquetas no aparezcan/
     // desaparezcan justo al borde de la pantalla al desplazar el mapa.
@@ -3412,13 +3702,25 @@
       const esActivo = layer === activeFeature;
       const enViewport = bounds.contains([lat, lng]);
       const permanente = zoom >= ZOOM_LABELS && enViewport;
-      const estado = esActivo ? 'activo' : (permanente ? 'permanente' : 'normal');
+      const tipos = capa === 'Urbanizaciones y Edificios' ? tiposAnuncios(name) : { venta: false, alquiler: false };
+      const hayAnuncios = tipos.venta || tipos.alquiler;
+      const conIcono = !permanente && zoom >= ZOOM_ICONO && enViewport && hayAnuncios;
+      const puntosEnNombre = permanente && hayAnuncios;
+      // El estado incluye qué puntos lleva (v = venta, a = alquiler), para que si un JSON
+      // llega antes que el otro el tooltip se actualice igualmente.
+      const estado = esActivo ? 'activo' : (permanente ? (puntosEnNombre ? 'permanente-' + (tipos.venta ? 'v' : '') + (tipos.alquiler ? 'a' : '') : 'permanente') : (conIcono ? 'icono' : 'normal'));
 
       // Si el tooltip ya está en el mismo "modo" que le corresponde, no lo
       // tocamos: desvincular y volver a vincular cuesta lo mismo aunque no
       // cambie nada, y es justo lo que queremos evitar — es la causa del
       // retardo al hacer zoom o mover el mapa con muchas etiquetas a la vez.
-      if (layer._lmTooltipEstado === estado) return;
+      // (El estado incluye si lleva icono, para que si los anuncios tardan en
+      // llegar, en cuanto estén disponibles el tooltip se actualice igualmente.)
+      // Excepción: el marcador activo (seleccionado) nunca se salta por
+      // caché, aunque su estado no cambie — se reafirma en cada movimiento/
+      // zoom del mapa. Es una sola capa (no las 372), así que no cuesta nada,
+      // y evita que su etiqueta roja se pierda al arrastrar el mapa.
+      if (layer._lmTooltipEstado === estado && !esActivo) return;
       layer._lmTooltipEstado = estado;
 
       layer.unbindTooltip();
@@ -3435,12 +3737,52 @@
           'Sitios de Interés':    '#6ddc6d',
         };
         const color = TOOLTIP_COLORS[capa] || '#e6edf3';
-        layer.bindTooltip(`<span style="color:${color}">${name}</span>`, {
+        const nombreHtml = `<span style="color:${color}">${name}</span>`;
+        layer.bindTooltip(etiquetaConPuntos(nombreHtml, tipos), puntosEnNombre ? {
+          permanent: true,
+          direction: 'center',
+          offset: [0, 0],
+          className: 'lm-tooltip-permanent',
+        } : {
           permanent: true,
           direction: 'top',
           offset: [0, -4],
           className: 'lm-tooltip-permanent',
         });
+      } else if (conIcono) {
+        layer.bindTooltip(ICONO_PISOS, {
+          permanent: true,
+          direction: 'center',
+          offset: [0, 0],
+          className: 'lm-tooltip-icono',
+        });
+        // Por debajo de zoom 17 el icono es una tooltip permanente, así que
+        // Leaflet ya no dispara ninguna al pasar el cursor (solo lo hace
+        // cuando no hay tooltip vinculada). Para que el nombre se siga
+        // viendo al hacer hover, lo añadimos a mano y lo quitamos al salir.
+        if (!layer._lmIconoHoverBound) {
+          layer._lmIconoHoverBound = true;
+          layer.on('mouseover', function () {
+            if (layer._lmTooltipEstado !== 'icono') return;
+            layer.unbindTooltip();
+            layer.bindTooltip(etiquetaConPuntos(name, tiposAnuncios(name)), {
+              permanent: true,
+              direction: 'center',
+              offset: [0, 0],
+              className: 'lm-tooltip-permanent',
+            });
+          });
+          layer.on('mouseout', function () {
+            if (layer._lmTooltipEstado !== 'icono') return;
+            layer.unbindTooltip();
+            layer.bindTooltip(ICONO_PISOS, {
+              permanent: true,
+              direction: 'center',
+              offset: [0, 0],
+              className: 'lm-tooltip-icono',
+            });
+          });
+        }
       } else {
         layer.bindTooltip(name, {
           sticky: true,
@@ -3835,14 +4177,14 @@
       document.body.style.overflow = 'hidden';
       // Móvil: permitir pinch-to-zoom
       const vp = document.querySelector('meta[name="viewport"]');
-      if (vp) vp.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
+      if (vp) vp.content = 'width=device-width, initial-scale=1.0';
     }
     function closeLightbox() {
       lightboxOverlay.classList.remove('visible');
       document.body.style.overflow = '';
       // Móvil: restaurar bloqueo de zoom
       const vp = document.querySelector('meta[name="viewport"]');
-      if (vp) vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+      if (vp) vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
     }
 
     // Escritorio: zoom con rueda del ratón
@@ -4092,6 +4434,7 @@
               `<div style="color:var(--ink);font-size:1em;font-weight:600;margin-top:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);animation:pulse 2s infinite;vertical-align:middle;margin-right:6px;"></span>Act. ${p.fecha}</div>`;
             const horarioHTML = `<div style="color:var(--ink);font-size:0.9em;margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">🕑 Horario habitual de socorristas: 11:00 — 19:00 h</div>`;
 
+            resetPisosPopup();
             document.getElementById('ppDot').style.background = colorTexto;
             document.getElementById('ppCapa').textContent = 'PUESTO DE SOCORRISTA';
             document.getElementById('ppName').textContent = 'Playa ' + nombreCorto;
@@ -4178,6 +4521,7 @@
         ? `<div style="color:var(--ink);font-size:0.85em;margin-top:4px;">${f.direccion}</div>`
         : '';
 
+      resetPisosPopup();
       document.getElementById('ppDot').style.background = deGuardia ? 'var(--farmacia-roja)' : 'var(--farmacia-verde)';
       document.getElementById('ppCapa').textContent = 'FARMACIA';
       document.getElementById('ppName').textContent = f.nombre;
@@ -4419,6 +4763,7 @@
 
         marker.on('click', () => {
           registrarStats('clic_marcador', 'Temperatura del agua');
+          resetPisosPopup();
           document.getElementById('ppDot').style.background = colorTemp;
           document.getElementById('ppCapa').textContent = 'TEMPERATURA DEL AGUA';
           document.getElementById('ppName').textContent = '';
@@ -4499,102 +4844,6 @@
     })();
 
   }); // DOMContentLoaded
-  </script>
-
-  <!-- PWA: banner propio de instalación (solo visible en móvil, ver CSS) -->
-  <div class="pwa-install-banner" id="pwaInstallBanner">
-    <img src="icons/icon-192.png" alt="" class="pwa-install-icon"/>
-    <div class="pwa-install-text">
-      <div class="pwa-install-title">Instala La Manga a tus pies</div>
-      <div class="pwa-install-sub" id="pwaInstallSub">Acceso directo desde tu pantalla de inicio, sin buscarla en el navegador.</div>
-    </div>
-    <button type="button" class="pwa-install-btn" id="pwaInstallBtn" style="display:none;">Instalar</button>
-    <button type="button" class="pwa-install-close" id="pwaInstallClose" aria-label="Cerrar aviso de instalación">✕</button>
-  </div>
-  <script>
-    (function() {
-      var STORAGE_KEY = 'pwaInstallDismissedAt';
-      var banner   = document.getElementById('pwaInstallBanner');
-      var btn      = document.getElementById('pwaInstallBtn');
-      var closeBtn = document.getElementById('pwaInstallClose');
-      var sub      = document.getElementById('pwaInstallSub');
-      var deferredPrompt = null;
-
-      function isStandalone() {
-        return window.matchMedia('(display-mode: standalone)').matches ||
-               window.navigator.standalone === true;
-      }
-
-      function wasDismissedRecently() {
-        var ts = localStorage.getItem(STORAGE_KEY);
-        if (!ts) return false;
-        var CATORCE_DIAS = 14 * 24 * 60 * 60 * 1000;
-        return (Date.now() - parseInt(ts, 10)) < CATORCE_DIAS;
-      }
-
-      function hideBanner() {
-        banner.classList.remove('pwa-show');
-      }
-
-      function showBanner() {
-        if (isStandalone() || wasDismissedRecently()) return;
-        banner.classList.add('pwa-show');
-      }
-
-      closeBtn.addEventListener('click', function() {
-        hideBanner();
-        try { localStorage.setItem(STORAGE_KEY, String(Date.now())); } catch (e) {}
-      });
-
-      // Android/Chrome: evento nativo de instalación
-      window.addEventListener('beforeinstallprompt', function(e) {
-        e.preventDefault();
-        deferredPrompt = e;
-        btn.style.display = '';
-        showBanner();
-      });
-
-      btn.addEventListener('click', function() {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(function(choice) {
-          if (typeof gtag === 'function') {
-            gtag('event', 'pwa_install_prompt', {
-              event_category: 'PWA',
-              event_label: choice.outcome // 'accepted' o 'dismissed'
-            });
-          }
-          if (typeof registrarStats === 'function') {
-            registrarStats('pwa_prompt', choice.outcome); // 'accepted' o 'dismissed'
-          }
-        }).finally(function() {
-          deferredPrompt = null;
-          hideBanner();
-        });
-      });
-
-      window.addEventListener('appinstalled', function() {
-        hideBanner();
-        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-      });
-
-      // iOS/Safari: no existe beforeinstallprompt; mostramos instrucciones manuales
-      var esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-      if (esIOS && !isStandalone()) {
-        sub.textContent = 'Toca el icono compartir de Safari y luego "Añadir a pantalla de inicio".';
-        showBanner();
-      }
-    })();
-  </script>
-
-  <!-- PWA: registro del Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .catch((err) => console.warn('Registro de Service Worker falló:', err));
-      });
-    }
   </script>
 </body>
 </html>

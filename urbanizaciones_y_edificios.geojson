@@ -12055,7 +12055,8 @@
                 "name": "ZEUS",
                 "img": "img/zeus.jpg",
                 "desc": [
-                    "Edificio"
+                    "Edificio",
+					"Pista deportiva"
                 ]
             }
         },

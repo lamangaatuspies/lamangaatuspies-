@@ -3145,7 +3145,11 @@
 
     // Layer control — polígonos y sus etiquetas van juntos
     const overlays = {};
-    Object.keys(GEODATA).forEach(name => { overlays[name] = leafletLayers[name]; });
+    // Orden fijo del menú (igual que en la web). No depender de Object.keys(GEODATA):
+    // ese orden varía según qué GeoJSON termina de descargarse antes.
+    ['Urbanizaciones y Edificios', 'Hoteles', 'Bares y Restaurantes', 'Sitios de Interés'].forEach(name => {
+      if (leafletLayers[name]) overlays[name] = leafletLayers[name];
+    });
     overlays['Polígonos'] = L.layerGroup([poligonosLayer, poligonosLabels]);
     overlays['Salidas'] = salidasLayerGroup;
 

@@ -12056,7 +12056,7 @@
                 "img": "img/zeus.jpg",
                 "desc": [
                     "Edificio",
-					"Pista deportiva"
+                    "Pista deportiva"
                 ]
             }
         },
@@ -12345,6 +12345,43 @@
                 "img": "img/Ondarreta.jpg",
                 "desc": [
                     "Apartamentos"
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "CORNISA DEL ESTACIO",
+                "img": "img/Cornisa-del-estacio.jpg",
+                "desc": [
+                    "Apartamentos"
+                ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -0.738908,
+                            37.743706
+                        ],
+                        [
+                            -0.738689,
+                            37.743748
+                        ],
+                        [
+                            -0.739555,
+                            37.74654
+                        ],
+                        [
+                            -0.739821,
+                            37.746488
+                        ],
+                        [
+                            -0.738908,
+                            37.743706
+                        ]
+                    ]
                 ]
             }
         }

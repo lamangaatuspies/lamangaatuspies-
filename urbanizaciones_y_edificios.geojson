@@ -7672,20 +7672,20 @@
                             37.697695
                         ],
                         [
-                            -0.740158,
-                            37.698151
+                            -0.740172,
+                            37.698221
                         ],
                         [
-                            -0.740035,
-                            37.697803
+                            -0.740043,
+                            37.697695
                         ],
                         [
-                            -0.739788,
-                            37.69782
+                            -0.738699,
+                            37.697179
                         ],
                         [
-                            -0.738581,
-                            37.697394
+                            -0.738422,
+                            37.697242
                         ],
                         [
                             -0.738592,
@@ -12350,13 +12350,6 @@
         },
         {
             "type": "Feature",
-            "properties": {
-                "name": "CORNISA DEL ESTACIO",
-                "img": "img/Cornisa-del-estacio.jpg",
-                "desc": [
-                    "Apartamentos"
-                ]
-            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [
@@ -12382,6 +12375,13 @@
                             37.743706
                         ]
                     ]
+                ]
+            },
+            "properties": {
+                "name": "CORNISA DEL ESTACIO",
+                "img": "img/Cornisa-del-estacio.jpg",
+                "desc": [
+                    "Apartamentos"
                 ]
             }
         }

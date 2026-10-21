@@ -3482,6 +3482,34 @@
     document.getElementById('ppPisosLista').addEventListener('click', registrarClicPiso);
     document.getElementById('ppPisosLista').addEventListener('auxclick', registrarClicPiso);
 
+    // ── MÓVIL / PWA: conservar el scroll al volver de Idealista ──
+    // El anuncio se abre en una ventana por encima de la app; al cerrarla, el viewport se
+    // reajusta y la página queda algo desplazada hacia arriba. Guardamos el scrollY al pulsar
+    // el enlace y lo restauramos al volver (varios intentos por si el reajuste llega con retraso).
+    (function conservarScrollTrasIdealista() {
+      let scrollGuardado = null;
+      let timersRestaurar = [];
+      document.getElementById('ppPisosLista').addEventListener('click', ev => {
+        if (window.innerWidth > 600) return;
+        if (ev.target && ev.target.closest && ev.target.closest('.lp-piso-link')) {
+          scrollGuardado = window.scrollY;
+        }
+      });
+      function restaurarScroll() {
+        if (scrollGuardado === null) return;
+        timersRestaurar.forEach(clearTimeout);
+        timersRestaurar = [0, 150, 400, 800].map(ms => setTimeout(() => {
+          if (scrollGuardado !== null) window.scrollTo({ top: scrollGuardado, behavior: 'auto' });
+        }, ms));
+        timersRestaurar.push(setTimeout(() => { scrollGuardado = null; }, 1000));
+      }
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') restaurarScroll();
+      });
+      window.addEventListener('pageshow', restaurarScroll);
+      window.addEventListener('focus', restaurarScroll);
+    })();
+
     popupClose.addEventListener('click', () => {
       resetPisosPopup();
       popupPanel.classList.remove('visible');
